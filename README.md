@@ -1,21 +1,95 @@
-# 🏄 Rumbo SUP - Paquete de Transferencia
+# 🏄 Rumbo SUP - Tu Guía de Mar
 
-¡Hola! Si estás leyendo esto, es porque vas a comenzar la construcción de **Rumbo SUP**. Este directorio contiene todos los documentos necesarios para inicializar el proyecto con el contexto correcto.
+![Rumbo SUP Banner](https://img.shields.io/badge/Status-Beta-blue?style=for-the-badge) ![Python](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge) ![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB?style=for-the-badge) ![AI](https://img.shields.io/badge/AI-Google%20Gemini-orange?style=for-the-badge)
 
-## 📁 Contenido del Paquete
+Rumbo SUP es una **Progressive Web App (PWA)** diseñada para practicantes de Stand Up Paddle en Mar del Plata. No es solo un pronóstico del clima; es un **instructor virtual** que interpreta las condiciones (viento, olas, marea) basándose en tu nivel de experiencia y el tipo de tabla que usás.
 
-1.  **[project_prompt.md](./project_prompt.md)**: El "God Prompt". Pegá este contenido en tu primer mensaje para entender la visión completa.
-2.  **[agent_instructions.md](./agent_instructions.md)**: Reglas inmutables de arquitectura y diseño (HAX). **Leé esto antes de escribir la primera línea de código.**
-3.  **[implementation_plan.md](./implementation_plan.md)**: El mapa de ruta técnico dividido en 5 fases.
-4.  **[abstraction.md](./abstraction.md)**: Análisis del proyecto anterior (SUP Sensei) para referencia histórica.
-
-## 🚀 Cómo Empezar (Instrucciones para el Nuevo Agente)
-
-1.  **Inicia un nuevo chat**.
-2.  **Pega el contenido de `project_prompt.md`** como tu primer mensaje.
-3.  Una vez procesado el prompt, **lee `agent_instructions.md`** y confirma al usuario que has comprendido las reglas de separación de capas (Layer A/B) y la semántica del semáforo.
-4.  Comenzá ejecutando la **Fase 1 del `implementation_plan.md`**.
+> **Experiencia Premium**: Diseñada con una estética "Deep Ocean" (Glassmorphism + Dark Mode) y arquitectura mobile-first.
 
 ---
-*Buen viaje y buenas remadas,*
-*Tu agente de planificación anterior.*
+
+## 🧠 Arquitectura "Split Brain"
+
+Este proyecto utiliza una arquitectura de doble capa para garantizar seguridad y pedagogía:
+
+1.  **Layer A (Determinístico - El "Risk Manager")**:
+    *   **Motor Matemático**: Calcula scores de seguridad (0-100) basándose estrictamente en datos físicos (viento, ráfagas, olas).
+    *   **Inmutable**: No usa IA. Si el viento supera 30km/h, es bandera roja. Punto.
+    *   **Personalizado**: Ajusta los umbrales según si sos Principiante, Intermedio o Avanzado.
+
+2.  **Layer B (Pedagógico - El "Sensei")**:
+    *   **IA Generativa (Google Gemini)**: Recibe los datos del Layer A y los "traduce" a una explicación humana.
+    *   **Enfoque Sensorial**: No te dice "Viento 15 nudos". Te dice *"Vas a sentir una brisa fresca en la cara, y el mar tendrá una textura rugosa pero navegable"*.
+    *   **Prohibición de Decisión**: La IA tiene prohibido explícitamente tomar decisiones de seguridad (Go/No-Go). Solo explica y enseña.
+
+---
+
+## 🚀 Features
+
+*   **Algoritmo de Disfrute**: Calcula no solo si es seguro, sino si vas a pasarla bien según tu objetivo (Chill, Entrenamiento o Adrenalina).
+*   **Gestión de Perfiles**: Ajusta las recomendaciones según tu tabla (Inflable vs. Rígida) y tu potencia de remada.
+*   **Integraciones Reales**:
+    *   🌊 **OpenMeteo Marine API**: Datos de olas y viento en tiempo real.
+    *   🌖 **WorldTides API**: Estado preciso de las mareas localizadas.
+    *   🤖 **Google Gemini 2.0**: Capa de razonamiento pedagógico.
+*   **PWA Installable**: Funciona como una app nativa en iOS y Android.
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **React 18 + Vite**: Velocidad y modularidad.
+- **Glassmorphism CSS**: Diseño custom sin frameworks pesados.
+- **SVG Icons**: Sistema de iconos conceptuales propios.
+
+### Backend
+- **FastAPI (Python 3.11)**: API REST de alto rendimiento.
+- **Pydantic**: Validación estricta de datos.
+- **Uvicorn**: Servidor ASGI para producción.
+
+---
+
+## 💻 Instalación Local
+
+1.  **Clonar el repo**
+    ```bash
+    git clone https://github.com/mattbarreto/Rumbo-SUP.git
+    cd Rumbo-SUP
+    ```
+
+2.  **Backend**
+    ```bash
+    cd proyecto/backend
+    python -m venv venv
+    source venv/bin/activate  # o .\venv\Scripts\activate en Windows
+    pip install -r requirements.txt
+    
+    # Crear .env basado en .env.example
+    cp .env.example .env
+    # Completar API Keys (Gemini y WorldTides)
+    
+    python -m uvicorn app.main:app --reload
+    ```
+
+3.  **Frontend**
+    ```bash
+    cd proyecto/frontend
+    npm install
+    npm run dev
+    ```
+
+---
+
+## ☁️ Deploy (Render)
+
+El proyecto incluye un `render.yaml` (Blueprint) para deploy automático.
+
+1.  Conectá tu repo a [Render.com](https://render.com).
+2.  Creá un **Blueprint**.
+3.  Seteá las variables de entorno (`GEMINI_API_KEY`, `WORLDTIDES_API_KEY`).
+4.  ¡Listo! Render levantará el Backend (Python) y el Frontend (Static) automáticamente.
+
+---
+
+Desarrollado con 💙 y 🧉 para la comunidad de SUP.
