@@ -1,8 +1,6 @@
 .metric-card {
-    background: linear-gradient(135deg,
-            hsla(210, 20%, 98%, 0.03) 0%,
-            hsla(210, 20%, 98%, 0.01) 100%);
-    border: 1px solid var(--glass-border);
+    background: var(--gradient-card);
+    border: 1px solid var(--ocean-current);
     border-radius: var(--radius-lg);
     padding: var(--space-4);
     display: flex;
@@ -11,13 +9,16 @@
     transition: all var(--transition-base);
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-soft);
 }
 
 .metric-card:hover {
-    background: var(--glass-light);
+    background: linear-gradient(135deg,
+            var(--ocean-current) 0%,
+            var(--ocean-surface) 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    border-color: hsla(210, 20%, 98%, 0.2);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--ocean-shimmer);
 }
 
 .metric-header {

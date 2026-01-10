@@ -6,95 +6,116 @@
 /* ==================== PALETA DE COLORES HSL ==================== */
 
 :root {
-  /* Azules Oceánicos - Profundidad y Calma */
-  --ocean-midnight: hsl(210, 65%, 8%);
-  /* #0a1419 */
-  --ocean-deep: hsl(210, 55%, 12%);
-  /* #0e1920 */
-  --ocean-abyss: hsl(210, 50%, 18%);
-  /* #17252e */
-  --ocean-surface: hsl(200, 45%, 25%);
-  /* #233845 */
+  /* ==================== OCEAN PALETTE (design_system.md) ==================== */
 
-  /* Azules Vibrantes - Acción y Foco */
-  --ocean-bright: hsl(195, 85%, 45%);
-  /* #11a8cd */
-  --ocean-cyan: hsl(185, 75%, 55%);
-  /* #3fc9d8 */
-  --ocean-foam: hsl(180, 60%, 85%);
-  /* #c0e9ed */
+  /* Primary Tones - The Water (Deep to Light) */
+  --ocean-abyss: #0A1628;
+  /* Main Background - deepest depth */
+  --ocean-deep: #0F2942;
+  /* Surface elements, card bg (gradient start) */
+  --ocean-current: #1A4667;
+  /* Elevated surfaces, card bg (gradient end) */
+  --ocean-surface: #2A6F97;
+  /* Secondary accents, active states */
+  --ocean-shimmer: #61A5C2;
+  /* PRIMARY BRAND - highlights, icons, active text */
+  --ocean-foam: #A9D6E5;
+  /* Subtle text details, secondary icons */
 
-  /* Semáforo Oceánico */
-  --safe-teal: hsl(165, 65%, 45%);
-  /* #29a688 */
-  --caution-amber: hsl(35, 90%, 55%);
-  /* #f5a623 */
-  --danger-coral: hsl(10, 75%, 58%);
-  /* #e85d4a */
+  /* Neutrals - The Shore */
+  --ocean-sand: #F5F1EB;
+  /* Primary Text - warm white */
+  --ocean-shell: #E8E4DC;
+  /* Secondary text, placeholders */
+  --ocean-driftwood: #C4BFB5;
+  /* Muted text, labels, borders */
 
-  /* Neutros Refinados */
-  --neutral-100: hsl(210, 15%, 98%);
-  /* #fafbfc */
-  --neutral-200: hsl(210, 12%, 92%);
-  /* #e8eaed */
-  --neutral-300: hsl(210, 10%, 75%);
-  /* #b8bcc2 */
-  --neutral-600: hsl(210, 8%, 35%);
-  /* #515861 */
-  --neutral-800: hsl(210, 12%, 15%);
-  /* #202529 */
+  /* Semantic Status - Life Indicators */
+  --ocean-kelp: #52796F;
+  /* Safe / Go - healthy state */
+  --ocean-coral: #E07A5F;
+  /* Caution / Attention */
+  --ocean-urchin: #9B2335;
+  /* Danger / Stop - high risk */
 
-  /* Colores de Texto - Para Dark Theme */
-  --text-primary: hsl(210, 15%, 98%);
-  /* Blanco cálido - texto principal */
-  --text-secondary: hsl(210, 10%, 75%);
-  /* Gris claro - texto secundario */
-  --text-tertiary: hsla(210, 15%, 98%, 0.6);
-  /* Blanco con opacidad - hints */
-  --text-on-card: hsl(210, 15%, 98%);
-  /* Texto en cards oscuras */
+  /* Glass & Transparency */
+  --ocean-mist: rgba(169, 214, 229, 0.1);
+  /* Overlay */
+  --ocean-spray: rgba(97, 165, 194, 0.15);
+  /* Glass containers, buttons */
 
-  /* Gradientes */
-  --gradient-ocean: linear-gradient(135deg,
-      hsl(210, 65%, 8%) 0%,
-      hsl(200, 55%, 15%) 50%,
-      hsl(190, 50%, 20%) 100%);
+  /* Legacy compatibility aliases */
+  --ocean-midnight: var(--ocean-abyss);
+  --ocean-bright: var(--ocean-shimmer);
+  --ocean-cyan: var(--ocean-shimmer);
+  --safe-teal: var(--ocean-kelp);
+  --caution-amber: var(--ocean-coral);
+  --danger-coral: var(--ocean-urchin);
+  --neutral-100: var(--ocean-sand);
+  --neutral-200: var(--ocean-shell);
+  --neutral-300: var(--ocean-driftwood);
+  --neutral-600: #515861;
+  --neutral-800: var(--ocean-abyss);
+
+  /* Text Colors - Dark Theme */
+  --text-primary: var(--ocean-sand);
+  --text-secondary: var(--ocean-shell);
+  --text-tertiary: rgba(245, 241, 235, 0.6);
+  --text-on-card: var(--ocean-sand);
+
+  /* Gradients */
+  --gradient-ocean: linear-gradient(180deg,
+      var(--ocean-abyss) 0%,
+      var(--ocean-deep) 100%);
+
+  --gradient-card: linear-gradient(135deg,
+      var(--ocean-deep) 0%,
+      var(--ocean-current) 100%);
 
   --gradient-cta: linear-gradient(135deg,
-      hsl(195, 85%, 48%) 0%,
-      hsl(185, 80%, 52%) 100%);
+      var(--ocean-shimmer) 0%,
+      var(--ocean-surface) 100%);
 
   /* Glassmorphism */
-  --glass-light: hsla(210, 20%, 98%, 0.08);
-  --glass-medium: hsla(210, 15%, 95%, 0.12);
-  --glass-border: hsla(210, 20%, 100%, 0.15);
+  --glass-light: var(--ocean-mist);
+  --glass-medium: var(--ocean-spray);
+  --glass-border: rgba(97, 165, 194, 0.2);
+  --glass-premium: rgba(15, 23, 42, 0.6);
 
-  /* ==================== TIPOGRAFÍA ==================== */
+  /* ==================== TYPOGRAPHY (Golden Ratio 1.618×) ==================== */
 
-  /* Fonts - Apple inspired */
+  /* Fonts */
   --font-display: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'SF Pro Text', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'SF Mono', 'Roboto Mono', 'Courier New', monospace;
 
-  /* Type Scale (1.125 - Major Second) */
-  --text-xs: 0.75rem;
-  /* 12px */
-  --text-sm: 0.875rem;
-  /* 14px */
+  /* Type Scale (Golden Ratio ~1.618) */
+  --text-xs: 0.688rem;
+  /* 11px - metadata, small tags */
+  --text-sm: 0.813rem;
+  /* 13px - labels, secondary details */
   --text-base: 1rem;
-  /* 16px */
-  --text-lg: 1.125rem;
-  /* 18px */
-  --text-xl: 1.25rem;
-  /* 20px */
-  --text-2xl: 1.5rem;
-  /* 24px */
-  --text-3xl: 2rem;
-  /* 32px */
-  --text-4xl: 2.5rem;
-  /* 40px */
-  --text-5xl: 3rem;
-  /* 48px */
+  /* 16px - body text, buttons */
+  --text-lg: 1.25rem;
+  /* 20px - subheaders */
+  --text-xl: 1.625rem;
+  /* 26px - card numerical values */
+  --text-2xl: 2.125rem;
+  /* 34px - section headers */
+  --text-3xl: 2.625rem;
+  /* 42px - impact text */
+  --text-4xl: 3.5rem;
+  /* 56px - display, large score */
+  --text-5xl: 3.5rem;
+  /* alias for display */
+
+  /* Letter Spacing per spec */
+  --tracking-tight: -0.5px;
+  /* Large headers (2xl+) */
+  --tracking-wide: 1px;
+  /* Uppercase labels */
+  --tracking-widest: 2px;
+  /* Very small uppercase tags */
 
   /* Line Heights */
   --leading-tight: 1.15;
@@ -108,29 +129,25 @@
   --weight-semibold: 600;
   --weight-bold: 700;
 
-  /* ==================== ESPACIADO (8pt Grid) ==================== */
+  /* ==================== SPACING (8pt Grid) ==================== */
 
   --space-0: 0;
-  --space-1: 0.25rem;
-  /* 4px */
-  --space-2: 0.5rem;
-  /* 8px */
-  --space-3: 0.75rem;
-  /* 12px */
-  --space-4: 1rem;
-  /* 16px */
-  --space-5: 1.25rem;
-  /* 20px */
-  --space-6: 1.5rem;
-  /* 24px */
-  --space-8: 2rem;
-  /* 32px */
-  --space-10: 2.5rem;
-  /* 40px */
-  --space-12: 3rem;
-  /* 48px */
-  --space-16: 4rem;
-  /* 64px */
+  --space-1: 4px;
+  /* xs */
+  --space-2: 8px;
+  /* sm */
+  --space-3: 12px;
+  --space-4: 16px;
+  /* md - standard padding */
+  --space-5: 20px;
+  --space-6: 24px;
+  /* lg - section gap */
+  --space-8: 32px;
+  /* xl */
+  --space-10: 40px;
+  --space-12: 48px;
+  /* 2xl */
+  --space-16: 64px;
 
   /* ==================== BORDER RADIUS ==================== */
 
@@ -138,33 +155,47 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+  /* Ocean Card */
   --radius-xl: 20px;
   --radius-2xl: 24px;
+  /* Buttons */
   --radius-full: 9999px;
 
-  /* ==================== SOMBRAS ==================== */
+  /* ==================== SHADOWS & GLOWS ==================== */
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 2px 8px rgba(10, 25, 41, 0.08);
-  --shadow-md: 0 4px 16px rgba(10, 25, 41, 0.12);
-  --shadow-lg: 0 8px 32px rgba(10, 25, 41, 0.16);
-  --shadow-xl: 0 16px 48px rgba(10, 25, 41, 0.20);
+  --shadow-sm: 0 2px 8px rgba(10, 22, 40, 0.08);
+  --shadow-md: 0 4px 16px rgba(10, 22, 40, 0.12);
+  --shadow-lg: 0 8px 32px rgba(10, 22, 40, 0.16);
+  --shadow-xl: 0 16px 48px rgba(10, 22, 40, 0.20);
 
-  /* Shadow con color para CTAs */
-  --shadow-ocean: 0 8px 24px hsla(195, 85%, 45%, 0.25);
+  /* Shimmer-based shadows per spec */
+  --shadow-soft: 0 4px 12px rgba(97, 165, 194, 0.15);
+  --shadow-glow: 0 0 20px rgba(97, 165, 194, 0.30);
+  --shadow-ocean: 0 8px 24px rgba(97, 165, 194, 0.25);
 
-  /* ==================== TRANSICIONES ==================== */
+  /* ==================== ANIMATION TIMING (design_system.md) ==================== */
 
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-smooth: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  --timing-wave: 6000ms;
+  /* Wave background motion */
+  --timing-breath: 4000ms;
+  /* Breathing ring pulse */
+  --timing-transition: 300ms;
+  /* Page fades, slides */
+  --timing-wave-slow: 8000ms;
+  /* Second wave layer */
 
-  /* Easing */
+  /* Easing curves */
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Legacy transition aliases */
+  --transition-fast: 150ms var(--ease-in-out);
+  --transition-base: var(--timing-transition) var(--ease-in-out);
+  --transition-smooth: 350ms var(--ease-in-out);
+  --transition-slow: 500ms var(--ease-in-out);
 }
 
 /* ==================== RESET & BASE ==================== */
@@ -453,24 +484,59 @@ p {
   animation: fadeInUp var(--transition-smooth) var(--ease-out) both;
 }
 
-@keyframes wave {
+@keyframes waveMotion {
 
   0%,
   100% {
-    transform: translateX(0) translateY(0);
+    transform: translateY(0) translateX(0);
+    opacity: 0.3;
   }
 
-  25% {
-    transform: translateX(-2px) translateY(-2px);
+  50% {
+    transform: translateY(-8px) translateX(4px);
+    opacity: 0.4;
+  }
+}
+
+@keyframes waveMotionSlow {
+
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.15;
   }
 
-  75% {
-    transform: translateX(2px) translateY(2px);
+  50% {
+    transform: translateY(-5px) translateX(-3px);
+    opacity: 0.25;
   }
 }
 
 .wave-animation {
-  animation: wave 3s ease-in-out infinite;
+  animation: waveMotion var(--timing-wave) ease-in-out infinite;
+}
+
+.wave-animation-slow {
+  animation: waveMotionSlow var(--timing-wave-slow) ease-in-out infinite;
+}
+
+/* Breathing Ring Animation (design_system.md) */
+@keyframes breathingGlow {
+
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(1.05);
+  }
+}
+
+.breathing-animation {
+  animation: breathingGlow var(--timing-breath) ease-in-out infinite;
 }
 
 @keyframes pulse {
@@ -487,6 +553,37 @@ p {
 
 .pulse-animation {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ==================== OCEAN CARD (design_system.md) ==================== */
+
+.ocean-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--ocean-current);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-soft);
+  transition: all var(--transition-base);
+}
+
+.ocean-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ==================== GLASS CARD PREMIUM ==================== */
+
+.glass-card-premium {
+  background: var(--glass-premium);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid transparent;
+  border-image: linear-gradient(135deg,
+      rgba(97, 165, 194, 0.3) 0%,
+      rgba(97, 165, 194, 0.05) 100%) 1;
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ==================== LOADING STATE ==================== */

@@ -72,7 +72,13 @@
 }
 
 .conditions-card {
-    composes: glass-card from global;
+    background: var(--gradient-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--ocean-current);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-soft);
     margin-bottom: var(--space-6);
 }
 

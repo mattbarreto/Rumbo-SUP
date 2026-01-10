@@ -2,107 +2,122 @@ import { motion } from 'framer-motion';
 import './CircularIndicator.css';
 
 function CircularIndicator({ seguridad, categoria }) {
-    // Determinar color usando variables CSS del tema
+    // Map to design system semantic colors
     const getColorVariable = () => {
-        if (categoria === 'alto') return 'var(--safe-teal)';
-        if (categoria === 'medio') return 'var(--caution-amber)';
-        return 'var(--danger-coral)';
+        if (categoria === 'alto') return 'var(--ocean-kelp)';
+        if (categoria === 'medio') return 'var(--ocean-coral)';
+        return 'var(--ocean-urchin)';
     };
 
-    const getStrokeColor = () => getColorVariable();
-
-    // Determinar texto según categoría
     const getText = () => {
         if (categoria === 'alto') return 'Condiciones seguras';
         if (categoria === 'medio') return 'Con precaución';
         return 'No recomendado';
     };
 
-    const strokeColor = getStrokeColor();
-    // Getting raw hex for SVG defs might be tricky if we want exact matches to CSS vars without computing styles.
-    // However, for SVG stroke we can use var() directly.
-
-    const circumference = 2 * Math.PI * 90; // radio 90
+    const strokeColor = getColorVariable();
+    const circumference = 2 * Math.PI * 85; // Inner ring radius
     const progress = (seguridad / 100) * circumference;
 
     return (
         <div className="circular-indicator">
-            <svg width="240" height="240" viewBox="0 0 200 200">
-                <defs>
-                    <linearGradient id="gradientSafety" x1="0%" y1="0%" x2="100%" y2="0%">
-                        {/* We can't easily use var() inside stop-color in all browsers cleanly for gradients 
-                             without knowing the underlying value, but we can try currentColor or use the specific hues.
-                             For premium look, we'll try to stick to solid stroke with var() which is safer, 
-                             or map manually to the HSL values if needed. 
-                             Let's use the CSS variable directly in stroke, it works fine. 
-                             Gradients for the stroke would require definitions.
-                             Let's simple use a distinct opacity track.
-                         */}
-                    </linearGradient>
-                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="2" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                </defs>
-
-                {/* Track (Background Circle) */}
-                <circle
-                    cx="100"
-                    cy="100"
-                    r="90"
-                    fill="none"
-                    stroke="var(--glass-border)"
-                    strokeWidth="8"
-                    opacity="0.5"
+            <div className="breathing-ring-container">
+                {/* Animated Glow Layer (Breathing) */}
+                <motion.div
+                    className="glow-layer"
+                    style={{
+                        background: `radial-gradient(circle, ${strokeColor.replace('var(', '').replace(')', '')} 0%, transparent 70%)`,
+                        filter: 'blur(20px)',
+                    }}
+                    animate={{
+                        opacity: [0.2, 0.4, 0.2],
+                        scale: [1, 1.05, 1],
+                    }}
+                    transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                    }}
                 />
 
-                {/* Progress Circle with Animation */}
-                <motion.circle
-                    cx="100"
-                    cy="100"
-                    r="90"
-                    fill="none"
-                    stroke={strokeColor}
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={circumference - progress}
-                    transform="rotate(-90 100 100)"
-                    initial={{ strokeDashoffset: circumference }}
-                    animate={{ strokeDashoffset: circumference - progress }}
-                    transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-                    style={{ filter: "url(#glow)" }}
-                />
+                <svg width="240" height="240" viewBox="0 0 200 200" className="indicator-svg">
+                    <defs>
+                        <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
 
-                {/* Central Score */}
-                <text
-                    x="100"
-                    y="95"
-                    textAnchor="middle"
-                    fill="var(--text-primary)"
-                    fontSize="56"
-                    fontWeight="600"
-                    fontFamily="var(--font-display)"
-                    className="numeric"
-                    dy="5"
-                >
-                    {Math.round(seguridad)}
-                </text>
+                    {/* Outer Ring (50% opacity, 2px) */}
+                    <circle
+                        cx="100"
+                        cy="100"
+                        r="95"
+                        fill="none"
+                        stroke={strokeColor}
+                        strokeWidth="2"
+                        opacity="0.5"
+                        className="outer-ring"
+                    />
 
-                <text
-                    x="100"
-                    y="125"
-                    textAnchor="middle"
-                    fill="var(--text-secondary)"
-                    fontSize="12"
-                    fontWeight="500"
-                    fontFamily="var(--font-body)"
-                    letterSpacing="0.1em"
-                    style={{ textTransform: 'uppercase', opacity: 0.7 }}
-                >
-                    Seguridad
-                </text>
-            </svg>
+                    {/* Track (Inner Background Circle) */}
+                    <circle
+                        cx="100"
+                        cy="100"
+                        r="85"
+                        fill="var(--ocean-abyss)"
+                        stroke="var(--glass-border)"
+                        strokeWidth="3"
+                    />
+
+                    {/* Progress Arc (Inner Ring) */}
+                    <motion.circle
+                        cx="100"
+                        cy="100"
+                        r="85"
+                        fill="none"
+                        stroke={strokeColor}
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        strokeDasharray={circumference}
+                        strokeDashoffset={circumference - progress}
+                        transform="rotate(-90 100 100)"
+                        initial={{ strokeDashoffset: circumference }}
+                        animate={{ strokeDashoffset: circumference - progress }}
+                        transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                        style={{ filter: 'url(#glowFilter)' }}
+                    />
+
+                    {/* Central Score (Display size) */}
+                    <text
+                        x="100"
+                        y="95"
+                        textAnchor="middle"
+                        fill="var(--ocean-sand)"
+                        fontSize="56"
+                        fontWeight="600"
+                        fontFamily="var(--font-display)"
+                        letterSpacing="-0.5px"
+                        dy="5"
+                    >
+                        {Math.round(seguridad)}
+                    </text>
+
+                    {/* Label */}
+                    <text
+                        x="100"
+                        y="128"
+                        textAnchor="middle"
+                        fill="var(--ocean-driftwood)"
+                        fontSize="11"
+                        fontWeight="500"
+                        fontFamily="var(--font-body)"
+                        letterSpacing="2px"
+                    >
+                        SEGURIDAD
+                    </text>
+                </svg>
+            </div>
 
             <motion.div
                 className="indicator-label"
