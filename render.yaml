@@ -1,5 +1,4 @@
 # Rumbo SUP - Render deployment configuration
-# This file configures both frontend and backend deployment
 
 services:
   # Backend API (Web Service)
@@ -11,23 +10,23 @@ services:
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: GEMINI_API_KEY
-        sync: false  # Set manually in Render dashboard
+        sync: false
       - key: WORLDTIDES_API_KEY
-        sync: false  # Set manually in Render dashboard
+        sync: false
       - key: GEMINI_MODEL
         value: gemini-2.0-flash-exp
       - key: FRONTEND_URL
-        sync: false  # Set manually after frontend is deployed
+        sync: false
     rootDir: proyecto/backend
 
+staticSites:
   # Frontend (Static Site)
-  - type: static
-    name: rumbo-sup-frontend
+  - name: rumbo-sup-frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        sync: false  # Set manually after backend is deployed
+        sync: false
     rootDir: proyecto/frontend
     routes:
       - type: rewrite
