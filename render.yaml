@@ -13,6 +13,8 @@ services:
         sync: false
       - key: WORLDTIDES_API_KEY
         sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.6
       - key: GEMINI_MODEL
         value: gemini-2.0-flash-exp
       - key: FRONTEND_URL
