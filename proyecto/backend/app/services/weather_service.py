@@ -23,6 +23,13 @@ class WeatherProvider(ABC):
         """
         pass
 
+    @abstractmethod
+    async def get_forecast(self, lat: float, lon: float, hours: int = 12) -> list[WeatherData]:
+        """
+        Obtiene pronóstico horario
+        """
+        pass
+
 class WeatherService:
     """
     Servicio de clima con inyección de dependencia
@@ -37,3 +44,9 @@ class WeatherService:
         Obtiene condiciones actuales usando el provider configurado
         """
         return await self.provider.get_conditions(lat, lon)
+
+    async def get_forecast(self, lat: float, lon: float, hours: int = 12) -> list[WeatherData]:
+        """
+        Obtiene pronóstico horario
+        """
+        return await self.provider.get_forecast(lat, lon, hours)

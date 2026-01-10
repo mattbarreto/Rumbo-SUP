@@ -159,3 +159,48 @@
         transform: rotate(360deg);
     }
 }
+
+/* ==================== FORECAST ELEMENTS ==================== */
+
+.forecast-banner {
+    background: var(--ocean-surface);
+    color: var(--ocean-cyan);
+    text-align: center;
+    padding: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-4);
+    border: 1px solid var(--ocean-cyan);
+    box-shadow: 0 0 10px rgba(64, 224, 208, 0.2);
+}
+
+.highlight-time {
+    color: var(--ocean-cyan);
+    font-weight: var(--weight-bold);
+}
+
+.sensei-tip-card {
+    margin-bottom: var(--space-6);
+    background: linear-gradient(135deg, rgba(64, 224, 208, 0.1), rgba(0, 0, 0, 0));
+    border-color: rgba(64, 224, 208, 0.3);
+}
+
+.tip-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+    color: var(--ocean-cyan);
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+    letter-spacing: 1px;
+}
+
+.tip-text {
+    font-size: var(--text-base);
+    color: var(--text-primary);
+    line-height: var(--leading-relaxed);
+    margin: 0;
+}

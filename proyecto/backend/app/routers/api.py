@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.models.schemas import AnalyzeRequest, AnalyzeResponse, ExplanationRequest, ExplanationResponse, NearestSpotResponse
+from app.models.schemas import AnalyzeRequest, AnalyzeResponse, ExplanationRequest, ExplanationResponse, NearestSpotResponse, TimelineRequest, TimelineResponse, TimelinePoint
 from app.config.spots import SPOTS
 from datetime import datetime
 import math
@@ -109,3 +109,62 @@ async def get_nearest_spot(lat: float, lon: float):
         raise ValueError("No se encontraron spots cercanos")
     
     return NearestSpotResponse(**nearest)
+
+@router.post("/timeline", response_model=TimelineResponse)
+async def get_timeline(request: TimelineRequest):
+    """
+    Obtiene línea de tiempo semántica (forecast + engine)
+    """
+    from app.models.schemas import TimelineResponse, TimelinePoint
+    
+    if request.spot_id not in SPOTS:
+        raise ValueError(f"Spot '{request.spot_id}' no encontrado")
+    
+    spot = SPOTS[request.spot_id]
+    
+    # Setup services (inline)
+    from app.services.openmeteo_provider import OpenMeteoProvider
+    from app.services.weather_service import WeatherService
+    from app.services.worldtides_provider import WorldTidesProvider
+    from app.services.sensei_engine import SenseiEngine
+    import os
+    
+    worldtides_key = os.getenv("WORLDTIDES_API_KEY")
+    worldtides_provider = WorldTidesProvider(worldtides_key) if worldtides_key else None
+    
+    openmeteo_provider = OpenMeteoProvider(worldtides_provider=worldtides_provider)
+    weather_service = WeatherService(openmeteo_provider)
+    engine = SenseiEngine()
+    
+    # Obtener forecast 12hs
+    forecast = await weather_service.get_forecast(spot["lat"], spot["lon"], hours=12)
+    
+    timeline_points = []
+    
+    for wd in forecast:
+        # Ejecutar engine para cada hora
+        result = engine.analyze(wd, request.spot_id, request.user)
+        
+        # Formatear hora
+        try:
+            ts = datetime.fromisoformat(wd.timestamp)
+            label = ts.strftime("%H:%M")
+        except:
+            label = "--:--"
+            
+        timeline_points.append(TimelinePoint(
+            timestamp=wd.timestamp,
+            hour_label=label,
+            result=result,
+            weather=wd
+        ))
+        
+    if not timeline_points:
+        raise ValueError("No se pudieron obtener datos de pronóstico")
+        
+    return TimelineResponse(
+        spot={"name": spot["name"], "lat": spot["lat"], "lon": spot["lon"]},
+        weather=forecast[0], # El primero es el actual
+        current=timeline_points[0].result,
+        timeline=timeline_points
+    )

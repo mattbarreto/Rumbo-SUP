@@ -4,6 +4,7 @@ import OnboardingFlow from './components/OnboardingFlow';
 import MainScreen from './components/MainScreen';
 import SenseiScreen from './components/SenseiScreen';
 import ProfileScreen from './components/ProfileScreen';
+import AboutScreen from './components/AboutScreen';
 import PasswordGate from './components/PasswordGate';
 import { isMobile, isDevMode } from './utils/deviceDetection';
 
@@ -48,6 +49,7 @@ function App() {
                             <Route path="/" element={<MainScreen />} />
                             <Route path="/sensei" element={<SenseiScreen />} />
                             <Route path="/profile" element={<ProfileScreen />} />
+                            <Route path="/about" element={<AboutScreen />} />
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </>
                     )}

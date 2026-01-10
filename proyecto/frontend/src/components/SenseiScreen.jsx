@@ -45,7 +45,7 @@ function SenseiScreen() {
                 <div className="container">
                     <div className="loading-container">
                         <div className="loading-spinner"></div>
-                        <p>Analizando condiciones con IA...</p>
+                        <p>Consultando al Guía...</p>
                     </div>
                 </div>
             </div>
@@ -96,19 +96,24 @@ function SenseiScreen() {
                     </div>
                 )}
 
-                {/* Disclaimer */}
+                {/* Disclaimer & Sponsor */}
                 <div className="sensei-footer">
+                    <div className="sponsor-slot">
+                        <small>Potenciado por</small>
+                        <div className="sponsor-placeholder">[ Tu Escuela de SUP ]</div>
+                    </div>
+
                     <div className="disclaimer-badge">
-                        <span className="disclaimer-icon">🤝</span>
+                        <span className="disclaimer-icon">ℹ️</span>
                         <p>
-                            Esto es para ayudarte a leer el mar, no para decidir por vos.
+                            Rumbo es un asistente digital basado en datos.
                             <br />
-                            <strong>Confiá en lo que ves y en cómo te sentís antes de entrar.</strong>
+                            <strong>No reemplaza a un instructor certificado.</strong> Consultá siempre a los locales.
                         </p>
                     </div>
 
                     <button className="btn btn-primary btn-large" onClick={() => navigate('/')}>
-                        Entendido
+                        Volver al Inicio
                     </button>
                 </div>
             </div>

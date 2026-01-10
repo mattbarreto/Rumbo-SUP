@@ -100,6 +100,9 @@ function ProfileScreen() {
                 </div>
 
                 <div className="profile-actions">
+                    <button className="btn btn-about" onClick={() => navigate('/about')}>
+                        Acerca de Rumbo & Creador
+                    </button>
                     <button className="btn btn-secondary" onClick={handleReset}>
                         Reiniciar Onboarding
                     </button>

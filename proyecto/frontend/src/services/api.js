@@ -59,6 +59,22 @@ export async function getNearestSpot(lat, lon) {
 }
 
 /**
+ * Obtiene línea de tiempo semántica
+ */
+export async function getTimeline(spotId, userProfile) {
+    try {
+        const response = await api.post('/api/timeline', {
+            spot_id: spotId,
+            user: userProfile
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error getting timeline:', error);
+        throw error;
+    }
+}
+
+/**
  * Health check del backend
  */
 export async function healthCheck() {

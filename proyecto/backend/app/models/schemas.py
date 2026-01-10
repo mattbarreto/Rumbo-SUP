@@ -92,3 +92,21 @@ class NearestSpotResponse(BaseModel):
     spot_id: str
     name: str
     distance_km: float
+
+# ==================== Timeline ====================
+
+class TimelinePoint(BaseModel):
+    timestamp: str = Field(..., description="Timestamp ISO")
+    hour_label: str = Field(..., description="Etiqueta hora (ej: 14:00)")
+    result: EngineResult = Field(..., description="Resultado del motor para esta hora")
+    weather: WeatherData = Field(..., description="Datos climáticos para esta hora")
+
+class TimelineResponse(BaseModel):
+    spot: dict
+    weather: WeatherData
+    current: EngineResult
+    timeline: List[TimelinePoint] = Field(..., description="Proyección horaria")
+
+class TimelineRequest(BaseModel):
+    spot_id: str
+    user: UserProfile

@@ -250,3 +250,33 @@ export const TimeIcon = ({ className = "", size = 24 }) => (
         <circle cx="12" cy="12" r="9" strokeWidth="1.5" opacity="0.4" />
     </svg>
 );
+
+export const GithubIcon = ({ className = "", size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+        <path d="M9 19C9 19 9.034 16.094 9 13C3.5 14.25 3.5 10.062 3.5 10.062C3.5 10.062 1.75 9.312 3.5 9.312C5.25 9.312 6.125 10.062 6.125 10.062C7 11.812 9.625 11.25 9.625 11.25C9.625 11.25 10.062 10.062 10.5 9.625C6.125 9.187 3.5 5.812 3.5 5.812C3.5 3.875 4.375 2.5 4.375 2.5C4.375 2.5 2.625 2.5 2.625 4.375C2.625 6.25 4.375 9.312 4.375 9.312C4.375 9.312 4.375 11.812 4.375 11.812" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0" />
+        <path d="M12 2C6.47 2 2 6.47 2 12C2 16.42 5.31 20.17 9.5 21.17C10 21.26 10.19 20.96 10.19 20.72C10.19 20.5 10.18 19.91 10.18 19.13C7.23 19.78 6.4 17.96 6.16 17.29C6.03 16.94 5.43 15.86 4.9 15.58C4.46 15.34 3.84 14.88 4.89 14.86C5.87 14.85 6.57 15.76 6.8 16.13C7.94 18.06 9.77 17.5 10.49 17.17C10.6 16.35 10.93 15.8 11.3 15.48C8.56 15.17 5.68 14.11 5.68 9.38C5.68 8.03 6.16 6.94 6.96 6.07C6.83 5.76 6.41 4.5 7.08 2.81C7.08 2.81 8.11 2.48 10.45 4.07C11.43 3.8 12.48 3.66 13.53 3.66C14.58 3.66 15.63 3.8 16.61 4.07C18.95 2.48 19.98 2.81 19.98 2.81C20.66 4.5 20.24 5.76 20.11 6.07C20.91 6.94 21.39 8.03 21.39 9.38C21.39 14.12 18.51 15.16 15.76 15.47C16.23 15.87 16.65 16.67 16.65 17.89C16.65 19.64 16.64 21.06 16.64 21.28C16.64 21.52 16.82 21.83 17.33 21.73C21.51 20.17 25 16.32 25 11.83C25 6.4 20.52 2 15 2H12Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
+
+export const LinkedinIcon = ({ className = "", size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+        <path d="M16 8C17.5913 8 19.1174 8.63214 20.2426 9.75736C21.3679 10.8826 22 12.4087 22 14V21H18V14C18 13.4696 17.7893 12.9609 17.4142 12.5858C17.0391 12.2107 16.5304 12 16 12C15.4696 12 14.9609 12.2107 14.5858 12.5858C14.2107 12.9609 14 13.4696 14 14V21H10V14C10 12.4087 10.6321 10.8826 11.7574 9.75736C12.8826 8.63214 14.4087 8 16 8Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M6 9H2V21H6V9Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M4 6C5.10457 6 6 5.10457 6 4C6 2.89543 5.10457 2 4 2C2.89543 2 2 2.89543 2 4C2 5.10457 2.89543 6 4 6Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
+
+export const GlobeIcon = ({ className = "", size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+        <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
+        <path d="M2.05 12.5H22" strokeWidth="1.5" opacity="0.5" />
+        <path d="M12 2A15.3 15.3 0 0 1 17.05 12A15.3 15.3 0 0 1 12 22A15.3 15.3 0 0 1 6.95 12A15.3 15.3 0 0 1 12 2Z" strokeWidth="1.5" opacity="0.8" />
+    </svg>
+);
+
+export const CodeIcon = ({ className = "", size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+        <path d="M16 18L22 12L16 6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M8 6L2 12L8 18" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);

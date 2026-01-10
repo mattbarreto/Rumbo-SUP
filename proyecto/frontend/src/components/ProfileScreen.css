@@ -88,3 +88,24 @@
     flex-direction: column;
     gap: var(--space-3);
 }
+
+/* About Button */
+.btn-about {
+    background: rgba(42, 111, 151, 0.2);
+    color: var(--ocean-sand);
+    border: 1px solid var(--ocean-surface);
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-base);
+    font-weight: var(--weight-medium);
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: var(--space-3);
+    transition: all 0.3s;
+}
+
+.btn-about:hover {
+    background: var(--ocean-surface);
+    border-color: var(--ocean-shimmer);
+    transform: translateY(-1px);
+}

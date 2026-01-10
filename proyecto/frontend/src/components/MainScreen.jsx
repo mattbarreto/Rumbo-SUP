@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { analyzeConditions } from '../services/api';
+import { getTimeline } from '../services/api';
 import CircularIndicator from './CircularIndicator';
 import MetricCard from './MetricCard';
 import SessionGoalSelector from './SessionGoalSelector';
+import WindVisualizer from './WindVisualizer';
+import TimelineWidget from './TimelineWidget';
 import { WindIcon, WaveIcon, TideIcon, RefreshIcon, SettingsIcon, BrainIcon, LocationIcon, TimeIcon, ShieldIcon, EffortIcon, EnjoymentIcon, AlertIcon } from './Icons';
 import './MainScreen.css';
 
@@ -12,7 +14,8 @@ function MainScreen() {
     const navigate = useNavigate();
     const { profile, updateProfile } = useUserProfile();
     const [sessionGoal, setSessionGoal] = useState(profile?.session_goal || 'calma');
-    const [analysis, setAnalysis] = useState(null);
+    const [timelineData, setTimelineData] = useState(null);
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -28,15 +31,15 @@ function MainScreen() {
 
         try {
             // Por ahora usamos Varese hardcoded
-            // En futuro: usar geolocalización + getNearestSpot
-            const data = await analyzeConditions('varese', {
+            const data = await getTimeline('varese', {
                 ...profile,
                 session_goal: sessionGoal
             });
 
-            setAnalysis(data);
+            setTimelineData(data);
+            setSelectedIndex(0); // Reset a "Ahora"
         } catch (err) {
-            console.error('Error fetching analysis:', err);
+            console.error('Error fetching timeline:', err);
             setError('No se pudieron obtener las condiciones. Verificá tu conexión.');
         } finally {
             setLoading(false);
@@ -52,13 +55,17 @@ function MainScreen() {
         fetchAnalysis();
     };
 
+    const handlePointSelect = (point, index) => {
+        setSelectedIndex(index);
+    };
+
     if (loading) {
         return (
             <div className="page">
                 <div className="container">
                     <div className="loading-container">
                         <div className="loading-spinner"></div>
-                        <p>Obteniendo condiciones...</p>
+                        <p>Analizando condiciones...</p>
                     </div>
                 </div>
             </div>
@@ -84,9 +91,16 @@ function MainScreen() {
         );
     }
 
-    if (!analysis) return null;
+    if (!timelineData) return null;
 
-    const { spot, weather, result } = analysis;
+    // Derived State
+    const spot = timelineData.spot;
+    const currentPoint = timelineData.timeline[selectedIndex];
+    const weather = currentPoint.weather;
+    const result = currentPoint.result;
+
+    // Si no es el primero, es futuro
+    const isForecast = selectedIndex > 0;
 
     // Flags de alerta - tipo de alerta para el icono
     const flagVariants = {
@@ -117,7 +131,9 @@ function MainScreen() {
                             <span>Mar del Plata</span>
                             <span className="separator">•</span>
                             <TimeIcon size={16} />
-                            <span>Ahora</span>
+                            <span className={isForecast ? 'highlight-time' : ''}>
+                                {isForecast ? `Pronóstico ${currentPoint.hour_label}` : 'Ahora'}
+                            </span>
                         </p>
                     </div>
                     <button className="btn-icon" onClick={() => navigate('/profile')}>
@@ -125,17 +141,49 @@ function MainScreen() {
                     </button>
                 </div>
 
-                {/* Selector de Objetivo */}
-                <SessionGoalSelector
-                    value={sessionGoal}
-                    onChange={handleGoalChange}
+                {/* Banner de Pronóstico */}
+                {isForecast && (
+                    <div className="forecast-banner fade-in-up">
+                        Viendo condiciones futuras ({currentPoint.hour_label})
+                    </div>
+                )}
+
+                {/* Wind Visualizer (Windy-like) */}
+                <WindVisualizer
+                    speed={weather.wind.speed_kmh}
+                    direction={weather.wind.direction_deg}
+                    relativeDirection={weather.wind.relative_direction}
                 />
+
+                {/* Timeline Widget */}
+                <TimelineWidget
+                    timeline={timelineData.timeline}
+                    onPointSelect={handlePointSelect}
+                    selectedIndex={selectedIndex}
+                />
+
+                {/* Selector de Objetivo */}
+                {!isForecast && (
+                    <SessionGoalSelector
+                        value={sessionGoal}
+                        onChange={handleGoalChange}
+                    />
+                )}
 
                 {/* Indicador Circular de SEGURIDAD */}
                 <CircularIndicator
                     seguridad={result.scores.seguridad}
                     categoria={result.categories.seguridad}
                 />
+
+                {/* Sensei Tip (Dinámico) */}
+                <div className="sensei-tip-card glass-card">
+                    <div className="tip-header">
+                        <BrainIcon size={18} className="sensei-icon" />
+                        <span>Rumbo Dice:</span>
+                    </div>
+                    <p className="tip-text">{result.semantics.strategy_desc}</p>
+                </div>
 
                 {/* Flags de Alerta */}
                 {result.flags && result.flags.length > 0 && (
@@ -171,9 +219,9 @@ function MainScreen() {
                     />
                 </div>
 
-                {/* Condiciones Actuales */}
+                {/* Condiciones Detalladas */}
                 <div className="card conditions-card">
-                    <h3>Condiciones Actuales</h3>
+                    <h3>Detalles {isForecast ? `(${currentPoint.hour_label})` : ''}</h3>
                     <div className="conditions-grid">
                         <div className="condition-item">
                             <WindIcon className="condition-icon" size={32} />
@@ -203,29 +251,20 @@ function MainScreen() {
                     </div>
                 </div>
 
-                {/* Confianza del Modelo */}
-                {result.confidence === 'baja' && (
-                    <div className="alert alert-warning">
-                        <span>ℹ️</span>
-                        <div>
-                            <strong>Confianza baja</strong>
-                            <p>Los datos pueden estar desactualizados o incompletos</p>
-                        </div>
-                    </div>
-                )}
-
                 {/* Acciones */}
                 <div className="actions-section">
-                    <button className="btn btn-primary btn-large" onClick={handleRefresh}>
-                        🔄 Actualizar
-                    </button>
+                    {!isForecast && (
+                        <button className="btn btn-primary btn-large" onClick={handleRefresh}>
+                            🔄 Actualizar
+                        </button>
+                    )}
                     <button
                         className="btn btn-secondary btn-large"
                         onClick={() => navigate('/sensei', {
                             state: { user: profile, weather, result }
                         })}
                     >
-                        🧠 ¿Por qué?
+                        🧠 Análisis del Guía
                     </button>
                 </div>
             </div>

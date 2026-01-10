@@ -3,7 +3,7 @@ import { WaveIcon } from './Icons';
 import './PasswordGate.css';
 
 const ACCESS_PASSWORD = 'supadmin';
-const STORAGE_KEY = 'rumbo_access_granted';
+const STORAGE_KEY = 'rumbo_access_v2'; // Bump version to force re-login
 
 function PasswordGate({ children }) {
     const [isUnlocked, setIsUnlocked] = useState(() => {
