@@ -1,0 +1,51 @@
+{
+    "name": "rumbo-sup-pwa",
+    "short_name": "Rumbo SUP",
+    "description": "Tu instructor virtual de Stand Up Paddle en Mar del Plata",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a1929",
+    "theme_color": "#0a1929",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshots/main-screen.png",
+            "sizes": "390x844",
+            "type": "image/png",
+            "platform": "mobile"
+        }
+    ],
+    "categories": [
+        "sports",
+        "weather",
+        "lifestyle"
+    ],
+    "shortcuts": [
+        {
+            "name": "Ver Condiciones",
+            "short_name": "Condiciones",
+            "description": "Revisar condiciones actuales",
+            "url": "/",
+            "icons": [
+                {
+                    "src": "/icons/icon-192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ]
+}

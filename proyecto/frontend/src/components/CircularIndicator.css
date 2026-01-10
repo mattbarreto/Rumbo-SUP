@@ -1,0 +1,26 @@
+.circular-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: var(--space-4) 0;
+    position: relative;
+}
+
+.indicator-label {
+    margin-top: var(--space-4);
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.status-badge {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(4px);
+    transition: all var(--transition-base);
+}

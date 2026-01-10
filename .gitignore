@@ -1,0 +1,43 @@
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+proyecto/frontend/node_modules/
+proyecto/backend/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Environment variables
+.env
+proyecto/backend/.env
+proyecto/frontend/.env.local
+proyecto/frontend/.env.development.local
+proyecto/frontend/.env.test.local
+proyecto/frontend/.env.production.local
+
+# Build outputs
+proyecto/frontend/dist/
+proyecto/frontend/build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+proyecto/backend/logs/
+
+# Optional: Local data
+.agent/
+.gemini/
+.env*
+!.env.example

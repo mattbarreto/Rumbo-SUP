@@ -1,0 +1,72 @@
+.metric-card {
+    background: linear-gradient(135deg,
+            hsla(210, 20%, 98%, 0.03) 0%,
+            hsla(210, 20%, 98%, 0.01) 100%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card:hover {
+    background: var(--glass-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    border-color: hsla(210, 20%, 98%, 0.2);
+}
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-1);
+}
+
+.metric-icon {
+    color: var(--ocean-cyan);
+    display: flex;
+    align-items: center;
+}
+
+.metric-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: var(--weight-bold);
+    color: var(--text-tertiary);
+}
+
+.metric-value {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    font-family: var(--font-display);
+    color: var(--text-primary);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+}
+
+.metric-total {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--weight-medium);
+    margin-left: 2px;
+    opacity: 0.6;
+}
+
+.metric-category {
+    margin-top: auto;
+}
+
+/* Badges override for card context */
+.metric-card .badge {
+    background: transparent;
+    border: 1px solid currentColor;
+    padding: 2px 8px;
+    font-size: 9px;
+}

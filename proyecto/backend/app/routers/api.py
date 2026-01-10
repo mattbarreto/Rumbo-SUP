@@ -1,0 +1,111 @@
+from fastapi import APIRouter
+from app.models.schemas import AnalyzeRequest, AnalyzeResponse, ExplanationRequest, ExplanationResponse, NearestSpotResponse
+from app.config.spots import SPOTS
+from datetime import datetime
+import math
+
+router = APIRouter(prefix="/api", tags=["api"])
+
+@router.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "ok", "timestamp": datetime.now().isoformat()}
+
+@router.post("/analyze", response_model=AnalyzeResponse)
+async def analyze_conditions(request: AnalyzeRequest):
+    """
+    Analiza condiciones para un spot y usuario
+    Usa datos reales de OpenMeteo + Motor determinístico
+    """
+    # Validar spot existe
+    if request.spot_id not in SPOTS:
+        raise ValueError(f"Spot '{request.spot_id}' no encontrado")
+    
+    spot = SPOTS[request.spot_id]
+    
+    # Obtener datos meteorológicos REALES de OpenMeteo
+    from app.services.openmeteo_provider import OpenMeteoProvider
+    from app.services.weather_service import WeatherService
+    from app.services.worldtides_provider import WorldTidesProvider
+    import os
+    
+    # Configurar providers
+    worldtides_key = os.getenv("WORLDTIDES_API_KEY")
+    worldtides_provider = WorldTidesProvider(worldtides_key) if worldtides_key else None
+    
+    openmeteo_provider = OpenMeteoProvider(worldtides_provider=worldtides_provider)
+    weather_service = WeatherService(openmeteo_provider)
+    
+    weather_data = await weather_service.get_current_conditions(
+        spot["lat"], 
+        spot["lon"]
+    )
+    
+    # Ejecutar motor determinístico (Layer A)
+    from app.services.sensei_engine import SenseiEngine
+    engine = SenseiEngine()
+    result = engine.analyze(weather_data, request.spot_id, request.user)
+    
+    return AnalyzeResponse(
+        spot={"name": spot["name"], "lat": spot["lat"], "lon": spot["lon"]},
+        weather=weather_data,
+        result=result
+    )
+
+@router.post("/pedagogy/explain", response_model=ExplanationResponse)
+async def explain_conditions(request: ExplanationRequest):
+    """
+    Genera explicación pedagógica usando Gemini (Layer B)
+    Solo explica, NUNCA decide
+    """
+    from app.services.pedagogy_service import PedagogyService
+    
+    pedagogy = PedagogyService()
+    explanation = await pedagogy.generate_explanation(
+        request.user,
+        request.weather,
+        request.result
+    )
+    
+    return ExplanationResponse(
+        explanation=explanation,
+        glossary_terms=[]  # TODO: Fase futura - extraer términos del glosario
+    )
+
+@router.get("/spots/nearest", response_model=NearestSpotResponse)
+async def get_nearest_spot(lat: float, lon: float):
+    """
+    Retorna el spot más cercano a las coordenadas dadas
+    """
+    def haversine_distance(lat1, lon1, lat2, lon2):
+        """Calcula distancia en km usando fórmula haversine"""
+        R = 6371  # Radio de la Tierra en km
+        
+        phi1 = math.radians(lat1)
+        phi2 = math.radians(lat2)
+        delta_phi = math.radians(lat2 - lat1)
+        delta_lambda = math.radians(lon2 - lon1)
+        
+        a = math.sin(delta_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda/2)**2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+        
+        return R * c
+    
+    # Calcular distancia a todos los spots
+    nearest = None
+    min_distance = float('inf')
+    
+    for spot_id, spot_data in SPOTS.items():
+        distance = haversine_distance(lat, lon, spot_data["lat"], spot_data["lon"])
+        if distance < min_distance:
+            min_distance = distance
+            nearest = {
+                "spot_id": spot_id,
+                "name": spot_data["name"],
+                "distance_km": round(distance, 2)
+            }
+    
+    if not nearest:
+        raise ValueError("No se encontraron spots cercanos")
+    
+    return NearestSpotResponse(**nearest)

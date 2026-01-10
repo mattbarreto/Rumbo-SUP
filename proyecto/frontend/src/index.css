@@ -1,0 +1,650 @@
+/* ========================================
+   RUMBO SUP - PREMIUM DESIGN SYSTEM
+   Fase 4: Oceanic Minimalism
+   ======================================== */
+
+/* ==================== PALETA DE COLORES HSL ==================== */
+
+:root {
+  /* Azules Oceánicos - Profundidad y Calma */
+  --ocean-midnight: hsl(210, 65%, 8%);
+  /* #0a1419 */
+  --ocean-deep: hsl(210, 55%, 12%);
+  /* #0e1920 */
+  --ocean-abyss: hsl(210, 50%, 18%);
+  /* #17252e */
+  --ocean-surface: hsl(200, 45%, 25%);
+  /* #233845 */
+
+  /* Azules Vibrantes - Acción y Foco */
+  --ocean-bright: hsl(195, 85%, 45%);
+  /* #11a8cd */
+  --ocean-cyan: hsl(185, 75%, 55%);
+  /* #3fc9d8 */
+  --ocean-foam: hsl(180, 60%, 85%);
+  /* #c0e9ed */
+
+  /* Semáforo Oceánico */
+  --safe-teal: hsl(165, 65%, 45%);
+  /* #29a688 */
+  --caution-amber: hsl(35, 90%, 55%);
+  /* #f5a623 */
+  --danger-coral: hsl(10, 75%, 58%);
+  /* #e85d4a */
+
+  /* Neutros Refinados */
+  --neutral-100: hsl(210, 15%, 98%);
+  /* #fafbfc */
+  --neutral-200: hsl(210, 12%, 92%);
+  /* #e8eaed */
+  --neutral-300: hsl(210, 10%, 75%);
+  /* #b8bcc2 */
+  --neutral-600: hsl(210, 8%, 35%);
+  /* #515861 */
+  --neutral-800: hsl(210, 12%, 15%);
+  /* #202529 */
+
+  /* Colores de Texto - Para Dark Theme */
+  --text-primary: hsl(210, 15%, 98%);
+  /* Blanco cálido - texto principal */
+  --text-secondary: hsl(210, 10%, 75%);
+  /* Gris claro - texto secundario */
+  --text-tertiary: hsla(210, 15%, 98%, 0.6);
+  /* Blanco con opacidad - hints */
+  --text-on-card: hsl(210, 15%, 98%);
+  /* Texto en cards oscuras */
+
+  /* Gradientes */
+  --gradient-ocean: linear-gradient(135deg,
+      hsl(210, 65%, 8%) 0%,
+      hsl(200, 55%, 15%) 50%,
+      hsl(190, 50%, 20%) 100%);
+
+  --gradient-cta: linear-gradient(135deg,
+      hsl(195, 85%, 48%) 0%,
+      hsl(185, 80%, 52%) 100%);
+
+  /* Glassmorphism */
+  --glass-light: hsla(210, 20%, 98%, 0.08);
+  --glass-medium: hsla(210, 15%, 95%, 0.12);
+  --glass-border: hsla(210, 20%, 100%, 0.15);
+
+  /* ==================== TIPOGRAFÍA ==================== */
+
+  /* Fonts - Apple inspired */
+  --font-display: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'SF Pro Text', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'SF Mono', 'Roboto Mono', 'Courier New', monospace;
+
+  /* Type Scale (1.125 - Major Second) */
+  --text-xs: 0.75rem;
+  /* 12px */
+  --text-sm: 0.875rem;
+  /* 14px */
+  --text-base: 1rem;
+  /* 16px */
+  --text-lg: 1.125rem;
+  /* 18px */
+  --text-xl: 1.25rem;
+  /* 20px */
+  --text-2xl: 1.5rem;
+  /* 24px */
+  --text-3xl: 2rem;
+  /* 32px */
+  --text-4xl: 2.5rem;
+  /* 40px */
+  --text-5xl: 3rem;
+  /* 48px */
+
+  /* Line Heights */
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* Font Weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* ==================== ESPACIADO (8pt Grid) ==================== */
+
+  --space-0: 0;
+  --space-1: 0.25rem;
+  /* 4px */
+  --space-2: 0.5rem;
+  /* 8px */
+  --space-3: 0.75rem;
+  /* 12px */
+  --space-4: 1rem;
+  /* 16px */
+  --space-5: 1.25rem;
+  /* 20px */
+  --space-6: 1.5rem;
+  /* 24px */
+  --space-8: 2rem;
+  /* 32px */
+  --space-10: 2.5rem;
+  /* 40px */
+  --space-12: 3rem;
+  /* 48px */
+  --space-16: 4rem;
+  /* 64px */
+
+  /* ==================== BORDER RADIUS ==================== */
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ==================== SOMBRAS ==================== */
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 8px rgba(10, 25, 41, 0.08);
+  --shadow-md: 0 4px 16px rgba(10, 25, 41, 0.12);
+  --shadow-lg: 0 8px 32px rgba(10, 25, 41, 0.16);
+  --shadow-xl: 0 16px 48px rgba(10, 25, 41, 0.20);
+
+  /* Shadow con color para CTAs */
+  --shadow-ocean: 0 8px 24px hsla(195, 85%, 45%, 0.25);
+
+  /* ==================== TRANSICIONES ==================== */
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Easing */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ==================== RESET & BASE ==================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  /* Blanco sobre fondo oscuro */
+  background: var(--gradient-ocean);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==================== TIPOGRAFÍA ==================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  margin-bottom: var(--space-4);
+  letter-spacing: -0.02em;
+  /* Tighter tracking para headings */
+}
+
+h1 {
+  font-size: var(--text-4xl);
+}
+
+h2 {
+  font-size: var(--text-3xl);
+}
+
+h3 {
+  font-size: var(--text-2xl);
+}
+
+h4 {
+  font-size: var(--text-xl);
+}
+
+h5 {
+  font-size: var(--text-lg);
+}
+
+h6 {
+  font-size: var(--text-base);
+}
+
+p {
+  margin-bottom: var(--space-4);
+  line-height: var(--leading-relaxed);
+}
+
+/* Numbers con tabular spacing */
+.numeric {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+}
+
+/* ==================== GLASSMORPHISM CARDS ==================== */
+
+.glass-card {
+  background: linear-gradient(135deg,
+      var(--glass-medium) 0%,
+      var(--glass-light) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 hsla(210, 20%, 100%, 0.1);
+  transition: all var(--transition-smooth);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    var(--shadow-xl),
+    inset 0 1px 0 hsla(210, 20%, 100%, 0.15);
+}
+
+/* Fallback sin blur para performance */
+@media (prefers-reduced-motion: reduce) {
+  .glass-card {
+    backdrop-filter: none;
+    background: hsla(210, 15%, 95%, 0.15);
+  }
+}
+
+/* ==================== BUTTONS PREMIUM ==================== */
+
+.btn {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: var(--gradient-cta);
+  color: var(--neutral-100);
+  box-shadow: var(--shadow-ocean);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px hsla(195, 85%, 45%, 0.35);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  transition-duration: 100ms;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ocean-cyan);
+  border: 2px solid var(--ocean-cyan);
+}
+
+.btn-secondary:hover {
+  background: hsla(185, 75%, 55%, 0.1);
+  border-color: var(--ocean-bright);
+}
+
+.btn-large {
+  padding: var(--space-5) var(--space-8);
+  font-size: var(--text-lg);
+}
+
+/* ==================== CARDS ==================== */
+
+.card {
+  background: hsla(210, 30%, 15%, 0.7);
+  /* Fondo oscuro semi-transparente */
+  backdrop-filter: blur(8px);
+  border: 1px solid hsla(210, 20%, 100%, 0.12);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-smooth);
+  color: var(--text-primary);
+  /* Texto blanco */
+}
+
+.card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-xl);
+  background: hsla(210, 30%, 18%, 0.8);
+}
+
+/* ==================== ALERTS ==================== */
+
+.alert {
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+}
+
+.alert-danger {
+  background: hsla(10, 75%, 58%, 0.12);
+  color: var(--danger-coral);
+  border-left: 4px solid var(--danger-coral);
+}
+
+.alert-warning {
+  background: hsla(35, 90%, 55%, 0.12);
+  color: hsl(35, 90%, 45%);
+  border-left: 4px solid var(--caution-amber);
+}
+
+.alert-success {
+  background: hsla(165, 65%, 45%, 0.12);
+  color: var(--safe-teal);
+  border-left: 4px solid var(--safe-teal);
+}
+
+/* ==================== BADGES ==================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-bajo {
+  background: var(--safe-teal);
+  color: white;
+}
+
+.badge-medio {
+  background: var(--caution-amber);
+  color: var(--ocean-deep);
+}
+
+.badge-alto {
+  background: var(--danger-coral);
+  color: white;
+}
+
+/* ==================== LAYOUT ==================== */
+
+.container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--space-6);
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ==================== ANIMACIONES ==================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp var(--transition-smooth) var(--ease-out) both;
+}
+
+@keyframes wave {
+
+  0%,
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+
+  25% {
+    transform: translateX(-2px) translateY(-2px);
+  }
+
+  75% {
+    transform: translateX(2px) translateY(2px);
+  }
+}
+
+.wave-animation {
+  animation: wave 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.pulse-animation {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ==================== LOADING STATE ==================== */
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: var(--neutral-100);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid hsla(210, 20%, 98%, 0.2);
+  border-top-color: var(--ocean-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--space-6);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==================== FORMS ==================== */
+
+input,
+select,
+textarea {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  padding: var(--space-4);
+  border: 2px solid var(--neutral-200);
+  border-radius: var(--radius-md);
+  width: 100%;
+  transition: border-color var(--transition-base);
+  background: var(--neutral-100);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--ocean-cyan);
+  box-shadow: 0 0 0 3px hsla(185, 75%, 55%, 0.1);
+}
+
+label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--neutral-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-group {
+  margin-bottom: var(--space-6);
+}
+
+/* ==================== DESKTOP BLOCK ==================== */
+
+.desktop-block {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  color: var(--neutral-100);
+  padding: var(--space-12);
+}
+
+.desktop-block.active {
+  display: flex;
+}
+
+.desktop-block h1 {
+  font-size: var(--text-5xl);
+  margin-bottom: var(--space-6);
+}
+
+.desktop-block p {
+  font-size: var(--text-xl);
+  opacity: 0.8;
+  line-height: var(--leading-relaxed);
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mb-2 {
+  margin-bottom: var(--space-2);
+}
+
+.mb-4 {
+  margin-bottom: var(--space-4);
+}
+
+.mb-6 {
+  margin-bottom: var(--space-6);
+}
+
+.mb-8 {
+  margin-bottom: var(--space-8);
+}
+
+.mt-2 {
+  margin-top: var(--space-2);
+}
+
+.mt-4 {
+  margin-top: var(--space-4);
+}
+
+.mt-6 {
+  margin-top: var(--space-6);
+}
+
+.mt-8 {
+  margin-top: var(--space-8);
+}
+
+.gap-2 {
+  gap: var(--space-2);
+}
+
+.gap-4 {
+  gap: var(--space-4);
+}
+
+.gap-6 {
+  gap: var(--space-6);
+}
+
+/* Performance optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Contenedor con layout optimization */
+.optimized {
+  contain: layout style paint;
+}
