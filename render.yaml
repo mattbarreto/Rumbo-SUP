@@ -17,10 +17,7 @@ services:
       - key: GEMINI_MODEL
         value: gemini-2.0-flash-exp
       - key: FRONTEND_URL
-        fromService:
-          name: rumbo-sup-frontend
-          type: web
-          property: url
+        sync: false  # Set manually after frontend is deployed
     rootDir: proyecto/backend
 
   # Frontend (Static Site)
@@ -32,10 +29,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        fromService:
-          name: rumbo-sup-api
-          type: web
-          property: url
+        sync: false  # Set manually after backend is deployed
     rootDir: proyecto/frontend
     routes:
       - type: rewrite
