@@ -26,11 +26,17 @@
 
 .breathing-ring-container {
     position: relative;
-    width: 240px;
-    height: 240px;
+    width: 260px;
+    /* Increased from 240px to allow breathing expansion */
+    height: 260px;
+    /* Increased from 240px to allow breathing expansion */
     display: flex;
     align-items: center;
     justify-content: center;
+    /* CRITICAL: Allow overflow for breathing expansion */
+    overflow: visible;
+    /* Extra padding for breathing expansion */
+    padding: 10px;
 }
 
 .glow-layer {
@@ -48,6 +54,10 @@
 
 .outer-ring {
     animation: breathingGlow var(--timing-breath) ease-in-out infinite;
+    /* Ensure perfectly centered radial expansion */
+    transform-origin: center center;
+    transform-box: fill-box;
+    /* SVG-specific: use the element's bounding box */
 }
 
 .indicator-label {

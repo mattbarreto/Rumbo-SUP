@@ -40,7 +40,14 @@ function CircularIndicator({ seguridad, categoria }) {
                     }}
                 />
 
-                <svg width="240" height="240" viewBox="0 0 200 200" className="indicator-svg">
+                {/* SVG with expanded viewBox to prevent clipping during breathing */}
+                <svg
+                    width="260"
+                    height="260"
+                    viewBox="-10 -10 220 220"
+                    className="indicator-svg"
+                    style={{ overflow: 'visible' }}
+                >
                     <defs>
                         <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
                             <feGaussianBlur stdDeviation="3" result="blur" />
@@ -48,7 +55,7 @@ function CircularIndicator({ seguridad, categoria }) {
                         </filter>
                     </defs>
 
-                    {/* Outer Ring (50% opacity, 2px) */}
+                    {/* Outer Ring with breathing animation - now with space to expand */}
                     <circle
                         cx="100"
                         cy="100"
