@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import './CircularIndicator.css';
 
-function CircularIndicator({ seguridad, categoria }) {
+function CircularIndicator({ seguridad, categoria, freshness = 'fresh' }) {
     // Map to design system semantic colors
     const getColorVariable = () => {
         if (categoria === 'alto') return 'var(--ocean-kelp)';
@@ -19,6 +19,11 @@ function CircularIndicator({ seguridad, categoria }) {
     const circumference = 2 * Math.PI * 85; // Inner ring radius
     const progress = (seguridad / 100) * circumference;
 
+    // Animation constants determined by data freshness
+    // 'fresh' = slow calm breathing (4s)
+    // 'stale' = faster alert pulse (1.5s)
+    const isFresh = freshness === 'fresh';
+
     return (
         <div className="circular-indicator">
             <div className="breathing-ring-container">
@@ -30,11 +35,11 @@ function CircularIndicator({ seguridad, categoria }) {
                         filter: 'blur(20px)',
                     }}
                     animate={{
-                        opacity: [0.2, 0.4, 0.2],
-                        scale: [1, 1.05, 1],
+                        opacity: isFresh ? [0.1, 0.3, 0.1] : [0.1, 0.4, 0.1],
+                        scale: isFresh ? [1, 1.05, 1] : [1, 1.08, 1],
                     }}
                     transition={{
-                        duration: 4,
+                        duration: isFresh ? 4 : 1.5,
                         repeat: Infinity,
                         ease: 'easeInOut',
                     }}

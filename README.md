@@ -26,13 +26,16 @@ Este proyecto utiliza una arquitectura de doble capa para garantizar seguridad y
 
 ## 🚀 Features
 
-*   **Algoritmo de Disfrute**: Calcula no solo si es seguro, sino si vas a pasarla bien según tu objetivo (Chill, Entrenamiento o Adrenalina).
-*   **Gestión de Perfiles**: Ajusta las recomendaciones según tu tabla (Inflable vs. Rígida) y tu potencia de remada.
+*   **Safety Cockpit (Layer A):** Análisis determinístico con métricas industriales - números grandes, alto contraste, optimizado para luz solar y manos mojadas.
+*   **Guía del Mar (Layer B):** Explicación pedagógica con IA (Google Gemini 2.0) que traduce datos técnicos a experiencia sensorial.
+*   **Algoritmo de Disfrute**: Calcula no solo si es seguro, sino si vas a pasarla bien según tu objetivo (Calma, Entreno o Desafío).
+*   **Gestión de Perfiles**: Ajusta las recomendaciones según tu tabla (Inflable vs. Rígida), nivel y potencia de remada.
 *   **Integraciones Reales**:
     *   🌊 **OpenMeteo Marine API**: Datos de olas y viento en tiempo real.
     *   🌖 **WorldTides API**: Estado preciso de las mareas localizadas.
     *   🤖 **Google Gemini 2.0**: Capa de razonamiento pedagógico.
 *   **PWA Installable**: Funciona como una app nativa en iOS y Android.
+*   **Oceanic Utility Design:** Thumb Zone de 56px, botones sin diagonales, texto negro sobre colores de seguridad para máxima visibilidad solar.
 
 ---
 
@@ -40,7 +43,9 @@ Este proyecto utiliza una arquitectura de doble capa para garantizar seguridad y
 
 ### Frontend
 - **React 18 + Vite**: Velocidad y modularidad.
-- **Glassmorphism CSS**: Diseño custom sin frameworks pesados.
+- **Framer Motion**: Animaciones physics-based suaves.
+- **Custom CSS Design System**: Variables CSS (--ocean-*, --safety-*), Glassmorphism, sin frameworks pesados.
+- **Tipografía Premium**: Syne (display/industrial) + Instrument Sans (body/conversacional).
 - **SVG Icons**: Sistema de iconos conceptuales propios.
 
 ### Backend

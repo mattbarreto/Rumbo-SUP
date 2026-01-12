@@ -9,6 +9,8 @@ import TimelineWidget from './TimelineWidget';
 import SessionGoalSelector from './SessionGoalSelector';
 import MetricCard from './MetricCard';
 import { WindIcon, WaveIcon, TideIcon, RefreshIcon, SettingsIcon, BrainIcon, LocationIcon, TimeIcon, ShieldIcon, EffortIcon, EnjoymentIcon, AlertIcon, ShareIcon } from './Icons';
+import RumboPanel from './RumboPanel';
+import OceanSkeleton from './OceanSkeleton';
 import './MainScreen.css';
 
 function MainScreen() {
@@ -59,6 +61,15 @@ function MainScreen() {
         fetchAnalysis();
     };
 
+    // Calculate data freshness (fresh if < 1 hour old)
+    const getFreshness = () => {
+        if (!timelineData?.weather?.timestamp) return 'fresh';
+        const dataTime = new Date(timelineData.weather.timestamp);
+        const now = new Date();
+        const diffHours = (now - dataTime) / (1000 * 60 * 60);
+        return diffHours < 1 ? 'fresh' : 'stale';
+    };
+
     const handlePointSelect = (point, index) => {
         setSelectedIndex(index);
 
@@ -98,13 +109,8 @@ function MainScreen() {
 
     if (loading) {
         return (
-            <div className="page">
-                <div className="container">
-                    <div className="loading-container">
-                        <div className="loading-spinner"></div>
-                        <p>Analizando condiciones...</p>
-                    </div>
-                </div>
+            <div className="page main-screen">
+                <OceanSkeleton />
             </div>
         );
     }
@@ -216,6 +222,7 @@ function MainScreen() {
                 <CircularIndicator
                     seguridad={result.scores.seguridad}
                     categoria={result.categories.seguridad}
+                    freshness={getFreshness()}
                 />
 
                 {/* INDUSTRIAL METRICS GRID - Safety Cockpit Layer A + B */}
@@ -266,14 +273,13 @@ function MainScreen() {
                     />
                 </div>
 
-                {/* Sensei Tip (Dinámico) */}
-                <div className="sensei-tip-card glass-card">
-                    <div className="tip-header">
-                        <BrainIcon size={18} className="sensei-icon" />
-                        <span>Rumbo Dice:</span>
-                    </div>
-                    <p className="tip-text">{result.semantics.strategy_desc}</p>
-                </div>
+                {/* Rumbo Panel - Layer B: Educational Voice */}
+                <RumboPanel
+                    content={result.semantics.strategy_desc}
+                    onClick={() => navigate('/sensei', {
+                        state: { user: profile, weather, result }
+                    })}
+                />
 
                 {/* Flags de Alerta */}
                 {result.flags && result.flags.length > 0 && (

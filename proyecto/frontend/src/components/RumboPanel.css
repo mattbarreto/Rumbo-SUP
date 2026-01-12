@@ -1,0 +1,117 @@
+/* RumboPanel - Layer B: Conversational/Educational Voice */
+/* Philosophy: Organic "Chat Bubble" vs Industrial "Cockpit" */
+
+.rumbo-panel {
+    background: linear-gradient(135deg,
+            rgba(10, 22, 40, 0.65) 0%,
+            rgba(15, 41, 66, 0.55) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(97, 165, 194, 0.2);
+    border-radius: 24px;
+    /* Very rounded for "chat bubble" feel */
+    padding: var(--space-6);
+    margin: var(--space-6) 0;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--transition-smooth);
+}
+
+.rumbo-panel:hover {
+    transform: translateY(-2px);
+    border-color: rgba(97, 165, 194, 0.4);
+    box-shadow: 0 8px 24px rgba(97, 165, 194, 0.2);
+}
+
+/* Decorative "speech tail" (optional - subtle) */
+.rumbo-panel::before {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 32px;
+    width: 16px;
+    height: 16px;
+    background: rgba(10, 22, 40, 0.65);
+    border-right: 1px solid rgba(97, 165, 194, 0.2);
+    border-bottom: 1px solid rgba(97, 165, 194, 0.2);
+    transform: rotate(45deg);
+    opacity: 0.8;
+}
+
+.rumbo-panel-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.rumbo-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+            rgba(97, 165, 194, 0.2) 0%,
+            rgba(97, 165, 194, 0.05) 100%);
+    border: 2px solid rgba(97, 165, 194, 0.3);
+}
+
+.rumbo-avatar svg {
+    color: var(--ocean-shimmer);
+    /* Animated pulse */
+    animation: avatarPulse 3s ease-in-out infinite;
+}
+
+@keyframes avatarPulse {
+
+    0%,
+    100% {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+.rumbo-label {
+    font-family: var(--font-body);
+    /* Instrument Sans - Human voice */
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--ocean-shimmer);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+}
+
+.rumbo-content {
+    font-family: var(--font-body);
+    /* Instrument Sans - Readable */
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--ocean-sand);
+    /* High contrast for readability */
+    margin: 0;
+}
+
+/* "More info" indicator */
+.rumbo-cta-hint {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--ocean-foam);
+    opacity: 0.7;
+    transition: opacity var(--transition-base);
+}
+
+.rumbo-panel:hover .rumbo-cta-hint {
+    opacity: 1;
+}

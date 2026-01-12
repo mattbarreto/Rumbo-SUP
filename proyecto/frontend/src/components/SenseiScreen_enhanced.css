@@ -1,81 +1,11 @@
-.sensei-screen {
-    background: var(--gradient-ocean);
-    min-height: 100vh;
-}
-
-.sensei-header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    margin-bottom: var(--space-6);
-}
-
-.btn-back-nav {
-    align-self: flex-start;
-    background: transparent;
-    border: none;
-    color: var(--ocean-cyan);
-    font-size: var(--text-sm);
-    font-weight: var(--weight-semibold);
-    padding: var(--space-2) 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-}
-
-.sensei-brand {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    padding-left: var(--space-2);
-}
-
-.sensei-icon {
-    color: var(--ocean-cyan);
-}
-
-.sensei-brand h1 {
-    margin: 0;
-    font-size: var(--text-2xl);
-    color: var(--neutral-100);
-    letter-spacing: -0.02em;
-}
-
-.explanation-card {
-    /* Layer B: Conversational/Chat Bubble Aesthetic */
-    background: linear-gradient(135deg,
-            rgba(10, 22, 40, 0.65) 0%,
-            rgba(15, 41, 66, 0.55) 100%);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(97, 165, 194, 0.2);
-    border-radius: 24px;
-    /* Very rounded for organic feel */
-    padding: var(--space-6);
-    box-shadow: 0 8px 24px rgba(97, 165, 194, 0.15);
-    margin-bottom: var(--space-6);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Decoración sutil de fondo */
-.explanation-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, var(--ocean-cyan), var(--ocean-bright));
-    opacity: 0.8;
-}
+/* Markdown Content - Enhanced Visual Hierarchy */
 
 .markdown-content {
     font-family: var(--font-body);
+    /* Instrument Sans - Human/Readable */
     color: var(--ocean-sand);
+    /* High contrast */
     line-height: 1.8;
-    /* Increased from 1.5 for better readability */
     font-size: var(--text-base);
 }
 
@@ -113,27 +43,25 @@
     margin-bottom: var(--space-3);
 }
 
+/* Paragraphs - Enhanced Spacing */
 .markdown-content p {
     margin-bottom: var(--space-5);
-    /* Increased spacing */
     line-height: 1.8;
 }
 
+/* Lists - Better Visual Separation */
 .markdown-content ul,
 .markdown-content ol {
     margin-left: 0;
     padding-left: var(--space-6);
-    /* Increased indentation */
     margin-bottom: var(--space-5);
 }
 
 .markdown-content li {
     margin-bottom: var(--space-3);
-    /* Increased spacing */
     line-height: 1.7;
 }
 
-/* Custom List Markers */
 .markdown-content ul li::marker {
     color: var(--ocean-shimmer);
     font-size: 1.2em;
@@ -144,9 +72,53 @@
     font-weight: 600;
 }
 
+/* Emphasis */
 .markdown-content strong {
     color: var(--ocean-shimmer);
     font-weight: 600;
+}
+
+.markdown-content em {
+    color: var(--ocean-foam);
+    font-style: italic;
+}
+
+/* Code */
+.markdown-content code {
+    background: rgba(97, 165, 194, 0.1);
+    color: var(--ocean-foam);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
+
+.markdown-content pre {
+    background: rgba(10, 22, 40, 0.8);
+    border: 1px solid var(--ocean-shimmer);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    overflow-x: auto;
+    margin-bottom: var(--space-5);
+}
+
+.markdown-content pre code {
+    background: transparent;
+    padding: 0;
+}
+
+/* Blockquotes */
+.markdown-content blockquote {
+    border-left: 4px solid var(--ocean-coral);
+    background: rgba(230, 126, 80, 0.1);
+    padding: var(--space-4);
+    margin: var(--space-5) 0;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.markdown-content blockquote p {
+    margin-bottom: var(--space-2);
+    font-style: italic;
 }
 
 /* Footer Section */
@@ -188,7 +160,7 @@
     font-size: var(--text-base);
 }
 
-/* Sponsor Slot (Placeholder) */
+/* Sponsor Slot */
 .sponsor-slot {
     background: rgba(10, 22, 40, 0.6);
     border: 1px dashed var(--glass-border);
@@ -196,7 +168,6 @@
     padding: var(--space-4);
     text-align: center;
     order: -1;
-    /* Muestra el sponsor antes del disclaimer flex */
 }
 
 .sponsor-slot small {
