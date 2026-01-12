@@ -7,12 +7,14 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
       includeAssets: ['favicon.png', 'robots.txt', 'icons/*.png'],
       devOptions: {
         enabled: true,
         type: 'module'
       },
       manifest: {
+        id: '/',
         name: 'Rumbo SUP - Guía de Mar',
         short_name: 'Rumbo SUP',
         start_url: '/',
