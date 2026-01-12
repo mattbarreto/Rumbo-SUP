@@ -1,5 +1,8 @@
 .session-goal-selector {
     margin-bottom: var(--space-8);
+    /* Diagonal flow - subtle rotation for unexpected composition */
+    transform: rotate(-2deg);
+    perspective: 1000px;
 }
 
 .goal-segmented-control {
@@ -11,6 +14,9 @@
     border: 1px solid var(--glass-border);
     position: relative;
     gap: 4px;
+    /* Counter-rotate to keep buttons level */
+    transform: rotate(2deg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .goal-segment {

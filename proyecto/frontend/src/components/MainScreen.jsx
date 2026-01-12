@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserProfile } from '../hooks/useUserProfile';
+import { useStaggeredReveal } from '../hooks/useStaggeredReveal';
 import { getTimeline } from '../services/api';
 import CircularIndicator from './CircularIndicator';
 import MetricCard from './MetricCard';
@@ -13,6 +14,9 @@ import './MainScreen.css';
 function MainScreen() {
     const navigate = useNavigate();
     const { profile, updateProfile } = useUserProfile();
+    // Animation container ref
+    const containerRef = useStaggeredReveal({ delay: 200, interval: 80 });
+
     const [sessionGoal, setSessionGoal] = useState(profile?.session_goal || 'calma');
     const [timelineData, setTimelineData] = useState(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -121,7 +125,7 @@ function MainScreen() {
 
     return (
         <div className="page main-screen">
-            <div className="container">
+            <div className="container" ref={containerRef}>
                 {/* Header */}
                 <div className="main-header">
                     <div>

@@ -6,6 +6,7 @@ import SenseiScreen from './components/SenseiScreen';
 import ProfileScreen from './components/ProfileScreen';
 import AboutScreen from './components/AboutScreen';
 import PasswordGate from './components/PasswordGate';
+import BackgroundOcean from './components/BackgroundOcean';
 import { isMobile, isDevMode } from './utils/deviceDetection';
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
 
     return (
         <PasswordGate>
+            <BackgroundOcean />
             <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                 <Routes>
                     {!hasCompletedOnboarding ? (
