@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      injectRegister: 'auto',
+      injectRegister: null, // Desactivar inyección automática para usar main.jsx
       includeAssets: ['favicon.png', 'robots.txt', 'icons/*.png'],
       devOptions: {
         enabled: true,
