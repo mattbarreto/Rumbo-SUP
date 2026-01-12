@@ -41,6 +41,55 @@
     gap: var(--space-2);
     cursor: pointer;
     transition: all var(--transition-base);
+    /* Staggered reveal animation */
+    animation: timelineBlockReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Staggered delays for timeline blocks */
+.timeline-block:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.timeline-block:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.timeline-block:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.timeline-block:nth-child(4) {
+    animation-delay: 0.25s;
+}
+
+.timeline-block:nth-child(5) {
+    animation-delay: 0.3s;
+}
+
+.timeline-block:nth-child(6) {
+    animation-delay: 0.35s;
+}
+
+.timeline-block:nth-child(7) {
+    animation-delay: 0.4s;
+}
+
+@keyframes timelineBlockReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.85);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.timeline-block:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(97, 165, 194, 0.2);
+    background: var(--glass-premium);
 }
 
 .timeline-block:active {

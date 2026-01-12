@@ -84,9 +84,9 @@
 
   /* ==================== TYPOGRAPHY (Golden Ratio 1.618×) ==================== */
 
-  /* Fonts */
-  --font-display: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'SF Pro Text', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Fonts - Premium, Distinctive Typography */
+  --font-display: 'Syne', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'SF Mono', 'Roboto Mono', 'Courier New', monospace;
 
   /* Type Scale (Golden Ratio ~1.618) */
@@ -291,16 +291,25 @@ p {
 
 .glass-card {
   background: linear-gradient(135deg,
-      var(--glass-medium) 0%,
-      var(--glass-light) 100%);
+      rgba(97, 165, 194, 0.1) 0%,
+      rgba(97, 165, 194, 0.05) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
+  border: 1px solid transparent;
+  width: 100%;
+  border-image: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.05) 100%) 1;
+  /* Fallback for border-image compatibility issues in some contexts, can use masking */
+  /* Reverting to reliable border method for now */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+
   border-radius: var(--radius-xl);
   padding: var(--space-6);
   box-shadow:
-    var(--shadow-lg),
-    inset 0 1px 0 hsla(210, 20%, 100%, 0.1);
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all var(--transition-smooth);
 }
 

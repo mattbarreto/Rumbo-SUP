@@ -1,3 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* RUMBO SUP - PREMIUM TYPOGRAPHY */
+/* Distinctive fonts that avoid generic AI aesthetics */
 
-/* SF Pro está disponible en sistemas Apple, fallback a Inter */
+/* Syne - Bold, geometric display font with character */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap');
+
+/* Instrument Sans - Clean, refined body font with personality */
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap');
