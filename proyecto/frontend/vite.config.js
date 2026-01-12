@@ -7,25 +7,27 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'icons/*.png'],
+      includeAssets: ['favicon.png', 'robots.txt', 'icons/*.png'],
       manifest: {
-        name: 'Rumbo SUP',
+        name: 'Rumbo SUP - Guía de Mar',
         short_name: 'Rumbo SUP',
-        description: 'Tu instructor virtual de Stand Up Paddle',
-        theme_color: '#0a1929',
-        background_color: '#0a1929',
+        description: 'Instructor virtual con IA para Stand Up Paddle en Mar del Plata',
+        theme_color: '#0A1628',
+        background_color: '#0A1628',
         display: 'standalone',
         orientation: 'portrait',
         icons: [
           {
             src: '/icons/icon-192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
             src: '/icons/icon-512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           }
         ]
       },

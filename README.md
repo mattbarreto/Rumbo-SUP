@@ -1,6 +1,6 @@
 # 🏄 Rumbo SUP - Tu Guía de Mar
 
-![Rumbo SUP Banner](https://img.shields.io/badge/Status-Beta-blue?style=for-the-badge) ![Python](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge) ![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB?style=for-the-badge) ![AI](https://img.shields.io/badge/AI-Google%20Gemini-orange?style=for-the-badge)
+![Rumbo SUP Banner](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge) ![Python](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge) ![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB?style=for-the-badge) ![AI](https://img.shields.io/badge/AI-Google%20Gemini-orange?style=for-the-badge)
 
 Rumbo SUP es una **Progressive Web App (PWA)** diseñada para practicantes de Stand Up Paddle en Mar del Plata. No es solo un pronóstico del clima; es un **instructor virtual** que interpreta las condiciones (viento, olas, marea) basándose en tu nivel de experiencia y el tipo de tabla que usás.
 
