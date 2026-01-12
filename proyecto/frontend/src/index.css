@@ -228,6 +228,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+
+  /* Custom Ocean Cursor - Water Drop Theme */
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%2361A5C2' d='M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z' opacity='0.9'/%3E%3Cpath fill='%23A9D6E5' d='M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z' opacity='0.4'/%3E%3C/svg%3E") 12 12, auto;
+}
+
+/* Interactive elements get pointer cursor */
+button,
+a,
+.clickable {
+  cursor: pointer;
 }
 
 #root {
@@ -311,6 +321,24 @@ p {
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative bottom shimmer border */
+.glass-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      var(--ocean-shimmer) 50%,
+      transparent 100%);
+  opacity: 0.4;
+  transition: opacity var(--transition-base);
 }
 
 .glass-card:hover {
@@ -318,6 +346,11 @@ p {
   box-shadow:
     var(--shadow-xl),
     inset 0 1px 0 hsla(210, 20%, 100%, 0.15);
+}
+
+/* Enhance decorative border on hover */
+.glass-card:hover::after {
+  opacity: 0.7;
 }
 
 /* Fallback sin blur para performance */
