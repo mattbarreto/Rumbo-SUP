@@ -67,15 +67,45 @@
     width: 100%;
 }
 
+/* INDUSTRIAL STATUS BADGE - Mechanical, not floaty */
 .status-badge {
     padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-full);
-    font-size: var(--text-sm);
-    font-weight: var(--weight-semibold);
+    border-radius: var(--radius-md);
+    /* Less rounded for industrial feel */
+    font-size: 13px;
+    font-weight: 800;
+    /* Extra bold for outdoor legibility */
     text-transform: uppercase;
-    letter-spacing: var(--tracking-wide);
-    backdrop-filter: blur(4px);
+    letter-spacing: 0.1em;
+
+    /* REMOVE glassmorphism - solid industrial style */
+    backdrop-filter: none;
+    border: 3px solid;
+    /* Solid thick border */
+
+    /* Shadow for depth but not float */
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+
     transition: all var(--transition-base);
+}
+
+/* Mechanical lock-in animation */
+@keyframes lockIn {
+    0% {
+        transform: scale(0.8) rotate(-5deg);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.05) rotate(2deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
 }
 
 .svg-circle {

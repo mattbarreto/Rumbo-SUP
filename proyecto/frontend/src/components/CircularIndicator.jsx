@@ -126,22 +126,32 @@ function CircularIndicator({ seguridad, categoria }) {
                 </svg>
             </div>
 
+            {/* INDUSTRIAL STATUS BADGE - Layer A (Safety Cockpit) */}
             <motion.div
                 className="indicator-label"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.6 }}
             >
-                <div
-                    className="status-badge"
+                <motion.div
+                    className="status-badge status-badge--industrial"
                     style={{
-                        backgroundColor: `color-mix(in srgb, ${strokeColor} 20%, transparent)`,
-                        color: strokeColor,
-                        border: `1px solid color-mix(in srgb, ${strokeColor} 30%, transparent)`
+                        backgroundColor: strokeColor,
+                        color: 'var(--ocean-abyss)', // BLACK text on bright safety colors
+                        borderColor: strokeColor
+                    }}
+                    // Mechanical "lock-in" animation
+                    initial={{ scale: 0.8, rotate: -5, opacity: 0 }}
+                    animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                    transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 15,
+                        delay: 1
                     }}
                 >
                     {getText()}
-                </div>
+                </motion.div>
             </motion.div>
         </div>
     );

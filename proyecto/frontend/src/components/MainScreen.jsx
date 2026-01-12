@@ -4,11 +4,11 @@ import { useUserProfile } from '../hooks/useUserProfile';
 import { useStaggeredReveal } from '../hooks/useStaggeredReveal';
 import { getTimeline } from '../services/api';
 import CircularIndicator from './CircularIndicator';
-import MetricCard from './MetricCard';
-import SessionGoalSelector from './SessionGoalSelector';
 import WindVisualizer from './WindVisualizer';
 import TimelineWidget from './TimelineWidget';
-import { WindIcon, WaveIcon, TideIcon, RefreshIcon, SettingsIcon, BrainIcon, LocationIcon, TimeIcon, ShieldIcon, EffortIcon, EnjoymentIcon, AlertIcon } from './Icons';
+import SessionGoalSelector from './SessionGoalSelector';
+import MetricCard from './MetricCard';
+import { WindIcon, WaveIcon, TideIcon, RefreshIcon, SettingsIcon, BrainIcon, LocationIcon, TimeIcon, ShieldIcon, EffortIcon, EnjoymentIcon, AlertIcon, ShareIcon } from './Icons';
 import './MainScreen.css';
 
 function MainScreen() {
@@ -61,6 +61,39 @@ function MainScreen() {
 
     const handlePointSelect = (point, index) => {
         setSelectedIndex(index);
+
+        // Scroll to CircularIndicator (main result section) when timeline item is selected
+        // Ensures the selected forecast is visible without the top being cut off
+        setTimeout(() => {
+            const circularIndicator = document.querySelector('.circular-indicator');
+            if (circularIndicator) {
+                const headerOffset = 120; // Main header + spot name + timeline title (~120px)
+                const elementPosition = circularIndicator.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100); // Small delay to ensure DOM is updated
+    };
+
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Rumbo SUP',
+                    text: 'Chequeá las condiciones en Varese para remar hoy!',
+                    url: window.location.href,
+                });
+            } catch (error) {
+                console.log('Error sharing:', error);
+            }
+        } else {
+            alert('¡Enlace copiado al portapapeles!');
+            navigator.clipboard.writeText(window.location.href);
+        }
     };
 
     if (loading) {
@@ -140,9 +173,14 @@ function MainScreen() {
                             </span>
                         </p>
                     </div>
-                    <button className="btn-icon" onClick={() => navigate('/profile')}>
-                        <SettingsIcon size={20} />
-                    </button>
+                    <div className="header-actions">
+                        <button className="btn-icon" onClick={handleShare} aria-label="Compartir">
+                            <ShareIcon size={20} />
+                        </button>
+                        <button className="btn-icon" onClick={() => navigate('/profile')} aria-label="Configuración">
+                            <SettingsIcon size={20} />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Banner de Pronóstico */}
@@ -180,6 +218,54 @@ function MainScreen() {
                     categoria={result.categories.seguridad}
                 />
 
+                {/* INDUSTRIAL METRICS GRID - Safety Cockpit Layer A + B */}
+                <div className="metrics-grid">
+                    <MetricCard
+                        label="Viento"
+                        value={Math.round(weather.wind_speed || 0)}
+                        unit="km/h"
+                        icon="💨"
+                        threshold="wind"
+                    />
+                    <MetricCard
+                        label="Dirección"
+                        value={weather.wind_direction_name || 'N/A'}
+                        unit=""
+                        icon="🧭"
+                        threshold={null}
+                    />
+                    <MetricCard
+                        label="Olas"
+                        value={(weather.wave_height || 0).toFixed(1)}
+                        unit="m"
+                        icon="🌊"
+                        threshold="wave"
+                    />
+
+                    {/* Restored Layer B Metrics - Adapting to Industrial Style */}
+                    <MetricCard
+                        label="Seguridad"
+                        value={result.scores.seguridad}
+                        unit="%"
+                        icon={<ShieldIcon size={24} />}
+                        threshold={null}
+                    />
+                    <MetricCard
+                        label="Esfuerzo"
+                        value={result.scores.esfuerzo}
+                        unit="%"
+                        icon={<EffortIcon size={24} />}
+                        threshold={null} // Manual severity handling could be added
+                    />
+                    <MetricCard
+                        label="Disfrute"
+                        value={result.scores.disfrute}
+                        unit="%"
+                        icon={<EnjoymentIcon size={24} />}
+                        threshold={null}
+                    />
+                </div>
+
                 {/* Sensei Tip (Dinámico) */}
                 <div className="sensei-tip-card glass-card">
                     <div className="tip-header">
@@ -193,35 +279,13 @@ function MainScreen() {
                 {result.flags && result.flags.length > 0 && (
                     <div className="alerts-section">
                         {result.flags.map(flag => (
-                            <div key={flag} className={`alert ${flagVariants[flag] === 'danger' ? 'alert-danger' : 'alert-warning'}`}>
+                            <div key={flag} className={`alert ${flagVariants[flag] === 'danger' ? 'alert-danger' : 'alert-warning'} `}>
                                 <AlertIcon size={18} variant={flagVariants[flag] || 'warning'} />
-                                <span>{flagDescriptions[flag] || flag}</span>
+                                <span className="alert-text">{flagDescriptions[flag] || flag}</span>
                             </div>
                         ))}
                     </div>
                 )}
-
-                {/* Métricas Separadas */}
-                <div className="metrics-grid">
-                    <MetricCard
-                        label="Seguridad"
-                        score={result.scores.seguridad}
-                        categoria={result.categories.seguridad}
-                        icon={<ShieldIcon size={18} />}
-                    />
-                    <MetricCard
-                        label="Esfuerzo"
-                        score={result.scores.esfuerzo}
-                        categoria={result.categories.esfuerzo}
-                        icon={<EffortIcon size={18} />}
-                    />
-                    <MetricCard
-                        label="Disfrute"
-                        score={result.scores.disfrute}
-                        categoria={result.categories.disfrute}
-                        icon={<EnjoymentIcon size={18} />}
-                    />
-                </div>
 
                 {/* Condiciones Detalladas */}
                 <div className="card conditions-card">

@@ -30,13 +30,24 @@
   --ocean-driftwood: #C4BFB5;
   /* Muted text, labels, borders */
 
-  /* Semantic Status - Life Indicators */
-  --ocean-kelp: #52796F;
-  /* Safe / Go - healthy state */
-  --ocean-coral: #E07A5F;
-  /* Caution / Attention */
-  --ocean-urchin: #9B2335;
-  /* Danger / Stop - high risk */
+  /* ===== INDUSTRIAL SAFETY COLORS (Oceanic Utility) ===== */
+
+  /* SAFETY COCKPIT PALETTE - HIGH CONTRAST FOR OUTDOOR */
+  /* CRITICAL: Text on these colors MUST be BLACK for sunlight legibility */
+
+  --safety-safe: #00FF94;
+  /* Bioluminescent Neon Green - Safe conditions */
+
+  --safety-warning: #FFB800;
+  /* Industrial Amber - Caution required */
+
+  --safety-danger: #FF3B5C;
+  /* Rescue Red - Dangerous conditions */
+
+  /* Legacy ocean colors - Keep for ambient Layer B elements */
+  --ocean-kelp: #62C370;
+  --ocean-coral: #E67E50;
+  --ocean-urchin: #D84A4F;
 
   /* Glass & Transparency */
   --ocean-mist: rgba(169, 214, 229, 0.1);
@@ -289,6 +300,19 @@ h6 {
 p {
   margin-bottom: var(--space-4);
   line-height: var(--leading-relaxed);
+}
+
+/* CRITICAL: Tabular nums for all numerical data (outdoor scanning) */
+.metric-value,
+.metric-card-value,
+.circular-indicator text,
+.timeline-value {
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-weight: 700;
+  /* Bold for outdoor legibility */
+  letter-spacing: -0.02em;
+  font-feature-settings: 'tnum' 1;
+  /* Tabular numbers fallback */
 }
 
 /* Numbers con tabular spacing */

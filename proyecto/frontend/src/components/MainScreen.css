@@ -48,19 +48,32 @@
     opacity: 0.4;
 }
 
+
+
+.header-actions {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+}
+
 .btn-icon {
-    background: var(--glass-light);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-md);
-    width: 44px;
-    height: 44px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
+    /* More squircle, less rounded rect */
+    width: 48px;
+    /* Slightly larger touch target */
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: var(--text-xl);
+    color: var(--neutral-100);
     cursor: pointer;
     transition: all var(--transition-base);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    /* Floating effect */
 }
 
 .btn-icon:hover {
