@@ -9,8 +9,11 @@ function ProfileScreen() {
 
     const handleReset = () => {
         if (confirm('¿Querés volver a hacer el onboarding?')) {
+            // Force direct removal to avoid hook race conditions
+            localStorage.removeItem('userProfile');
             clearProfile();
-            window.location.reload();
+            // Force navigation to root
+            window.location.href = '/';
         }
     };
 

@@ -13,9 +13,10 @@ const TimelineWidget = ({ timeline, onPointSelect, selectedIndex }) => {
                     const score = point.result.scores.seguridad;
                     const effort = point.result.categories.esfuerzo;
 
-                    let statusClass = "status-danger"; // < 40
-                    if (score >= 70) statusClass = "status-safe";
-                    else if (score >= 40) statusClass = "status-caution";
+                    // Traffic Light Logic
+                    let statusClass = "status-danger"; // < 50
+                    if (score >= 80) statusClass = "status-safe";
+                    else if (score >= 50) statusClass = "status-caution";
 
                     const isSelected = selectedIndex === index;
 
@@ -27,10 +28,12 @@ const TimelineWidget = ({ timeline, onPointSelect, selectedIndex }) => {
                         >
                             <span className="time-label">{point.hour_label}</span>
 
-                            <div className="indicator-line">
-                                <div className="indicator-dot"></div>
-                            </div>
+                            {/* Traffic Light Indicator */}
+                            <div className="traffic-light-indicator"></div>
 
+                            {/* Optional: We can keep the effort icon or remove it to reduce noise. 
+                                Keeping it small for now as per "Thumb Zone" usually implies less clutter, 
+                                but user didn't explicitly ask to remove it. */}
                             <span className="effort-mini-icon" title={`Esfuerzo: ${effort}`}>
                                 {effort === 'alto' && '🔥'}
                                 {effort === 'medio' && '💧'}

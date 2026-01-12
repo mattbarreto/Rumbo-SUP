@@ -7,10 +7,10 @@ function OnboardingFlow({ onComplete }) {
     const { saveProfile } = useUserProfile();
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
-        board_type: '',
+        boardType: '',
         experience: '',
-        paddle_power: '',
-        session_goal: 'calma'
+        paddlePower: '',
+        sessionGoal: 'calma'
     });
 
     const handleInputChange = (field, value) => {
@@ -34,8 +34,8 @@ function OnboardingFlow({ onComplete }) {
 
     const canProceed = () => {
         if (step === 1) return true;
-        if (step === 2) return formData.board_type && formData.experience && formData.paddle_power;
-        if (step === 3) return formData.session_goal;
+        if (step === 2) return formData.boardType && formData.experience && formData.paddlePower;
+        if (step === 3) return formData.sessionGoal;
         return false;
     };
 
@@ -88,8 +88,8 @@ function OnboardingFlow({ onComplete }) {
                             <label>Tipo de Tabla</label>
                             <div className="radio-group">
                                 <button
-                                    className={`radio-btn ${formData.board_type === 'rigid' ? 'active' : ''}`}
-                                    onClick={() => handleInputChange('board_type', 'rigid')}
+                                    className={`radio-btn ${formData.boardType === 'rigid' ? 'active' : ''}`}
+                                    onClick={() => handleInputChange('boardType', 'rigid')}
                                 >
                                     <ShieldIcon size={20} className="radio-icon" />
                                     <div className="radio-content">
@@ -98,8 +98,8 @@ function OnboardingFlow({ onComplete }) {
                                     </div>
                                 </button>
                                 <button
-                                    className={`radio-btn ${formData.board_type === 'inflable' ? 'active' : ''}`}
-                                    onClick={() => handleInputChange('board_type', 'inflable')}
+                                    className={`radio-btn ${formData.boardType === 'inflable' ? 'active' : ''}`}
+                                    onClick={() => handleInputChange('boardType', 'inflable')}
                                 >
                                     <WaveIcon size={20} className="radio-icon" />
                                     <div className="radio-content">
@@ -147,8 +147,8 @@ function OnboardingFlow({ onComplete }) {
                             <label>Potencia de Remada</label>
                             <div className="radio-group">
                                 <button
-                                    className={`radio-btn ${formData.paddle_power === 'low' ? 'active' : ''}`}
-                                    onClick={() => handleInputChange('paddle_power', 'low')}
+                                    className={`radio-btn ${formData.paddlePower === 'low' ? 'active' : ''}`}
+                                    onClick={() => handleInputChange('paddlePower', 'low')}
                                 >
                                     <EffortIcon size={20} className="radio-icon" />
                                     <div className="radio-content">
@@ -157,8 +157,8 @@ function OnboardingFlow({ onComplete }) {
                                     </div>
                                 </button>
                                 <button
-                                    className={`radio-btn ${formData.paddle_power === 'medium' ? 'active' : ''}`}
-                                    onClick={() => handleInputChange('paddle_power', 'medium')}
+                                    className={`radio-btn ${formData.paddlePower === 'medium' ? 'active' : ''}`}
+                                    onClick={() => handleInputChange('paddlePower', 'medium')}
                                 >
                                     <EffortIcon size={20} className="radio-icon" />
                                     <div className="radio-content">
@@ -167,8 +167,8 @@ function OnboardingFlow({ onComplete }) {
                                     </div>
                                 </button>
                                 <button
-                                    className={`radio-btn ${formData.paddle_power === 'high' ? 'active' : ''}`}
-                                    onClick={() => handleInputChange('paddle_power', 'high')}
+                                    className={`radio-btn ${formData.paddlePower === 'high' ? 'active' : ''}`}
+                                    onClick={() => handleInputChange('paddlePower', 'high')}
                                 >
                                     <EffortIcon size={20} className="radio-icon" />
                                     <div className="radio-content">
@@ -204,8 +204,8 @@ function OnboardingFlow({ onComplete }) {
 
                         <div className="goal-cards">
                             <button
-                                className={`goal-card ${formData.session_goal === 'calma' ? 'active' : ''}`}
-                                onClick={() => handleInputChange('session_goal', 'calma')}
+                                className={`goal-card ${formData.sessionGoal === 'calma' ? 'active' : ''}`}
+                                onClick={() => handleInputChange('sessionGoal', 'calma')}
                             >
                                 <div className="goal-icon">
                                     <EnjoymentIcon size={36} />
@@ -215,8 +215,8 @@ function OnboardingFlow({ onComplete }) {
                             </button>
 
                             <button
-                                className={`goal-card ${formData.session_goal === 'entrenamiento' ? 'active' : ''}`}
-                                onClick={() => handleInputChange('session_goal', 'entrenamiento')}
+                                className={`goal-card ${formData.sessionGoal === 'entrenamiento' ? 'active' : ''}`}
+                                onClick={() => handleInputChange('sessionGoal', 'entrenamiento')}
                             >
                                 <div className="goal-icon">
                                     <EffortIcon size={36} />
@@ -226,8 +226,8 @@ function OnboardingFlow({ onComplete }) {
                             </button>
 
                             <button
-                                className={`goal-card ${formData.session_goal === 'desafio' ? 'active' : ''}`}
-                                onClick={() => handleInputChange('session_goal', 'desafio')}
+                                className={`goal-card ${formData.sessionGoal === 'desafio' ? 'active' : ''}`}
+                                onClick={() => handleInputChange('sessionGoal', 'desafio')}
                             >
                                 <div className="goal-icon">
                                     <WaveIcon size={36} />

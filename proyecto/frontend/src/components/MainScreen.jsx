@@ -222,21 +222,21 @@ function MainScreen() {
                 <div className="metrics-grid">
                     <MetricCard
                         label="Viento"
-                        value={Math.round(weather.wind_speed || 0)}
+                        value={Math.round(weather.wind.speed_kmh || 0)}
                         unit="km/h"
                         icon="💨"
                         threshold="wind"
                     />
                     <MetricCard
                         label="Dirección"
-                        value={weather.wind_direction_name || 'N/A'}
+                        value={weather.wind.direction_deg + '°' || 'N/A'}
                         unit=""
                         icon="🧭"
                         threshold={null}
                     />
                     <MetricCard
                         label="Olas"
-                        value={(weather.wave_height || 0).toFixed(1)}
+                        value={(weather.waves.height_m || 0).toFixed(1)}
                         unit="m"
                         icon="🌊"
                         threshold="wave"

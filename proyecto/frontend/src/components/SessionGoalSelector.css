@@ -1,34 +1,32 @@
 .session-goal-selector {
     margin-bottom: var(--space-8);
-    /* Diagonal flow - subtle rotation for unexpected composition */
-    transform: rotate(-2deg);
+    /* Removed diagonal transforms for better touch precision */
     perspective: 1000px;
 }
 
 .goal-segmented-control {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     background: var(--glass-medium);
     padding: 4px;
-    /* Padding interno como iOS */
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     border: 1px solid var(--glass-border);
     position: relative;
     gap: 4px;
-    /* Counter-rotate to keep buttons level */
-    transform: rotate(2deg);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .goal-segment {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    /* Minimum touch target height */
+    min-height: 56px;
     padding: var(--space-2) var(--space-1);
     background: transparent;
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     cursor: pointer;
     color: var(--text-secondary);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -41,21 +39,32 @@
     background: hsla(210, 15%, 98%, 0.05);
 }
 
+
 .goal-segment.active {
-    background: var(--glass-light);
-    /* Casi casi blanco */
-    color: var(--neutral-100);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    /* Solid Fill for High Contrast / Sun Visibility */
+    background: var(--ocean-cyan);
+    color: var(--neutral-900);
+    /* Ensure this is Dark */
+    box-shadow: 0 4px 12px rgba(46, 196, 182, 0.3);
 }
+
+.goal-segment.active .goal-icon,
+.goal-segment.active .goal-label {
+    color: var(--neutral-900);
+    fill: var(--neutral-900);
+    /* For stubborn SVGs */
+    font-weight: 800;
+    /* Ensure bold */
+}
+
 
 /* Indicador de descripción sutil abajo */
 .goal-description {
     text-align: center;
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
     color: var(--text-tertiary);
     margin-top: var(--space-3);
     height: 1.2em;
-    /* Evitar salto de layout */
     font-weight: var(--weight-medium);
     letter-spacing: 0.02em;
     animation: fadeIn 0.3s ease-out;
@@ -65,7 +74,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     opacity: 0.7;
     transition: opacity 0.2s ease;
 }
@@ -76,11 +85,12 @@
 }
 
 .goal-label {
-    font-size: 11px;
-    /* Texto muy pequeño estilo iOS bottom tab */
-    font-weight: var(--weight-semibold);
+    /* Thumb Zone Typography: 14px Bold Uppercase */
+    font-size: 14px;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    margin-top: 2px;
 }
 
 @keyframes fadeIn {

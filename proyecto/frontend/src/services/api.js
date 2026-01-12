@@ -11,13 +11,26 @@ const api = axios.create({
 });
 
 /**
+ * Helper to map frontend profile (camelCase) to backend schema (snake_case)
+ */
+function mapProfileToBackend(profile) {
+    if (!profile) return null;
+    return {
+        board_type: profile.boardType || profile.board_type, // Fallback for legacy
+        experience: profile.experience,
+        paddle_power: profile.paddlePower || profile.paddle_power,
+        session_goal: profile.sessionGoal || profile.session_goal
+    };
+}
+
+/**
  * Analiza condiciones para un spot y usuario
  */
 export async function analyzeConditions(spotId, userProfile) {
     try {
         const response = await api.post('/api/analyze', {
             spot_id: spotId,
-            user: userProfile
+            user: mapProfileToBackend(userProfile)
         });
         return response.data;
     } catch (error) {
@@ -32,7 +45,7 @@ export async function analyzeConditions(spotId, userProfile) {
 export async function getExplanation(user, weather, result) {
     try {
         const response = await api.post('/api/pedagogy/explain', {
-            user,
+            user: mapProfileToBackend(user),
             weather,
             result
         });
@@ -65,7 +78,7 @@ export async function getTimeline(spotId, userProfile) {
     try {
         const response = await api.post('/api/timeline', {
             spot_id: spotId,
-            user: userProfile
+            user: mapProfileToBackend(userProfile)
         });
         return response.data;
     } catch (error) {
