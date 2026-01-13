@@ -12,12 +12,12 @@ class UserProfile(BaseModel):
 # ==================== Weather Data ====================
 
 class WindData(BaseModel):
-    speed_kmh: float = Field(..., description="Velocidad del viento en km/h")
-    direction_deg: int = Field(..., ge=0, le=360, description="Dirección del viento en grados (0=Norte)")
+    speed_kmh: Optional[float] = Field(None, description="Velocidad del viento en km/h")
+    direction_deg: Optional[int] = Field(None, ge=0, le=360, description="Dirección del viento en grados (0=Norte)")
     relative_direction: Optional[str] = Field(None, description="Dirección relativa: onshore/offshore/cross")
 
 class WaveData(BaseModel):
-    height_m: float = Field(..., ge=0, description="Altura de olas en metros")
+    height_m: Optional[float] = Field(None, ge=0, description="Altura de olas en metros")
 
 class TideData(BaseModel):
     state: Literal["rising", "falling", "high", "low"] = Field(..., description="Estado de la marea")

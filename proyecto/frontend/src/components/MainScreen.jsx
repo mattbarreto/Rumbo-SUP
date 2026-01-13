@@ -243,21 +243,21 @@ function MainScreen() {
                 <div className="metrics-grid">
                     <MetricCard
                         label="Viento"
-                        value={Math.round(weather.wind.speed_kmh || 0)}
+                        value={weather.wind.speed_kmh !== null ? Math.round(weather.wind.speed_kmh) : null}
                         unit="km/h"
                         icon="💨"
                         threshold="wind"
                     />
                     <MetricCard
                         label="Dirección"
-                        value={weather.wind.direction_deg + '°' || 'N/A'}
+                        value={weather.wind.direction_deg !== null ? weather.wind.direction_deg + '°' : null}
                         unit=""
                         icon="🧭"
                         threshold={null}
                     />
                     <MetricCard
                         label="Olas"
-                        value={(weather.waves.height_m || 0).toFixed(1)}
+                        value={weather.waves.height_m !== null ? weather.waves.height_m.toFixed(1) : null}
                         unit="m"
                         icon="🌊"
                         threshold="wave"
@@ -321,10 +321,19 @@ function MainScreen() {
                             </div>
                         </div>
                         <div className="condition-item">
+                            <WindIcon className="condition-icon" size={32} />
+                            <div>
+                                <div className="condition-label">Viento</div>
+                                <div className="condition-value">
+                                    {weather.wind.speed_kmh !== null ? `${weather.wind.speed_kmh} km/h` : '- km/h'} {weather.wind.relative_direction === 'onshore' ? '→ Playa' : weather.wind.relative_direction === 'offshore' ? '→ Mar' : weather.wind.relative_direction === 'cross' ? '↔ Paralelo' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="condition-item">
                             <WaveIcon className="condition-icon" size={32} />
                             <div>
                                 <div className="condition-label">Olas</div>
-                                <div className="condition-value">{weather.waves.height_m}m</div>
+                                <div className="condition-value">{weather.waves.height_m !== null ? `${weather.waves.height_m}m` : '- m'}</div>
                             </div>
                         </div>
                         <div className="condition-item">

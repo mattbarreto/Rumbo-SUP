@@ -4,6 +4,7 @@ from typing import Optional, List
 from app.services.weather_service import WeatherProvider
 from app.models.schemas import WeatherData, WindData, WaveData, TideData
 import logging
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 logger = logging.getLogger(__name__)
 
@@ -44,45 +45,19 @@ class OpenMeteoProvider(WeatherProvider):
         async with httpx.AsyncClient() as client:
             # Request 1: Viento desde Weather Forecast API
             try:
-                forecast_params = {
-                    "latitude": lat,
-                    "longitude": lon,
-                    "hourly": "wind_speed_10m,wind_direction_10m",
-                    "timezone": "America/Argentina/Buenos_Aires",
-                    "forecast_days": 1
-                }
-                forecast_response = await client.get(
-                    self.FORECAST_URL,
-                    params=forecast_params,
-                    timeout=10.0
-                )
-                forecast_response.raise_for_status()
-                forecast_data = forecast_response.json()
+                forecast_data = await self._fetch_forecast_data(client, lat, lon)
                 logger.info("✅ Forecast API: datos de viento obtenidos")
             except Exception as e:
                 logger.error(f"❌ Forecast API failed: {e}")
-                # Continuar - usaremos valores por defecto
+                # Continuar - intentaremos obtener datos parciales
             
             # Request 2: Olas desde Marine API
             try:
-                marine_params = {
-                    "latitude": lat,
-                    "longitude": lon,
-                    "hourly": "wave_height",
-                    "timezone": "America/Argentina/Buenos_Aires",
-                    "forecast_days": 1
-                }
-                marine_response = await client.get(
-                    self.MARINE_URL,
-                    params=marine_params,
-                    timeout=10.0
-                )
-                marine_response.raise_for_status()
-                marine_data = marine_response.json()
+                marine_data = await self._fetch_marine_data(client, lat, lon)
                 logger.info("✅ Marine API: datos de olas obtenidos")
             except Exception as e:
                 logger.error(f"❌ Marine API failed: {e}")
-                # Continuar - usaremos valores por defecto
+                # Continuar - intentaremos obtener datos parciales
         
         # Verificar que al menos una API funcionó
         if forecast_data is None and marine_data is None:
@@ -218,15 +193,15 @@ class OpenMeteoProvider(WeatherProvider):
         wave_heights = marine_hourly.get("wave_height", [])
         wave_height = wave_heights[index] if index < len(wave_heights) else None
         
-        # Crear objetos con fallbacks a 0.0 si los valores son None
+        # Crear objetos con None si no hay datos (cliente maneja el "N/A")
         wind_data = WindData(
-            speed_kmh=float(wind_speed) if wind_speed is not None else 0.0,
-            direction_deg=int(wind_direction) if wind_direction is not None else 0,
+            speed_kmh=float(wind_speed) if wind_speed is not None else None,
+            direction_deg=int(wind_direction) if wind_direction is not None else None,
             relative_direction=None
         )
         
         wave_data = WaveData(
-            height_m=float(wave_height) if wave_height is not None else 0.0
+            height_m=float(wave_height) if wave_height is not None else None
         )
         
         tide_data = TideData(state=tide_state)
@@ -278,14 +253,50 @@ class OpenMeteoProvider(WeatherProvider):
             return 0
 
     def _create_fallback_weather_data(self, lat: float, lon: float, tide_state: str = "rising") -> WeatherData:
-        """Crea WeatherData con valores por defecto cuando las APIs fallan"""
+        """Crea WeatherData con valores None para indicar falta de datos"""
         return WeatherData(
-            wind=WindData(speed_kmh=0.0, direction_deg=0, relative_direction=None),
-            waves=WaveData(height_m=0.0),
+            wind=WindData(speed_kmh=None, direction_deg=None, relative_direction=None),
+            waves=WaveData(height_m=None),
             tide=TideData(state=tide_state),
             timestamp=datetime.now(timezone.utc).isoformat(),
             provider="openmeteo_fallback"
         )
+        
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10), retry=retry_if_exception_type(httpx.TransportError))
+    async def _fetch_forecast_data(self, client, lat, lon):
+        """Helper con retry para Forecast API"""
+        forecast_params = {
+            "latitude": lat,
+            "longitude": lon,
+            "hourly": "wind_speed_10m,wind_direction_10m",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "forecast_days": 1
+        }
+        forecast_response = await client.get(
+            self.FORECAST_URL,
+            params=forecast_params,
+            timeout=10.0
+        )
+        forecast_response.raise_for_status()
+        return forecast_response.json()
+        
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10), retry=retry_if_exception_type(httpx.TransportError))
+    async def _fetch_marine_data(self, client, lat, lon):
+        """Helper con retry para Marine API"""
+        marine_params = {
+            "latitude": lat,
+            "longitude": lon,
+            "hourly": "wave_height",
+            "timezone": "America/Argentina/Buenos_Aires",
+            "forecast_days": 1
+        }
+        marine_response = await client.get(
+            self.MARINE_URL,
+            params=marine_params,
+            timeout=10.0
+        )
+        marine_response.raise_for_status()
+        return marine_response.json()
 
     async def _get_tide_state(self, lat, lon) -> str:
         if self.tide_provider:

@@ -76,9 +76,9 @@ function MetricCard({ label, value, unit, icon, threshold }) {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 >
-                    {value}
+                    {value !== null && value !== undefined ? value : '-'}
                 </motion.div>
-                <span className="metric-card__unit">{unit}</span>
+                <span className="metric-card__unit">{value !== null && value !== undefined ? unit : ''}</span>
             </div>
 
             {/* Danger pulse glow */}
