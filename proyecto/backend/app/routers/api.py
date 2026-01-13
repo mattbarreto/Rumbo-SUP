@@ -6,6 +6,7 @@ from tenacity import RetryError
 from httpx import ConnectTimeout, ReadTimeout
 import math
 import logging
+import traceback
 
 logger = logging.getLogger(__name__)
 

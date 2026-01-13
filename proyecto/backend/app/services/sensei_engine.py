@@ -30,9 +30,14 @@ class SenseiEngine:
         if not spot:
             raise ValueError(f"Spot '{spot_id}' no encontrado")
         
+        # Safe defaults for None values (API failures)
+        wind_speed = weather.wind.speed_kmh if weather.wind.speed_kmh is not None else 0.0
+        wind_deg = weather.wind.direction_deg if weather.wind.direction_deg is not None else 0
+        wave_height = weather.waves.height_m if weather.waves.height_m is not None else 0.0
+        
         # Calcular dirección relativa del viento
         wind_relative = self._calculate_wind_relative_direction(
-            weather.wind.direction_deg,
+            wind_deg,
             spot["orientation_costa_deg"]
         )
         weather.wind.relative_direction = wind_relative
@@ -86,11 +91,16 @@ class SenseiEngine:
         from app.models.schemas import SemanticAnalysis
         from app.services.scenario_catalog import classify_scenario, get_scenario
         
+        # Use safe defaults for None values (API failures)
+        wind_speed = weather.wind.speed_kmh if weather.wind.speed_kmh is not None else 0.0
+        wave_height = weather.waves.height_m if weather.waves.height_m is not None else 0.0
+
         # 1. Clasificar las condiciones en UN escenario coherente
+        # Use safe defaults already calculated at start of analyze()
         scenario_id = classify_scenario(
-            wind_speed=weather.wind.speed_kmh,
+            wind_speed=wind_speed,  # safe default from analyze()
             wind_rel=weather.wind.relative_direction or "none",
-            wave_height=weather.waves.height_m,
+            wave_height=wave_height,  # safe default from analyze()
             tide_state=weather.tide.state,
             flags=flags
         )
@@ -148,8 +158,12 @@ class SenseiEngine:
         """
         flags = []
         
+        # Safe defaults for None
+        wind_speed = weather.wind.speed_kmh if weather.wind.speed_kmh is not None else 0.0
+        wave_height = weather.waves.height_m if weather.waves.height_m is not None else 0.0
+        
         # Flag: Viento fuerte
-        if weather.wind.speed_kmh > 30:
+        if wind_speed > 30:
             flags.append("viento_fuerte")
         
         # Flag: Riesgo de deriva (offshore + inflable)
@@ -158,12 +172,12 @@ class SenseiEngine:
             flags.append("riesgo_deriva")
         
         # Flag: Olas grandes
-        if weather.waves.height_m > 1.5:
+        if wave_height > 1.5:
             flags.append("olas_grandes")
         
         # Flag: Principiante en condiciones moderadas
         if (user.experience == "beginner" and 
-            (weather.wind.speed_kmh > 20 or weather.waves.height_m > 1.0)):
+            (wind_speed > 20 or wave_height > 1.0)):
             flags.append("principiante_condiciones_moderadas")
         
         # Reglas específicas del spot
@@ -215,8 +229,9 @@ class SenseiEngine:
             score -= 20
         
         # Penalización adicional por viento según experiencia
-        if user.experience == "beginner" and weather.wind.speed_kmh > 15:
-            score -= (weather.wind.speed_kmh - 15) * 1.5
+        wind_speed = weather.wind.speed_kmh if weather.wind.speed_kmh is not None else 0.0
+        if user.experience == "beginner" and wind_speed > 15:
+            score -= (wind_speed - 15) * 1.5
         
         # Ajuste por offshore (siempre reduce seguridad)
         if weather.wind.relative_direction == "offshore":
@@ -234,7 +249,9 @@ class SenseiEngine:
         Calcula score de ESFUERZO (0-100, donde 100 = muy exigente)
         Basado en viento vs potencia de remada
         """
-        base_effort = weather.wind.speed_kmh * 2  # Base proporcional al viento
+        wind_speed = weather.wind.speed_kmh if weather.wind.speed_kmh is not None else 0.0
+        wave_height = weather.waves.height_m if weather.waves.height_m is not None else 0.0
+        base_effort = wind_speed * 2  # Base proporcional al viento
         
         # Ajuste por potencia de remada
         power_multiplier = {
@@ -249,7 +266,7 @@ class SenseiEngine:
             effort *= 1.3
         
         # Olas aumentan esfuerzo
-        effort += weather.waves.height_m * 15
+        effort += wave_height * 15
         
         # Clamp entre 0-100
         return max(0, min(100, int(effort)))
@@ -265,8 +282,8 @@ class SenseiEngine:
         ⚠️ CRÍTICO: Basado en objetivo de sesión, NO inverso de riesgo
         """
         goal = user.session_goal
-        wind_speed = weather.wind.speed_kmh
-        wave_height = weather.waves.height_m
+        wind_speed = weather.wind.speed_kmh if weather.wind.speed_kmh is not None else 0.0
+        wave_height = weather.waves.height_m if weather.waves.height_m is not None else 0.0
         
         # Si seguridad es muy baja, disfrute también baja (no importa objetivo)
         if seguridad < 30:

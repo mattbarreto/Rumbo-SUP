@@ -16,13 +16,21 @@ async def test_endpoint():
     
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(url, json=payload, timeout=30.0)
+            response = await client.post(url, json=payload, timeout=60.0)
             print(f"Status: {response.status_code}")
             if response.status_code == 200:
                 print("✅ Success")
-                print(response.json())
+                data = response.json()
+                print(f"Spot: {data.get('spot')}")
+                print(f"Timeline items: {len(data.get('timeline', []))}")
             else:
-                print(f"❌ Failed: {response.text}")
+                print(f"❌ Failed (Status {response.status_code})")
+                # Print full response body
+                try:
+                    error_detail = response.json()
+                    print(f"Detail: {error_detail.get('detail', 'Unknown')}")
+                except:
+                    print(f"Raw: {response.text}")
     except Exception as e:
         print(f"❌ Exception: {e}")
 

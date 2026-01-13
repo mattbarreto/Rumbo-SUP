@@ -199,6 +199,10 @@ def classify_scenario(
 ) -> str:
     """Clasifica las condiciones en UN escenario coherente."""
     
+    # Safe defaults for None values
+    wind_speed = wind_speed if wind_speed is not None else 0.0
+    wave_height = wave_height if wave_height is not None else 0.0
+    
     if "riesgo_deriva" in flags or (wind_rel == "offshore" and wind_speed > 8):
         return "viento_offshore"
     
