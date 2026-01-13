@@ -12,12 +12,12 @@ class OpenMeteoProvider(WeatherProvider):
     
     BASE_URL = "https://marine-api.open-meteo.com/v1/marine"
     
-    def __init__(self, worldtides_provider=None):
+    def __init__(self, tide_provider=None):
         """
         Args:
-            worldtides_provider: Opcional - provider para datos de marea
+            tide_provider: Opcional - provider para datos de marea (NOAA, WorldTides, etc)
         """
-        self.worldtides_provider = worldtides_provider
+        self.tide_provider = tide_provider
     
     async def get_conditions(self, lat: float, lon: float) -> WeatherData:
         """
@@ -116,9 +116,9 @@ class OpenMeteoProvider(WeatherProvider):
             return 0
 
     async def _get_tide_state(self, lat, lon) -> str:
-        if self.worldtides_provider:
+        if self.tide_provider:
             try:
-                return await self.worldtides_provider.get_tide_state(lat, lon)
+                return await self.tide_provider.get_tide_state(lat, lon)
             except:
                 return "rising"
         return "rising"

@@ -26,14 +26,13 @@ async def analyze_conditions(request: AnalyzeRequest):
     # Obtener datos meteorológicos REALES de OpenMeteo
     from app.services.openmeteo_provider import OpenMeteoProvider
     from app.services.weather_service import WeatherService
-    from app.services.worldtides_provider import WorldTidesProvider
+    from app.services.noaa_tides_provider import NOAATidesProvider
     import os
     
-    # Configurar providers
-    worldtides_key = os.getenv("WORLDTIDES_API_KEY")
-    worldtides_provider = WorldTidesProvider(worldtides_key) if worldtides_key else None
+    # Configurar providers - NOAA es GRATIS, no requiere API key
+    noaa_tides = NOAATidesProvider()
     
-    openmeteo_provider = OpenMeteoProvider(worldtides_provider=worldtides_provider)
+    openmeteo_provider = OpenMeteoProvider(tide_provider=noaa_tides)
     weather_service = WeatherService(openmeteo_provider)
     
     weather_data = await weather_service.get_current_conditions(
@@ -125,14 +124,14 @@ async def get_timeline(request: TimelineRequest):
     # Setup services (inline)
     from app.services.openmeteo_provider import OpenMeteoProvider
     from app.services.weather_service import WeatherService
-    from app.services.worldtides_provider import WorldTidesProvider
+    from app.services.noaa_tides_provider import NOAATidesProvider
     from app.services.sensei_engine import SenseiEngine
     import os
     
-    worldtides_key = os.getenv("WORLDTIDES_API_KEY")
-    worldtides_provider = WorldTidesProvider(worldtides_key) if worldtides_key else None
+    # Configurar providers - NOAA es GRATIS
+    noaa_tides = NOAATidesProvider()
     
-    openmeteo_provider = OpenMeteoProvider(worldtides_provider=worldtides_provider)
+    openmeteo_provider = OpenMeteoProvider(tide_provider=noaa_tides)
     weather_service = WeatherService(openmeteo_provider)
     engine = SenseiEngine()
     
