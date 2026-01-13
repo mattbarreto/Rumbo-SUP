@@ -43,11 +43,7 @@ proyecto/backend/logs/
 .env*
 !.env.example
 
-# Internal documentation (AI agent instructions, planning)
-agent_instructions.md
-project_prompt.md
-implementation_plan.md
-abstraction.md
-HANDOFF.md
+# Internal documentation and planning (keep local only)
+docs/
 DEPLOY.md
-docs/frontend-design-guidelines.md
+.venv/
