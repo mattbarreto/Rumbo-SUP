@@ -29,6 +29,7 @@ proyecto/frontend/.env.production.local
 # Build outputs
 proyecto/frontend/dist/
 proyecto/frontend/build/
+proyecto/frontend/dev-dist/
 
 # Logs
 npm-debug.log*
@@ -41,3 +42,12 @@ proyecto/backend/logs/
 .gemini/
 .env*
 !.env.example
+
+# Internal documentation (AI agent instructions, planning)
+agent_instructions.md
+project_prompt.md
+implementation_plan.md
+abstraction.md
+HANDOFF.md
+DEPLOY.md
+docs/frontend-design-guidelines.md

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { WaveIcon } from './Icons';
 import './PasswordGate.css';
 
+// SECURITY NOTE: This is a demo/beta access password for public repository
+// In production, implement proper backend authentication with JWT tokens
 const ACCESS_PASSWORD = 'supadmin';
 const STORAGE_KEY = 'rumbo_access_v2'; // Bump version to force re-login
 

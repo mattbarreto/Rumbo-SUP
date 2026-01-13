@@ -252,7 +252,7 @@ a,
 }
 
 #root {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -271,6 +271,8 @@ h6 {
   margin-bottom: var(--space-4);
   letter-spacing: -0.02em;
   /* Tighter tracking para headings */
+  text-wrap: balance;
+  /* Prevent typographic widows */
 }
 
 h1 {
@@ -526,7 +528,7 @@ p {
 }
 
 .page {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom);
@@ -726,7 +728,7 @@ label {
   display: none;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 100dvh;
   text-align: center;
   color: var(--neutral-100);
   padding: var(--space-12);

@@ -27,6 +27,8 @@
     background: rgba(255, 255, 255, 0.4);
     border-radius: 2px;
     opacity: 0;
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
 /* Animations */
