@@ -316,15 +316,6 @@ function MainScreen() {
                             <div>
                                 <div className="condition-label">Viento</div>
                                 <div className="condition-value">
-                                    {weather.wind.speed_kmh} km/h {weather.wind.relative_direction === 'onshore' ? '→ Playa' : weather.wind.relative_direction === 'offshore' ? '→ Mar' : '↔ Paralelo'}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="condition-item">
-                            <WindIcon className="condition-icon" size={32} />
-                            <div>
-                                <div className="condition-label">Viento</div>
-                                <div className="condition-value">
                                     {weather.wind.speed_kmh !== null ? `${weather.wind.speed_kmh} km/h` : '- km/h'} {weather.wind.relative_direction === 'onshore' ? '→ Playa' : weather.wind.relative_direction === 'offshore' ? '→ Mar' : weather.wind.relative_direction === 'cross' ? '↔ Paralelo' : ''}
                                 </div>
                             </div>
