@@ -1,8 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.models.schemas import AnalyzeRequest, AnalyzeResponse, ExplanationRequest, ExplanationResponse, NearestSpotResponse, TimelineRequest, TimelineResponse, TimelinePoint
 from app.config.spots import SPOTS
 from datetime import datetime
+from tenacity import RetryError
+from httpx import ConnectTimeout, ReadTimeout
 import math
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api", tags=["api"])
 
@@ -19,37 +24,47 @@ async def analyze_conditions(request: AnalyzeRequest):
     """
     # Validar spot existe
     if request.spot_id not in SPOTS:
-        raise ValueError(f"Spot '{request.spot_id}' no encontrado")
+        raise HTTPException(status_code=404, detail=f"Spot '{request.spot_id}' no encontrado")
     
     spot = SPOTS[request.spot_id]
     
-    # Obtener datos meteorológicos REALES de OpenMeteo
-    from app.services.openmeteo_provider import OpenMeteoProvider
-    from app.services.weather_service import WeatherService
-    from app.services.noaa_tides_provider import NOAATidesProvider
-    import os
-    
-    # Configurar providers - NOAA es GRATIS, no requiere API key
-    noaa_tides = NOAATidesProvider()
-    
-    openmeteo_provider = OpenMeteoProvider(tide_provider=noaa_tides)
-    weather_service = WeatherService(openmeteo_provider)
-    
-    weather_data = await weather_service.get_current_conditions(
-        spot["lat"], 
-        spot["lon"]
-    )
-    
-    # Ejecutar motor determinístico (Layer A)
-    from app.services.sensei_engine import SenseiEngine
-    engine = SenseiEngine()
-    result = engine.analyze(weather_data, request.spot_id, request.user)
-    
-    return AnalyzeResponse(
-        spot={"name": spot["name"], "lat": spot["lat"], "lon": spot["lon"]},
-        weather=weather_data,
-        result=result
-    )
+    try:
+        # Obtener datos meteorológicos REALES de OpenMeteo
+        from app.services.openmeteo_provider import OpenMeteoProvider
+        from app.services.weather_service import WeatherService
+        from app.services.noaa_tides_provider import NOAATidesProvider
+        import os
+        
+        # Configurar providers - NOAA es GRATIS, no requiere API key
+        noaa_tides = NOAATidesProvider()
+        
+        openmeteo_provider = OpenMeteoProvider(tide_provider=noaa_tides)
+        weather_service = WeatherService(openmeteo_provider)
+        
+        weather_data = await weather_service.get_current_conditions(
+            spot["lat"], 
+            spot["lon"]
+        )
+        
+        # Ejecutar motor determinístico (Layer A)
+        from app.services.sensei_engine import SenseiEngine
+        engine = SenseiEngine()
+        result = engine.analyze(weather_data, request.spot_id, request.user)
+        
+        return AnalyzeResponse(
+            spot={"name": spot["name"], "lat": spot["lat"], "lon": spot["lon"]},
+            weather=weather_data,
+            result=result
+        )
+    except ValueError as e:
+        logger.error(f"Error validating data: {e}")
+        raise HTTPException(status_code=503, detail=str(e))
+    except (RetryError, ConnectTimeout, ReadTimeout) as e:
+        logger.error(f"Upstream API error: {e}")
+        raise HTTPException(status_code=503, detail="Weather service unavailable (upstream timeout)")
+    except Exception as e:
+        logger.error(f"Error in analyze_conditions: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.post("/pedagogy/explain", response_model=ExplanationResponse)
 async def explain_conditions(request: ExplanationRequest):
@@ -117,53 +132,63 @@ async def get_timeline(request: TimelineRequest):
     from app.models.schemas import TimelineResponse, TimelinePoint
     
     if request.spot_id not in SPOTS:
-        raise ValueError(f"Spot '{request.spot_id}' no encontrado")
+        raise HTTPException(status_code=404, detail=f"Spot '{request.spot_id}' no encontrado")
     
     spot = SPOTS[request.spot_id]
     
-    # Setup services (inline)
-    from app.services.openmeteo_provider import OpenMeteoProvider
-    from app.services.weather_service import WeatherService
-    from app.services.noaa_tides_provider import NOAATidesProvider
-    from app.services.sensei_engine import SenseiEngine
-    import os
-    
-    # Configurar providers - NOAA es GRATIS
-    noaa_tides = NOAATidesProvider()
-    
-    openmeteo_provider = OpenMeteoProvider(tide_provider=noaa_tides)
-    weather_service = WeatherService(openmeteo_provider)
-    engine = SenseiEngine()
-    
-    # Obtener forecast 12hs
-    forecast = await weather_service.get_forecast(spot["lat"], spot["lon"], hours=12)
-    
-    timeline_points = []
-    
-    for wd in forecast:
-        # Ejecutar engine para cada hora
-        result = engine.analyze(wd, request.spot_id, request.user)
+    try:
+        # Setup services (inline)
+        from app.services.openmeteo_provider import OpenMeteoProvider
+        from app.services.weather_service import WeatherService
+        from app.services.noaa_tides_provider import NOAATidesProvider
+        from app.services.sensei_engine import SenseiEngine
+        import os
         
-        # Formatear hora
-        try:
-            ts = datetime.fromisoformat(wd.timestamp)
-            label = ts.strftime("%H:%M")
-        except:
-            label = "--:--"
+        # Configurar providers - NOAA es GRATIS
+        noaa_tides = NOAATidesProvider()
+        
+        openmeteo_provider = OpenMeteoProvider(tide_provider=noaa_tides)
+        weather_service = WeatherService(openmeteo_provider)
+        engine = SenseiEngine()
+        
+        # Obtener forecast 12hs
+        forecast = await weather_service.get_forecast(spot["lat"], spot["lon"], hours=12)
+        
+        timeline_points = []
+        
+        for wd in forecast:
+            # Ejecutar engine para cada hora
+            result = engine.analyze(wd, request.spot_id, request.user)
             
-        timeline_points.append(TimelinePoint(
-            timestamp=wd.timestamp,
-            hour_label=label,
-            result=result,
-            weather=wd
-        ))
-        
-    if not timeline_points:
-        raise ValueError("No se pudieron obtener datos de pronóstico")
-        
-    return TimelineResponse(
-        spot={"name": spot["name"], "lat": spot["lat"], "lon": spot["lon"]},
-        weather=forecast[0], # El primero es el actual
-        current=timeline_points[0].result,
-        timeline=timeline_points
-    )
+            # Formatear hora
+            try:
+                ts = datetime.fromisoformat(wd.timestamp)
+                label = ts.strftime("%H:%M")
+            except:
+                label = "--:--"
+                
+            timeline_points.append(TimelinePoint(
+                timestamp=wd.timestamp,
+                hour_label=label,
+                result=result,
+                weather=wd
+            ))
+            
+        if not timeline_points:
+            raise ValueError("No se pudieron obtener datos de pronóstico")
+            
+        return TimelineResponse(
+            spot={"name": spot["name"], "lat": spot["lat"], "lon": spot["lon"]},
+            weather=forecast[0], # El primero es el actual
+            current=timeline_points[0].result,
+            timeline=timeline_points
+        )
+    except ValueError as e:
+        logger.error(f"Error fetching timeline data: {e}")
+        raise HTTPException(status_code=503, detail=str(e))
+    except (RetryError, ConnectTimeout, ReadTimeout) as e:
+        logger.error(f"Upstream API error: {e}")
+        raise HTTPException(status_code=503, detail="Weather service unavailable (upstream timeout)")
+    except Exception as e:
+        logger.error(f"Error in get_timeline: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
