@@ -1,4 +1,6 @@
-/* ColdStartLoader.css - Pure CSS oceanic loading animation */
+/* ColdStartLoader.css - Calm, balanced loader design */
+
+/* ==================== LAYOUT ==================== */
 
 .cold-start-overlay {
     position: fixed;
@@ -12,148 +14,104 @@
 }
 
 .cold-start-container {
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-    padding: var(--space-8);
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+    /* Clear separation between graphic and text */
 }
 
-/* ==================== ANIMATED WAVES ==================== */
+/* ==================== RINGS - Concentric System ==================== */
 
-.wave-loader {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px;
-    height: 300px;
-    pointer-events: none;
+.rings-container {
+    /* Position slightly above center for perceptual balance */
+    transform: translateY(-10%);
 }
 
-.wave {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 2px solid var(--ocean-shimmer);
-    opacity: 0;
-    animation: waveExpand 3s ease-out infinite;
+.rings-svg {
+    width: 200px;
+    height: 200px;
+    filter: drop-shadow(0 0 20px rgba(97, 165, 194, 0.3));
 }
 
-.wave-1 {
-    animation-delay: 0s;
-}
-
-.wave-2 {
-    animation-delay: 1s;
-}
-
-.wave-3 {
-    animation-delay: 2s;
-}
-
-@keyframes waveExpand {
-    0% {
-        transform: scale(0.3);
-        opacity: 0;
-    }
-
-    50% {
-        opacity: 0.6;
-    }
-
-    100% {
-        transform: scale(1.2);
-        opacity: 0;
-    }
-}
-
-/* ==================== BREATHING CIRCLE ==================== */
-
-.loader-circle {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto var(--space-6);
-    z-index: 10;
-}
-
-.circle-svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 0 20px rgba(97, 165, 194, 0.5));
-}
-
-.breathing-ring {
+.ring {
     fill: none;
     stroke: var(--ocean-cyan);
-    stroke-width: 3;
     stroke-linecap: round;
-    /* Use breathing animation from design system */
-    animation: breathingGlow var(--timing-breath) ease-in-out infinite;
+    /* Shared geometric center: cx=100, cy=100 */
     transform-origin: center;
     transform-box: fill-box;
 }
 
-/* ==================== LOADING TEXT ==================== */
-
-.loader-content {
-    position: relative;
-    z-index: 10;
+/* Outer ring - thinner, lower opacity, slower animation */
+.ring-outer {
+    stroke-width: 2;
+    opacity: 0.4;
+    animation: breathingSlow 6s ease-in-out infinite;
 }
 
-.loader-title {
-    font-family: var(--font-display);
-    font-size: var(--text-2xl);
-    font-weight: var(--weight-bold);
-    color: var(--text-primary);
-    margin: 0 0 var(--space-3);
-    text-wrap: balance;
+/* Inner ring - slightly thicker, medium opacity, gentle animation */
+.ring-inner {
+    stroke-width: 3;
+    opacity: 0.6;
+    animation: breathingGentle 4s ease-in-out infinite;
+    animation-delay: 0.5s;
+    /* Slight phase offset for visual interest */
 }
 
-.loader-subtitle {
-    font-size: var(--text-base);
-    color: var(--text-secondary);
-    margin: 0 0 var(--space-2);
-    font-weight: var(--weight-medium);
-}
-
-.loader-info {
-    font-size: var(--text-sm);
-    color: var(--text-tertiary);
-    margin: 0;
-}
-
-/* Animated dots */
-.dot-1,
-.dot-2,
-.dot-3 {
-    animation: dotBlink 1.5s ease-in-out infinite;
-}
-
-.dot-1 {
-    animation-delay: 0s;
-}
-
-.dot-2 {
-    animation-delay: 0.3s;
-}
-
-.dot-3 {
-    animation-delay: 0.6s;
-}
-
-@keyframes dotBlink {
+/* Calm breathing animations */
+@keyframes breathingSlow {
 
     0%,
-    60%,
     100% {
-        opacity: 0;
+        stroke-width: 2;
+        opacity: 0.4;
     }
 
-    30% {
-        opacity: 1;
+    50% {
+        stroke-width: 2.5;
+        opacity: 0.5;
     }
+}
+
+@keyframes breathingGentle {
+
+    0%,
+    100% {
+        stroke-width: 3;
+        opacity: 0.6;
+    }
+
+    50% {
+        stroke-width: 3.5;
+        opacity: 0.7;
+    }
+}
+
+/* ==================== TEXT - Clear Hierarchy ==================== */
+
+.text-container {
+    text-align: center;
+    max-width: 320px;
+}
+
+.text-primary {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-2);
+    text-wrap: balance;
+    /* No animations - static, clear */
+}
+
+.text-secondary {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: var(--weight-normal);
+    color: var(--text-secondary);
+    margin: 0;
+    /* No animations - static, clear */
 }
 
 /* ==================== FADE ANIMATIONS ==================== */
