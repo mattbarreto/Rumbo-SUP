@@ -11,6 +11,7 @@ import MetricCard from './MetricCard';
 import { WindIcon, WaveIcon, TideIcon, RefreshIcon, SettingsIcon, BrainIcon, LocationIcon, TimeIcon, ShieldIcon, EffortIcon, EnjoymentIcon, AlertIcon, ShareIcon } from './Icons';
 import RumboPanel from './RumboPanel';
 import OceanSkeleton from './OceanSkeleton';
+import ColdStartLoader from './ColdStartLoader';
 import './MainScreen.css';
 
 function MainScreen() {
@@ -24,6 +25,7 @@ function MainScreen() {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showColdStartLoader, setShowColdStartLoader] = useState(false);
 
     useEffect(() => {
         if (profile) {
@@ -34,6 +36,11 @@ function MainScreen() {
     const fetchAnalysis = async () => {
         setLoading(true);
         setError(null);
+
+        // Cold start detection: Show loader if request takes > 3 seconds
+        const coldStartTimer = setTimeout(() => {
+            setShowColdStartLoader(true);
+        }, 3000);
 
         try {
             // Por ahora usamos Varese hardcoded
@@ -48,6 +55,8 @@ function MainScreen() {
             console.error('Error fetching timeline:', err);
             setError('No se pudieron obtener las condiciones. Verificá tu conexión.');
         } finally {
+            clearTimeout(coldStartTimer);
+            setShowColdStartLoader(false);
             setLoading(false);
         }
     };
@@ -106,6 +115,11 @@ function MainScreen() {
             navigator.clipboard.writeText(window.location.href);
         }
     };
+
+    // Show cold start loader for Render.com wake-up
+    if (showColdStartLoader) {
+        return <ColdStartLoader />;
+    }
 
     if (loading) {
         return (
