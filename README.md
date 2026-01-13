@@ -45,8 +45,8 @@ Este proyecto utiliza una arquitectura de doble capa para garantizar seguridad y
 - **React 18 + Vite**: Velocidad y modularidad.
 - **Framer Motion**: Animaciones physics-based suaves.
 - **Custom CSS Design System**: Variables CSS (--ocean-*, --safety-*), Glassmorphism, sin frameworks pesados.
-- **Tipografía Premium**: Syne (display/industrial) + Instrument Sans (body/conversacional).
-- **SVG Icons**: Sistema de iconos conceptuales propios.
+- **Tipografía Premium**: Outfit (display/geométrica) + Inter (body/legibilidad universal).
+- **Oceanic Icon System**: Iconos SVG conceptuales propios con metáforas oceánicas (horizonte, olas, navegación).
 
 ### Backend
 - **FastAPI (Python 3.11)**: API REST de alto rendimiento.

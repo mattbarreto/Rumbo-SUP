@@ -1,5 +1,5 @@
 // Conceptual Minimalist Icons for Rumbo SUP
-// Phase 4 Refined: "Deep Ocean" Aesthetic
+// Phase 4 Refined: "Deep Ocean" Aesthetic (Updated)
 // Non-conventional, abstract, ultra-premium
 
 export const AlertIcon = ({ className = "", size = 24, variant = "warning" }) => (
@@ -11,16 +11,19 @@ export const AlertIcon = ({ className = "", size = 24, variant = "warning" }) =>
         stroke="currentColor"
         className={className}
     >
-        {/* Alert Triangle: Minimalist warning */}
+        {/* Organic Warning: Soft rounded triangle, buoy-like */}
         <path
-            d="M12 4L21 20H3L12 4Z"
-            strokeWidth="1.5"
+            d="M10.29 3.86L1.82 18C1.645 18.302 1.553 18.645 1.553 18.995C1.553 19.345 1.645 19.688 1.82 19.99C1.995 20.292 2.247 20.544 2.549 20.719C2.851 20.894 3.194 20.986 3.544 20.986H20.456C20.806 20.986 21.149 20.894 21.451 20.719C21.753 20.544 22.005 20.292 22.18 19.99C22.355 19.688 22.447 19.345 22.447 18.995C22.447 18.645 22.355 18.302 22.18 18L13.71 3.86C13.535 3.558 13.283 3.306 12.981 3.131C12.679 2.956 12.336 2.864 11.986 2.864C11.636 2.864 11.293 2.956 10.991 3.131C10.689 3.306 10.437 3.558 10.262 3.86"
+            strokeWidth="2"
+            strokeLinecap="round"
             strokeLinejoin="round"
             fill={variant === "danger" ? "currentColor" : "none"}
             opacity={variant === "danger" ? 0.2 : 1}
         />
-        <line x1="12" y1="10" x2="12" y2="14" strokeWidth="2" strokeLinecap="round" />
-        <circle cx="12" cy="17" r="1" fill="currentColor" stroke="none" />
+        <path d="M12 2C12 2 12 16 12 16" strokeWidth="2" strokeLinecap="round" />
+        {/* Simplified clean path for better rendering */}
+        <path d="M12 8V15" strokeWidth="2.5" strokeLinecap="round" />
+        <circle cx="12" cy="18.5" r="1.5" fill="currentColor" stroke="none" />
     </svg>
 );
 
@@ -222,17 +225,27 @@ export const BrainIcon = ({ className = "", size = 24 }) => (
         stroke="currentColor"
         className={className}
     >
-        {/* Synapse: Network connection */}
-        <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none" />
-        <circle cx="6" cy="8" r="1.5" strokeWidth="1.5" />
-        <circle cx="18" cy="6" r="1.5" strokeWidth="1.5" />
-        <circle cx="5" cy="17" r="1.5" strokeWidth="1.5" />
-        <circle cx="19" cy="16" r="1.5" strokeWidth="1.5" />
-
-        <path d="M12 12L6 8" strokeWidth="1" opacity="0.5" />
-        <path d="M12 12L18 6" strokeWidth="1" opacity="0.5" />
-        <path d="M12 12L5 17" strokeWidth="1" opacity="0.5" />
-        <path d="M12 12L19 16" strokeWidth="1" opacity="0.5" />
+        {/* Organic Brain: Fluid waves forming mind structure */}
+        <path
+            d="M9.5 20C9.5 20 5 19.5 3 15C1 10.5 4 6 8 5C8 5 9 2 14 3C19 4 21 8 21 12C21 16 18 20 14.5 20"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+        <path
+            d="M10 11.5C10 11.5 11 15 14 14"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity="0.6"
+        />
+        <path
+            d="M14 8C14 8 16 9 16 11"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity="0.6"
+        />
     </svg>
 );
 
@@ -290,3 +303,61 @@ export const ShareIcon = ({ className = "", size = 24 }) => (
         <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" strokeWidth="1.5" />
     </svg>
 );
+
+
+export const InfoIcon = ({ className = "", size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+        <circle cx="12" cy="12" r="10" strokeWidth="2" opacity="0.8" />
+        {/* Liquid Info: Drop shape and soft line */}
+        <path d="M12 16V12" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 8.5C12.5523 8.5 13 8.05228 13 7.5C13 6.94772 12.5523 6.5 12 6.5C11.4477 6.5 11 6.94772 11 7.5C11 8.05228 11.4477 8.5 12 8.5Z" fill="currentColor" />
+    </svg>
+);
+
+export const ArrowLeftIcon = ({ className = "", size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+        {/* Fluid Arrow: Curved shaft like a current */}
+        <path d="M20 12H4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M10 18L4 12L10 6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
+
+export const SeeIcon = ({ className = "", size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+        {/* Ocean Horizon: Scanning the sea - curved observation line */}
+        <path d="M2 12C4 9 8 6 12 6C16 6 20 9 22 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M2 12C4 15 8 18 12 18C16 18 20 15 22 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
+        {/* Focus point: wave crest */}
+        <circle cx="12" cy="12" r="2" strokeWidth="2" opacity="0.8" />
+    </svg>
+);
+
+export const BodyIcon = ({ className = "", size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+        {/* Balance Wave: Body as flowing water finding equilibrium */}
+        <path d="M12 3C12 3 12 8 12 12C12 16 12 21 12 21" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
+        <path d="M6 12C6 12 9 9 12 9C15 9 18 12 18 12C18 12 15 15 12 15C9 15 6 12 6 12Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        {/* Floating center of gravity */}
+        <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.6" />
+    </svg>
+);
+
+export const IdeaIcon = ({ className = "", size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+        {/* Navigation Star: Strategy as celestial guidance over ocean */}
+        <path d="M12 2L14 8L20 9L15 14L17 20L12 17L7 20L9 14L4 9L10 8L12 2Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+        {/* Radiating clarity */}
+        <circle cx="12" cy="11" r="3" strokeWidth="1.5" opacity="0.4" />
+    </svg>
+);
+
+export const TargetIcon = ({ className = "", size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+        {/* Compass Rose: Focus as finding true north */}
+        <circle cx="12" cy="12" r="8" strokeWidth="2" opacity="0.4" />
+        <path d="M12 4L12 8M12 16L12 20M4 12L8 12M16 12L20 12" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="12" cy="12" r="3" strokeWidth="2" />
+        <circle cx="12" cy="12" r="1" fill="currentColor" />
+    </svg>
+);
+

@@ -111,19 +111,19 @@ Generá una explicación breve y clara. Usá un tono de "compañero experto" per
 
 ## ESTRUCTURA SUGERIDA:
 
-## 🌊 Análisis del Mar
+## Análisis del Mar
 [El escenario físico explicado]
 
-## ⚠️ Factor de Riesgo
+## Factor de Riesgo
 [Qué cuidar hoy. Mencioná siempre: "Ante la duda, consultá a un instructor local"]
 
-## 👀 Claves Visuales
+## Claves Visuales
 [Qué mirar]
 
-## 💡 Estrategia Sugerida
+## Estrategia Sugerida
 [El plan]
 
-## 🎯 Foco de Aprendizaje
+## Foco de Aprendizaje
 [El concepto a internalizar]
 
 ---
@@ -149,25 +149,25 @@ Máximo 350 palabras. Español rioplatense neutro.
         s = result.semantics
         visuals = "\n".join([f"- {v}" for v in s.visual_cues[:3]])
         
-        return f"""## 🌊 Cómo está el mar hoy
+        return f"""## Cómo está el mar hoy
 {s.driver_desc}
 
 {s.behavior_desc}
 
-## 🏄 Qué vas a sentir
+## Qué vas a sentir
 {s.body_desc}
 
-## ⚠️ El riesgo y qué evitar
+## El riesgo y qué evitar
 {s.risk_desc}
 
 **Qué NO hacer:** {s.avoid_desc}
 
-## 👀 Qué buscar con los ojos
+## Qué buscar con los ojos
 {visuals}
 
-## 💡 Tu plan de hoy
+## Tu plan de hoy
 {s.strategy_desc}
 
-## 🎯 Qué estás practicando
+## Qué estás practicando
 {s.learning_focus}
 """

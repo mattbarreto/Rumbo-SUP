@@ -96,8 +96,8 @@
   /* ==================== TYPOGRAPHY (Golden Ratio 1.618×) ==================== */
 
   /* Fonts - Premium, Distinctive Typography */
-  --font-display: 'Syne', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'SF Mono', 'Roboto Mono', 'Courier New', monospace;
 
   /* Type Scale (Golden Ratio ~1.618) */
@@ -812,6 +812,20 @@ label {
 }
 
 /* Contenedor con layout optimization */
-.optimized {
-  contain: layout style paint;
+
+/* Text Color Utilities */
+.text-ocean-shimmer {
+  color: var(--ocean-shimmer);
+}
+
+.text-ocean-cyan {
+  color: var(--ocean-cyan);
+}
+
+.text-ocean-foam {
+  color: var(--ocean-foam);
+}
+
+.text-danger {
+  color: var(--danger-coral);
 }

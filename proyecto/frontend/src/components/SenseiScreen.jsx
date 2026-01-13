@@ -2,8 +2,42 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getExplanation } from '../services/api';
 import ReactMarkdown from 'react-markdown';
-import { BrainIcon } from './Icons';
+import {
+    BrainIcon, AlertIcon, ArrowLeftIcon, InfoIcon,
+    WaveIcon, SeeIcon, BodyIcon, IdeaIcon, TargetIcon
+} from './Icons';
 import './SenseiScreen.css';
+
+// Componente para renderizar H2 con iconos dinámicos
+const CustomH2 = ({ children, ...props }) => {
+    // Obtener texto plano del título
+    const text = String(children).toLowerCase();
+
+    // Determinar icono basado en palabras clave
+    let Icon = WaveIcon;
+    let iconClass = "text-ocean-cyan";
+
+    if (text.includes("mar") || text.includes("hoy")) {
+        Icon = WaveIcon;
+    } else if (text.includes("sentir") || text.includes("cuerpo")) {
+        Icon = BodyIcon;
+    } else if (text.includes("riesgo") || text.includes("evitar") || text.includes("alerta")) {
+        Icon = AlertIcon;
+    } else if (text.includes("visuales") || text.includes("mirar") || text.includes("ojos")) {
+        Icon = SeeIcon;
+    } else if (text.includes("plan") || text.includes("estrategia")) {
+        Icon = IdeaIcon;
+    } else if (text.includes("foco") || text.includes("practicando") || text.includes("aprendizaje")) {
+        Icon = TargetIcon;
+    }
+
+    return (
+        <div className="sensei-section-title">
+            <Icon size={26} className={iconClass} />
+            <h2 {...props}>{children}</h2>
+        </div>
+    );
+};
 
 function SenseiScreen() {
     const navigate = useNavigate();
@@ -57,7 +91,7 @@ function SenseiScreen() {
             <div className="page sensei-screen">
                 <div className="container">
                     <div className="alert alert-danger">
-                        <span>⚠️</span>
+                        <AlertIcon size={24} variant="danger" />
                         <div>
                             <strong>Error</strong>
                             <p>{error}</p>
@@ -77,10 +111,11 @@ function SenseiScreen() {
                 {/* Header */}
                 <div className="sensei-header">
                     <button className="btn-back-nav" onClick={() => navigate('/')}>
-                        ← Atrás
+                        <ArrowLeftIcon size={20} />
+                        <span>Atrás</span>
                     </button>
                     <div className="sensei-brand">
-                        <BrainIcon size={28} className="sensei-icon" />
+                        <BrainIcon size={28} className="text-ocean-cyan" />
                         <h1>Guía de Mar</h1>
                     </div>
                 </div>
@@ -89,7 +124,7 @@ function SenseiScreen() {
                 {explanation && (
                     <div className="explanation-card">
                         <div className="markdown-content">
-                            <ReactMarkdown>
+                            <ReactMarkdown components={{ h2: CustomH2 }}>
                                 {explanation}
                             </ReactMarkdown>
                         </div>
@@ -104,7 +139,9 @@ function SenseiScreen() {
                     </div>
 
                     <div className="disclaimer-badge">
-                        <span className="disclaimer-icon">ℹ️</span>
+                        <div className="disclaimer-icon-wrapper">
+                            <InfoIcon size={20} className="text-ocean-shimmer" />
+                        </div>
                         <p>
                             Rumbo es un asistente digital basado en datos.
                             <br />
