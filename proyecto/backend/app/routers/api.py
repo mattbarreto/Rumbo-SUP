@@ -30,17 +30,25 @@ async def analyze_conditions(request: AnalyzeRequest):
     spot = SPOTS[request.spot_id]
     
     try:
-        # Obtener datos meteorológicos REALES de OpenMeteo
+        # Usar HybridWeatherProvider (Stormglass + OpenMeteo fallback + cache)
+        from app.services.hybrid_provider import HybridWeatherProvider
+        from app.services.stormglass_provider import StormglassProvider
         from app.services.openmeteo_provider import OpenMeteoProvider
         from app.services.weather_service import WeatherService
         from app.services.noaa_tides_provider import NOAATidesProvider
         import os
         
-        # Configurar providers - NOAA es GRATIS, no requiere API key
+        # Configurar providers
         noaa_tides = NOAATidesProvider()
+        stormglass = StormglassProvider(tide_provider=noaa_tides) if os.getenv("STORMGLASS_API_KEY") else None
+        openmeteo = OpenMeteoProvider(tide_provider=noaa_tides)
         
-        openmeteo_provider = OpenMeteoProvider(tide_provider=noaa_tides)
-        weather_service = WeatherService(openmeteo_provider)
+        hybrid_provider = HybridWeatherProvider(
+            stormglass_provider=stormglass,
+            openmeteo_provider=openmeteo,
+            tide_provider=noaa_tides
+        )
+        weather_service = WeatherService(hybrid_provider)
         
         weather_data = await weather_service.get_current_conditions(
             spot["lat"], 
@@ -138,18 +146,26 @@ async def get_timeline(request: TimelineRequest):
     spot = SPOTS[request.spot_id]
     
     try:
-        # Setup services (inline)
+        # Usar HybridWeatherProvider (Stormglass + OpenMeteo fallback + cache)
+        from app.services.hybrid_provider import HybridWeatherProvider
+        from app.services.stormglass_provider import StormglassProvider
         from app.services.openmeteo_provider import OpenMeteoProvider
         from app.services.weather_service import WeatherService
         from app.services.noaa_tides_provider import NOAATidesProvider
         from app.services.sensei_engine import SenseiEngine
         import os
         
-        # Configurar providers - NOAA es GRATIS
+        # Configurar providers
         noaa_tides = NOAATidesProvider()
+        stormglass = StormglassProvider(tide_provider=noaa_tides) if os.getenv("STORMGLASS_API_KEY") else None
+        openmeteo = OpenMeteoProvider(tide_provider=noaa_tides)
         
-        openmeteo_provider = OpenMeteoProvider(tide_provider=noaa_tides)
-        weather_service = WeatherService(openmeteo_provider)
+        hybrid_provider = HybridWeatherProvider(
+            stormglass_provider=stormglass,
+            openmeteo_provider=openmeteo,
+            tide_provider=noaa_tides
+        )
+        weather_service = WeatherService(hybrid_provider)
         engine = SenseiEngine()
         
         # Obtener forecast 12hs
