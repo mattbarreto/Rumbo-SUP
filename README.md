@@ -7,33 +7,68 @@
 
 **Rumbo SUP** es una Aplicación Web Progresiva (PWA) diseñada para practicantes de Stand Up Paddle en Mar del Plata. Utiliza un motor híbrido de inteligencia meteorológica para analizar condiciones marítimas en tiempo real y ofrecer recomendaciones personalizadas de seguridad y disfrute, adaptadas a tu nivel de experiencia y equipamiento.
 
+## 🎯 Arquitectura "Split Brain"
+
+- **Layer A (Motor Determinístico)**: Calcula seguridad/esfuerzo/disfrute sin IA. Riguroso y predecible.
+- **Layer B (Pedagógico)**: IA (Google Gemini) explica las decisiones de forma educativa y empática.
+
+**La IA nunca decide si entras o no. Solo enseña el "por qué".**
+
+## 🧠 SenseiEngine (Motor de Decisiones)
+
+El **SenseiEngine** es el núcleo determinístico que evalúa la seguridad y condiciones del mar. Se encarga de traducir variables crudas en semántica de surf.
+
+### Variables Críticas y Flags
+
+| Variable | Flag Generado | Impacto en Score | Impacto Semántico |
+| :--- | :--- | :--- | :--- |
+| **Tormenta (WMO 95-99)** | `tormenta_electrica` | **Seguridad = 0** (Bloqueante) | Alerta crítica de riesgo eléctrico. |
+| **Visibilidad < 1km** | `visibilidad_nula` | **Seguridad = 0** | Aviso de desorientación. |
+| **Periodo < 5s** | `mar_picado` | Esfuerzo +20 | Aviso de inestabilidad/equilibrio. |
+| **UV Index > 6** | `uv_alto` | - | Consejos de protección solar. |
+| **Lluvia > 0.5mm** | `lluvia` | Seguridad -10 | Aviso de frío/visibilidad. |
+
+### Lógica de Puntuación
+- **Seguridad (0-100)**: Inicia en 100. Resta por viento offshore (-15), lluvia (-10). Se vuelve 0 si hay tormenta eléctrica o visibilidad nula.
+- **Esfuerzo (0-100)**: Suma basada en velocidad de viento y altura de ola. Se penaliza extra (+20) si el mar está "picado" (choppy).
+- **Disfrute (0-100)**: Cálculo subjetivo basado en el objetivo del usuario (Calma vs Entrenamiento vs Desafío).
+
 ## 🚀 Características Principales
 
-- **Sistema Multi-Provider Resiliente:** Arquitectura híbrida que consume datos de Stormglass (primario), OpenWeatherMap (secundario) y OpenMeteo (fallback), garantizando disponibilidad 24/7.
-- **Análisis Semántico:** Transforma datos crudos (periodo de ola, nudos de viento) en narrativas comprensibles ("Mar picado", "Glassy", "Viento de tierra").
-- **Personalización Contextual:** El motor de decisión (`SenseiEngine`) ajusta los scores de seguridad basándose en si tu tabla es rígida o inflable y tu experiencia previa.
-- **Timeline Inteligente:** Proyección hora a hora con corrección automática de zona horaria y secuencia de datos.
+- **Sistema Multi-Provider Resiliente:** Arquitectura híbrida que consume datos de Open-Meteo (primario), OpenWeatherMap (respaldo) y Stormglass (legacy), garantizando disponibilidad.
+- **Análisis Semántico:** Transforma datos crudos en narrativas comprensibles ("Mar picado", "Glassy", "Viento de tierra").
+- **Personalización Contextual:** Ajusta scores basándose en tabla (rígida/inflable) y experiencia.
+- **Timeline Inteligente:** Proyección hora a hora con corrección automática de zona horaria.
+
+## 📡 Integración de APIs
+
+El sistema utiliza un **HybridWeatherProvider** que orquesta múltiples fuentes:
+
+### 1. Open-Meteo (Principal)
+Proveedor primario para datos marinos y atmosféricos.
+- **Documentación**: [Open-Meteo Marine API](https://open-meteo.com/en/docs/marine-weather-api)
+- **Uso**: Modelo `best_match` con coordenadas costeras exactas para evitar errores de interpolación tierra-mar. Provee olas, viento, UV y visibilidad.
+
+### 2. OpenWeatherMap (Respaldo)
+Fallback para validación.
+- **Documentación**: [OpenWeather API](https://openweathermap.org/api)
+- **Uso**: Datos básicos de viento y clima si falla el primario.
+
+### 3. Google Gemini (IA Pedagógica)
+Genera las explicaciones narrativas.
+- **Modelo**: `gemini-2.0-flash-exp`.
+- **Uso**: Traduce Flags y Scores en consejos de seguridad ("Usa lycra", "Cuidado con la deriva").
 
 ## 🛠️ Arquitectura Técnica
 
-El proyecto sigue una arquitectura desacoplada moderna:
-
 ### Backend (Python / FastAPI)
-- **Providers Pattern:** Abstracción de fuentes de datos (`WeatherProvider` interface) permitiendo switch dinámico de APIs.
+- **Providers Pattern:** Abstracción de fuentes de datos (`WeatherProvider` interface).
 - **Hybrid Service:** Lógica de caché inteligente (TTL 30min) y orquestación de fallbacks.
-- **Pydantic Models:** Validación estricta de datos para viento, olas y atmósfera.
+- **Pydantic Models:** Validación estricta de datos.
 
 ### Frontend (React / Vite)
 - **PWA First:** Diseñado para funcionar como app nativa en móviles.
-- **Clean UI:** Interfaz minimalista enfocada en la legibilidad bajo luz solar directa.
-
-## 🔌 APIs Integradas
-
-| Provider | Rol | Datos | Estado |
-|----------|-----|-------|--------|
-| **Stormglass** | Primario | Olas, Viento, Marea | Limitado (10 req/día) |
-| **OpenWeather**| Secundario| Clima, Viento, Temp | Alta disponibilidad |
-| **OpenMeteo** | Fallback | Clima, Olas, UV | Gratuito ilimitado |
+- **Design System:** Interfaz minimalista enfocada en legibilidad bajo sol.
 
 ## ⚙️ Instalación Local
 
@@ -57,12 +92,8 @@ pip install -r requirements.txt
 Crea un archivo `.env` en `proyecto/backend/` con tus credenciales:
 
 ```env
-# Claves de API (Consíguelas en sus respectivos portales)
-STORMGLASS_API_KEY=tu_clave_stormglass
-OPENWEATHER_API_KEY=tu_clave_openweather
-GEMINI_API_KEY=tu_clave_gemini (opcional, para features experimentales)
-
-# Configuración
+OPENWEATHER_API_KEY=tu_clave
+GEMINI_API_KEY=tu_clave
 FRONTEND_URL=http://localhost:5173
 ```
 
@@ -80,19 +111,20 @@ La app estará disponible en `http://localhost:5173`.
 
 La infraestructura está definida como código en `render.yaml`. El despliegue es automático en **Render.com** al hacer push a `main`.
 
-**Variables de entorno requeridas en Producción:**
-- `STORMGLASS_API_KEY`
-- `OPENWEATHER_API_KEY`
-- `GEMINI_API_KEY`
-- `PYTHON_VERSION`: 3.11.6
+## 🧪 Principios Arquitectónicos
+
+1. **Semáforo = Solo seguridad** (nunca GO/NO-GO).
+2. **Layer A y Layer B separados** (decisión vs explicación).
+3. **Disfrute basado en objetivos** (calma/entrenamiento/desafío).
+4. **Modelo de seguridad inmutable**.
 
 ## 🤝 Contribuir
 
-Las contribuciones son bienvenidas. Por favor, asegúrate de no subir archivos de configuración local o claves API. La carpeta `docs/` y los scripts de prueba (`test_*.py`) están ignorados por defecto.
+Las contribuciones son bienvenidas. Por favor, asegúrate de no subir claves API. La carpeta `docs/` y scripts de prueba están ignorados.
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
+Este proyecto está bajo la Licencia MIT.
 
 ---
 
