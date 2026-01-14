@@ -30,10 +30,11 @@ class WindyProvider(WeatherProvider):
             raise ValueError("WINDY_API_KEY no configurada")
 
         # 1. Fetch de ambos modelos en paralelo
+        # Parámetros simplificados según documentación Windy API v2
         gfs_payload = {
             "lat": lat, "lon": lon, 
             "model": "gfs", 
-            "parameters": ["wind", "temp", "precip", "clouds"], 
+            "parameters": ["wind", "temp"],  # Simplificado - solo parámetros esenciales
             "levels": ["surface"], 
             "key": self.api_key
         }
@@ -41,27 +42,34 @@ class WindyProvider(WeatherProvider):
         wave_payload = {
             "lat": lat, "lon": lon, 
             "model": "gfsWave", 
-            "parameters": ["waves", "windWaves", "swell1"], 
+            "parameters": ["waves"],  # Simplificado - solo olas
             "levels": ["surface"], 
             "key": self.api_key
         }
         
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             resp_gfs, resp_wave = await asyncio.gather(
                 client.post(self.API_URL, json=gfs_payload),
                 client.post(self.API_URL, json=wave_payload)
             )
 
+        # Mejor logging de errores
+        if resp_gfs.status_code != 200:
+            logger.error(f"❌ Windy GFS Error {resp_gfs.status_code}: {resp_gfs.text[:500]}")
+        if resp_wave.status_code != 200:
+            logger.error(f"❌ Windy Wave Error {resp_wave.status_code}: {resp_wave.text[:500]}")
+            
         if resp_gfs.status_code != 200 or resp_wave.status_code != 200:
             error_msg = f"Windy Error. GFS: {resp_gfs.status_code}, Wave: {resp_wave.status_code}"
-            logger.error(error_msg)
-            # Intentar leer el body del error para más detalle
-            logger.error(f"GFS Body: {resp_gfs.text[:200]}")
-            logger.error(f"Wave Body: {resp_wave.text[:200]}")
             raise ValueError(error_msg)
+
 
         data_gfs = resp_gfs.json()
         data_wave = resp_wave.json()
+        
+        # Debug: Log response structure
+        logger.info(f"🔍 Windy GFS keys: {list(data_gfs.keys())}")
+        logger.info(f"🔍 Windy Wave keys: {list(data_wave.keys())}")
 
         # 2. Extraer índices actuales (Windy devuelve arrays de tiempo UNIX)
         # Buscamos el timestamp más cercano al "ahora"
@@ -82,17 +90,29 @@ class WindyProvider(WeatherProvider):
                     min_diff = diff
                     closest_idx = i
             return closest_idx
+        
+        # Helper para extracción segura de arrays
+        def safe_get(data, key, idx, default=None):
+            arr = data.get(key, [])
+            if arr and idx < len(arr):
+                return arr[idx]
+            return default
 
         idx_gfs = get_current_index(data_gfs.get("ts", []))
         idx_wave = get_current_index(data_wave.get("ts", []))
 
         if idx_gfs == -1 or idx_wave == -1:
             raise ValueError("Windy no devolvió serie de tiempo válida")
+        
+        logger.info(f"🔍 Windy indices: GFS={idx_gfs}, Wave={idx_wave}")
 
         # 3. Mapear Datos GFS (Viento vector -> Scalar)
         # wind_u-surface, wind_v-surface
-        u = data_gfs.get("wind_u-surface", [])[idx_gfs]
-        v = data_gfs.get("wind_v-surface", [])[idx_gfs]
+        u = safe_get(data_gfs, "wind_u-surface", idx_gfs)
+        v = safe_get(data_gfs, "wind_v-surface", idx_gfs)
+        
+        if u is None or v is None:
+            raise ValueError(f"Windy GFS no tiene datos de viento (u={u}, v={v})")
         
         # Convertir U/V a Speed/Dir
         # Speed = sqrt(u^2 + v^2)
@@ -119,13 +139,13 @@ class WindyProvider(WeatherProvider):
             # But we want SOURCE direction. So +180 to flip it?
             # Actually simplest: Met Dir = 270 - MathDir.
             # Let's use a safe standard formula.
-            direction_deg = (270 - math.degrees(math.atan2(v, u))) % 360
+            direction_deg = int((270 - math.degrees(math.atan2(v, u))) % 360)
 
         # 4. Mapear Datos Wave
         # waves_height-surface
-        wave_h = data_wave.get("waves_height-surface", [])[idx_wave]
-        wave_p = data_wave.get("waves_period-surface", [])[idx_wave]
-        wave_d = data_wave.get("waves_direction-surface", [])[idx_wave]
+        wave_h = safe_get(data_wave, "waves_height-surface", idx_wave)
+        wave_p = safe_get(data_wave, "waves_period-surface", idx_wave)
+        wave_d = safe_get(data_wave, "waves_direction-surface", idx_wave)
 
         # 5. Marea (Usar Provider Externo inyectado o N/A)
         # Windy no tiene tides.
@@ -146,12 +166,12 @@ class WindyProvider(WeatherProvider):
             waves=WaveData(
                 height_m=wave_h,
                 period_s=wave_p,
-                direction_deg=wave_d
+                direction_deg=int(wave_d) if wave_d is not None else None
             ),
             atmosphere=AtmosphereData(
-                temperature_c=data_gfs.get("temp-surface", [])[idx_gfs] - 273.15, # Kelvin to C
-                precipitation_mm=data_gfs.get("past3hprecip-surface", [])[idx_gfs],
-                cloud_cover_pct=None, # TBD logic for lclouds/mclouds
+                temperature_c=(safe_get(data_gfs, "temp-surface", idx_gfs) - 273.15) if safe_get(data_gfs, "temp-surface", idx_gfs) is not None else None,
+                precipitation_mm=safe_get(data_gfs, "past3hprecip-surface", idx_gfs, 0.0),
+                cloud_cover_pct=None,
                 uv_index=None,
                 visibility_km=None,
                 weather_code=None
