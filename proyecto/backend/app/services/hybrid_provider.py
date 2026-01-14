@@ -75,26 +75,46 @@ class HybridWeatherProvider(WeatherProvider):
             except Exception as e:
                 logger.warning(f"⚠️ Stormglass failed: {e}, trying OpenMeteo...")
         
-        # 3. Intentar OpenMeteo (Fuente Principal rica: Viento + Olas + UV)
-        if self.openmeteo:
-            try:
-                data = await self.openmeteo.get_conditions(lat, lon)
-                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
-                logger.info("✅ OpenMeteo success, cached")
-                return data
-            except Exception as e:
-                logger.warning(f"⚠️ OpenMeteo failed: {e}, trying OpenWeather...")
+            # Fallback a OpenMeteo (Fuente Principal)
+            if self.openmeteo:
+                try:
+                    data = await self.openmeteo.get_conditions(lat, lon)
+                    
+                    # --- HYBRID MERGE LOGIC (FRANKENSTEIN FIX) ---
+                    # Si OpenMeteo no trajo viento (posible bloqueo de Forecast API)
+                    # pero OpenWeather está disponible, intentamos rellenar el hueco.
+                    if data.wind.speed_kmh is None and self.openweather:
+                        logger.warning("⚠️ OpenMeteo returned partial data (No Wind). Attempting OpenWeather backfill...")
+                        try:
+                            ow_data = await self.openweather.get_conditions(lat, lon)
+                            
+                            # Merge: Usar datos de viento/clima de OpenWeather sobre la base de OpenMeteo
+                            data.wind = ow_data.wind
+                            data.atmosphere = ow_data.atmosphere
+                            data.provider = "openmeteo_openweather_hybrid"
+                            
+                            logger.info("🧟 Hybrid Merge Success: OpenMeteo Waves + OpenWeather Wind")
+                        except Exception as e:
+                            logger.error(f"❌ OpenWeather backfill failed: {e}")
+                            # Seguimos con lo que tenemos (al menos Olas)
 
-        # 4. Fallback a OpenWeather (Básico: Solo Viento/Clima)
-        if self.openweather:
-            try:
-                data = await self.openweather.get_conditions(lat, lon)
-                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
-                logger.info("✅ OpenWeather success, cached")
-                return data
-            except Exception as e:
-                logger.error(f"❌ OpenWeather also failed: {e}")
-                # No hacemos raise aún, intentamos Stale Cache abajo
+                    _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
+                    logger.info("✅ OpenMeteo (or Hybrid) success, cached")
+                    return data
+                except Exception as e:
+                    logger.warning(f"⚠️ OpenMeteo failed: {e}, trying OpenWeather...")
+
+            # 4. Fallback a OpenWeather (Básico: Solo Viento/Clima)
+            # Solo llegamos acá si OpenMeteo falló TOTALMENTE (Exception)
+            if self.openweather:
+                try:
+                    data = await self.openweather.get_conditions(lat, lon)
+                    _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
+                    logger.info("✅ OpenWeather success, cached")
+                    return data
+                except Exception as e:
+                    logger.error(f"❌ OpenWeather also failed: {e}")
+                    # No hacemos raise aún, intentamos Stale Cache abajo
 
         
         # 5. Fallback a Cache STALE (Último recurso)
