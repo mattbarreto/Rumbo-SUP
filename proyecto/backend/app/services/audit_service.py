@@ -102,33 +102,51 @@ class AuditService:
 
     async def check_windy(self):
         """Test Windy Stability/Reachability"""
-        # Usamos una key dummy si no hay, solo para probar conectividad (esperamos 401 si conecta, timeout si bloqueado)
         api_key = os.getenv("WINDY_API_KEY", "dummy_verification_key")
-        
         url = "https://api.windy.com/api/point-forecast/v2"
-        payload = {
-            "lat": self.lat,
-            "lon": self.lon,
+        
+        # 1. Test GFS (Wind/Temp)
+        payload_gfs = {
+            "lat": self.lat, "lon": self.lon,
             "model": "gfs",
-            "parameters": ["wind", "waves_height"],
+            "parameters": ["wind", "temp"],
             "levels": ["surface"],
             "key": api_key
         }
+        res_gfs = await self._timed_request(url, method="POST", json_body=payload_gfs)
         
-        res = await self._timed_request(url, method="POST", json_body=payload)
-        
+        # 2. Test GFS-Wave (Waves)
+        payload_wave = {
+            "lat": self.lat, "lon": self.lon,
+            "model": "gfsWave",
+            "parameters": ["waves"],
+            "levels": ["surface"],
+            "key": api_key
+        }
+        res_wave = await self._timed_request(url, method="POST", json_body=payload_wave)
+
         # Interpretación
-        if res["code"] == 200:
+        status = "OK"
+        if res_gfs["code"] == 200 and res_wave["code"] == 200:
             conclusion = "READY TO GO (Valid Key)"
-        elif res["code"] == 401: # Unauthorized
-            conclusion = "REACHABLE (Invalid/Missing Key) - Network OK"
-        elif res["status"] == "ERROR":
-            conclusion = "UNREACHABLE (Network/Block)"
+        elif res_gfs["code"] == 401:
+            conclusion = "REACHABLE (Invalid Key)"
+            status = "FAIL"
+        elif res_gfs["code"] == 400 or res_wave["code"] == 400:
+             # Si da 400 es que conectamos pero los params están mal (aunque ahora deberían estar bien)
+             conclusion = "BAD REQUEST (Check Params)"
+             status = "FAIL"
         else:
-            conclusion = f"UNEXPECTED ({res['code']})"
-            
-        res["conclusion"] = conclusion
-        return res
+            conclusion = f"UNREACHABLE/ERROR ({res_gfs['code']}/{res_wave['code']})"
+            status = "FAIL"
+
+        return {
+            "gfs_status": res_gfs["status"],
+            "wave_status": res_wave["status"],
+            "gfs_code": res_gfs["code"],
+            "gfs_error": res_gfs["error"],
+            "conclusion": conclusion
+        }
 
     async def run_audit(self):
         """Run all checks parallel"""
