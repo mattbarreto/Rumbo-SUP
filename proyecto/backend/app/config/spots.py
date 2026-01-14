@@ -3,8 +3,8 @@
 SPOTS = {
     "varese": {
         "name": "Varese",
-        "lat": -37.9833,
-        "lon": -57.5333,
+        "lat": -38.014,
+        "lon": -57.530,
         "orientation_costa_deg": 90,  # Costa mira al Este
         "reglas_especificas": [
             {
