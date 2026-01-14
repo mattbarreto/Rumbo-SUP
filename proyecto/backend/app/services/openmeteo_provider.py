@@ -173,7 +173,7 @@ class OpenMeteoProvider(WeatherProvider):
         elif len(forecast_times) == 0:
             # Fallback total si no hay datos - usar offset para generar timestamp secuencial
             logger.warning(f"No hay datos de tiempo en forecast para índice {index}")
-            raise ValueError(f"OpenMeteo: No hay datos de tiempo para index {index}")
+            return self._create_fallback_weather_data(0, 0, tide_state, hour_offset=hour_offset)
         
         # Timestamp siempre viene del forecast (o marine como fallback)
         # Aseguramos que tenga la marca Z de UTC si no la tiene
@@ -213,10 +213,6 @@ class OpenMeteoProvider(WeatherProvider):
             visibility = visibility / 1000.0
             
         wcode = get_val(forecast_hourly, "weathercode", index, int)
-
-        # Validate critical data
-        if wind_speed is None:
-            raise ValueError(f"OpenMeteo: Datos de viento faltantes para index {index}")
 
         # Construir objetos
         wind_data = WindData(
