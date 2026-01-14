@@ -225,6 +225,34 @@ async def get_timeline(request: TimelineRequest):
     except (RetryError, ConnectTimeout, ReadTimeout) as e:
         logger.error(f"Upstream API error: {e}")
         raise HTTPException(status_code=503, detail="Weather service unavailable (upstream timeout)")
-    except Exception as e:
-        logger.error(f"Error in get_timeline: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@router.get("/debug/openmeteo")
+async def debug_openmeteo():
+    """Debug endpoint to test OpenMeteo connection directly"""
+    try:
+        from app.services.openmeteo_provider import OpenMeteoProvider
+        from app.config.spots import SPOTS
+        
+        # Use Varese coords
+        spot = SPOTS["varese"]
+        provider = OpenMeteoProvider()
+        
+        # Try to fetch current conditions
+        data = await provider.get_conditions(spot["lat"], spot["lon"])
+        
+        return {
+            "status": "success",
+            "data": data,
+            "provider": "OpenMeteoProvider",
+            "lat": spot["lat"],
+            "lon": spot["lon"]
+        }
+    except Exception as e:
+        import traceback
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "error_message": str(e),
+            "traceback": traceback.format_exc()
+        }
