@@ -186,23 +186,19 @@ async def get_timeline(request: TimelineRequest):
             # Formatear hora
             # Formatear hora en zona horaria Argentina
             try:
-                # Parsear timestamp (puede venir con z u offset)
+                # 1. Parsear timestamp (asumimos que viene en ISO8601 UTC Z o +00:00 desde el provider)
                 ts = datetime.fromisoformat(wd.timestamp.replace('Z', '+00:00'))
                 
-                # Si no tiene timezone, asumir UTC (OpenMeteo raw) o Local según corresponda?
-                # Para estar seguros, si viene de OpenMeteo con nuestro fix, debería ser correcto
-                # Pero aseguramos conversión a Argentina para display
+                # 2. Asegurar que sea aware (UTC)
                 if ts.tzinfo is None:
-                    # Asumimos que si no tiene tz, ya es local o es UTC naive
-                    # En nuestro caso OpenMeteo devuelve local naive
-                    pass
-                else:
-                    # Convertir a Argentina (UTC-3)
-                    argentina_offset = timedelta(hours=-3)
-                    ts = ts.astimezone(timezone(argentina_offset))
+                    ts = ts.replace(tzinfo=timezone.utc)
+                
+                # 3. Convertir a Argentina (UTC-3)
+                argentina_offset = timedelta(hours=-3)
+                ts_local = ts.astimezone(timezone(argentina_offset))
                     
-                # Mostrar siempre la hora en punto (XX:00)
-                label = ts.strftime("%H:00")
+                # 4. Mostrar hora en punto (XX:00)
+                label = ts_local.strftime("%H:00")
             except Exception as e:
                 logger.error(f"Error formatting time {wd.timestamp}: {e}")
                 label = "--:--"

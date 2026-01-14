@@ -81,7 +81,7 @@ class OpenMeteoProvider(WeatherProvider):
                     "latitude": lat,
                     "longitude": lon,
                     "hourly": "wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weathercode,cloudcover,uv_index,visibility",
-                    "timezone": "America/Argentina/Buenos_Aires",
+                    "timezone": "UTC",
                     "forecast_days": 2
                 }
                 forecast_response = await client.get(
@@ -100,7 +100,7 @@ class OpenMeteoProvider(WeatherProvider):
                     "latitude": lat,
                     "longitude": lon,
                     "hourly": "wave_height,wave_period,wave_direction",
-                    "timezone": "America/Argentina/Buenos_Aires",
+                    "timezone": "UTC",
                     "forecast_days": 2
                 }
                 marine_response = await client.get(
@@ -181,7 +181,12 @@ class OpenMeteoProvider(WeatherProvider):
             return self._create_fallback_weather_data(0, 0, tide_state, hour_offset=hour_offset)
         
         # Timestamp siempre viene del forecast (o marine como fallback)
-        timestamp = forecast_times[index] if forecast_times else datetime.now(timezone.utc).isoformat()
+        # Aseguramos que tenga la marca Z de UTC si no la tiene
+        raw_ts = forecast_times[index] if forecast_times else datetime.now(timezone.utc).isoformat()
+        if not raw_ts.endswith("Z") and "+00:00" not in raw_ts:
+             timestamp = f"{raw_ts}Z"
+        else:
+             timestamp = raw_ts
         
         # Helper para extracción segura
         def get_val(source, key, idx, type_func=float):
@@ -248,36 +253,28 @@ class OpenMeteoProvider(WeatherProvider):
         )
 
     def _find_current_index(self, times: List[str]) -> int:
-        """Encuentra el índice de la hora que contiene el momento actual.
+        """Encuentra el índice de la hora actual usando UTC de forma estricta.
         
-        NOTA: OpenMeteo con timezone America/Argentina/Buenos_Aires devuelve
-        timestamps en hora local Argentina SIN offset (ej: "2026-01-14T09:00").
-        
-        Buscamos la hora que CONTIENE el momento actual. Por ejemplo, si son 
-        las 09:13, queremos retornar el índice de las 09:00, no las 10:00.
+        Compara datetime.now(timezone.utc) contra los timestamps de la API (también en UTC).
         """
         if not times:
             return 0
             
         try:
-            # Obtener hora actual en Argentina (UTC-3) 
-            now_utc = datetime.now(timezone.utc)
-            argentina_offset = timedelta(hours=-3)
-            now_argentina = (now_utc + argentina_offset).replace(tzinfo=None)
+            # 1. Obtener ahora en UTC estricto, truncado a la hora para comparar bloques
+            # Ejemplo: Si son 11:48 UTC, buscamos el bloque de las 11:00 UTC
+            now_utc = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
             
-            # Truncar a la hora (sin minutos/segundos) para comparar
-            now_hour = now_argentina.replace(minute=0, second=0, microsecond=0)
-            
-            # Buscar la primera hora >= la hora actual truncada
+            # Buscar la primera hora >= la hora actual
             for i, time_str in enumerate(times):
-                # OpenMeteo formato: "2026-01-14T09:00" (hora Argentina sin offset)
-                entry_time = datetime.fromisoformat(time_str.split('+')[0].split('Z')[0])
+                # OpenMeteo UTC devuelve ISO8601 (ej: "2026-01-14T14:00")
+                # Lo parseamos y le asignamos timezone UTC explícitamente para comparar peras con peras
+                entry_time = datetime.fromisoformat(time_str.split('+')[0].split('Z')[0]).replace(tzinfo=timezone.utc)
                 
-                # Si la hora del registro es >= la hora actual (truncada), usamos este índice
-                if entry_time >= now_hour:
+                # Si encontramos el bloque actual (igualdad) o uno futuro (mayor)
+                if entry_time >= now_utc:
                     return i
             
-            # Fallback: último índice disponible
             return len(times) - 1
             
         except Exception as e:
@@ -306,7 +303,7 @@ class OpenMeteoProvider(WeatherProvider):
             "latitude": lat,
             "longitude": lon,
             "hourly": "wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weathercode,cloudcover,uv_index,visibility",
-            "timezone": "America/Argentina/Buenos_Aires",
+            "timezone": "UTC",
             "forecast_days": 1
         }
         forecast_response = await client.get(
@@ -324,7 +321,7 @@ class OpenMeteoProvider(WeatherProvider):
             "latitude": lat,
             "longitude": lon,
             "hourly": "wave_height,wave_period,wave_direction",
-            "timezone": "America/Argentina/Buenos_Aires",
+            "timezone": "UTC",
             "forecast_days": 1
         }
         marine_response = await client.get(
