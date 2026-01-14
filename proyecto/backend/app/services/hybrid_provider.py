@@ -58,7 +58,7 @@ class HybridWeatherProvider(WeatherProvider):
                 logger.info(f"📦 Cache hit for {cache_key}")
                 return cached_data
         
-        # 2. Intentar Stormglass primero
+        # 2. Intentar Stormglass primero (Premium)
         if self.stormglass:
             try:
                 data = await self.stormglass.get_conditions(lat, lon)
@@ -66,19 +66,9 @@ class HybridWeatherProvider(WeatherProvider):
                 logger.info("✅ Stormglass success, cached")
                 return data
             except Exception as e:
-                logger.warning(f"⚠️ Stormglass failed: {e}, trying OpenWeather...")
+                logger.warning(f"⚠️ Stormglass failed: {e}, trying OpenMeteo...")
         
-        # 3. Intentar OpenWeather
-        if self.openweather:
-            try:
-                data = await self.openweather.get_conditions(lat, lon)
-                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
-                logger.info("✅ OpenWeather success, cached")
-                return data
-            except Exception as e:
-                logger.warning(f"⚠️ OpenWeather failed: {e}, trying OpenMeteo...")
-        
-        # 3. Fallback a OpenMeteo
+        # 3. Intentar OpenMeteo (Fuente Principal rica: Viento + Olas + UV)
         if self.openmeteo:
             try:
                 data = await self.openmeteo.get_conditions(lat, lon)
@@ -86,7 +76,17 @@ class HybridWeatherProvider(WeatherProvider):
                 logger.info("✅ OpenMeteo success, cached")
                 return data
             except Exception as e:
-                logger.error(f"❌ OpenMeteo also failed: {e}")
+                logger.warning(f"⚠️ OpenMeteo failed: {e}, trying OpenWeather...")
+
+        # 4. Fallback a OpenWeather (Básico: Solo Viento/Clima)
+        if self.openweather:
+            try:
+                data = await self.openweather.get_conditions(lat, lon)
+                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
+                logger.info("✅ OpenWeather success, cached")
+                return data
+            except Exception as e:
+                logger.error(f"❌ OpenWeather also failed: {e}")
                 raise
         
         raise ValueError("No weather providers available")
@@ -111,20 +111,9 @@ class HybridWeatherProvider(WeatherProvider):
                     logger.info("✅ Stormglass forecast success, cached")
                     return data
             except Exception as e:
-                logger.warning(f"⚠️ Stormglass forecast failed: {e}, trying OpenWeather...")
+                logger.warning(f"⚠️ Stormglass forecast failed: {e}, trying OpenMeteo...")
         
-        # 3. Intentar OpenWeather
-        if self.openweather:
-            try:
-                data = await self.openweather.get_forecast(lat, lon, hours)
-                if data:
-                    _forecast_cache[cache_key] = (datetime.now(timezone.utc), data)
-                    logger.info("✅ OpenWeather forecast success, cached")
-                    return data
-            except Exception as e:
-                logger.warning(f"⚠️ OpenWeather forecast failed: {e}, trying OpenMeteo...")
-        
-        # 3. Fallback a OpenMeteo
+        # 3. Intentar OpenMeteo (Fuente Principal)
         if self.openmeteo:
             try:
                 data = await self.openmeteo.get_forecast(lat, lon, hours)
@@ -133,7 +122,18 @@ class HybridWeatherProvider(WeatherProvider):
                     logger.info("✅ OpenMeteo forecast success, cached")
                     return data
             except Exception as e:
-                logger.error(f"❌ OpenMeteo forecast also failed: {e}")
+                logger.warning(f"⚠️ OpenMeteo forecast failed: {e}, trying OpenWeather...")
+
+        # 4. Intentar OpenWeather
+        if self.openweather:
+            try:
+                data = await self.openweather.get_forecast(lat, lon, hours)
+                if data:
+                    _forecast_cache[cache_key] = (datetime.now(timezone.utc), data)
+                    logger.info("✅ OpenWeather forecast success, cached")
+                    return data
+            except Exception as e:
+                logger.error(f"❌ OpenWeather forecast also failed: {e}")
                 raise
         
         raise ValueError("No weather providers available for forecast")

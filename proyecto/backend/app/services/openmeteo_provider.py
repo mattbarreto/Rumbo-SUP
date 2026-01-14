@@ -82,7 +82,8 @@ class OpenMeteoProvider(WeatherProvider):
                     "longitude": lon,
                     "hourly": "wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weathercode,cloudcover,uv_index,visibility",
                     "timezone": "UTC",
-                    "forecast_days": 2
+                    "forecast_days": 2,
+                    "models": "best_match"
                 }
                 forecast_response = await client.get(
                     self.FORECAST_URL,
@@ -304,7 +305,8 @@ class OpenMeteoProvider(WeatherProvider):
             "longitude": lon,
             "hourly": "wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weathercode,cloudcover,uv_index,visibility",
             "timezone": "UTC",
-            "forecast_days": 1
+            "forecast_days": 1,
+            "models": "best_match"
         }
         forecast_response = await client.get(
             self.FORECAST_URL,
