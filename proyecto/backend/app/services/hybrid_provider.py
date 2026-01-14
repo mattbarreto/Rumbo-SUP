@@ -34,10 +34,12 @@ class HybridWeatherProvider(WeatherProvider):
     4. Cachea resultados
     """
     
-    def __init__(self, stormglass_provider=None, openweather_provider=None, openmeteo_provider=None, tide_provider=None):
+    
+    def __init__(self, stormglass_provider=None, openweather_provider=None, openmeteo_provider=None, windy_provider=None, tide_provider=None):
         self.stormglass = stormglass_provider
         self.openweather = openweather_provider
         self.openmeteo = openmeteo_provider
+        self.windy = windy_provider
         self.tide_provider = tide_provider
     
     def _get_cache_key(self, lat: float, lon: float) -> str:
@@ -102,7 +104,17 @@ class HybridWeatherProvider(WeatherProvider):
                     logger.info("✅ OpenMeteo (or Hybrid) success, cached")
                     return data
                 except Exception as e:
-                    logger.warning(f"⚠️ OpenMeteo failed: {e}, trying OpenWeather...")
+                    logger.warning(f"⚠️ OpenMeteo failed: {e}, trying Windy...")
+
+            # 4. Fallback a Windy (Emergency Elite Backup)
+            if self.windy:
+                try:
+                    data = await self.windy.get_conditions(lat, lon)
+                    _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
+                    logger.info("✅ Windy success (Fallback activated), cached")
+                    return data
+                except Exception as e:
+                    logger.warning(f"⚠️ Windy failed: {e}, trying OpenWeather...")
 
             # 4. Fallback a OpenWeather (Básico: Solo Viento/Clima)
             # Solo llegamos acá si OpenMeteo falló TOTALMENTE (Exception)
