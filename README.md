@@ -35,7 +35,9 @@ El **SenseiEngine** es el núcleo determinístico que evalúa la seguridad y con
 
 ## 🚀 Características Principales
 
-- **Sistema Multi-Provider Resiliente:** Arquitectura híbrida que consume datos de Open-Meteo (primario), OpenWeatherMap (respaldo) y Stormglass (legacy), garantizando disponibilidad.
+- **Sistema Multi-Provider Resiliente:** Arquitectura híbrida que consume datos de Open-Meteo (primario), Windy.com (respaldo de élite) y OpenWeatherMap (último recurso).
+- **Smart Session Cache:** Persistencia inteligente en frontend para reducir latencia y consumo de API.
+- **Auditoría Forense:** Herramienta de autodiagnóstico (`/api/audit`) para verificar la salud de todos los proveedores en tiempo real.
 - **Análisis Semántico:** Transforma datos crudos en narrativas comprensibles ("Mar picado", "Glassy", "Viento de tierra").
 - **Personalización Contextual:** Ajusta scores basándose en tabla (rígida/inflable) y experiencia.
 - **Timeline Inteligente:** Proyección hora a hora con corrección automática de zona horaria.
@@ -47,14 +49,20 @@ El sistema utiliza un **HybridWeatherProvider** que orquesta múltiples fuentes:
 ### 1. Open-Meteo (Principal)
 Proveedor primario para datos marinos y atmosféricos.
 - **Documentación**: [Open-Meteo Marine API](https://open-meteo.com/en/docs/marine-weather-api)
-- **Uso**: Modelo `best_match` con coordenadas costeras exactas para evitar errores de interpolación tierra-mar. Provee olas, viento, UV y visibilidad.
+- **Uso**: Modelo `best_match` con coordenadas costeras exactas para evitar errores de interpolación tierra-mar.
 
-### 2. OpenWeatherMap (Respaldo)
-Fallback para validación.
+### 2. Windy.com (Respaldo de Élite)
+Se activa automáticamente si Open-Meteo falla (Error 429/503).
+- **Documentación**: [Windy Point Forecast API v2](https://api.windy.com/point-forecast/docs)
+- **Uso**: Modelos `gfs` (viento) y `gfsWave` (olas).
+- **Ventaja**: Datos de altísima calidad y fiabilidad comercial.
+
+### 3. OpenWeatherMap (Último Recurso)
+Fallback final para validación básica.
 - **Documentación**: [OpenWeather API](https://openweathermap.org/api)
-- **Uso**: Datos básicos de viento y clima si falla el primario.
+- **Uso**: Datos básicos de viento y clima si fallan los anteriores.
 
-### 3. Google Gemini (IA Pedagógica)
+### 4. Google Gemini (IA Pedagógica)
 Genera las explicaciones narrativas.
 - **Modelo**: `gemini-2.0-flash-exp`.
 - **Uso**: Traduce Flags y Scores en consejos de seguridad ("Usa lycra", "Cuidado con la deriva").
@@ -93,6 +101,7 @@ Crea un archivo `.env` en `proyecto/backend/` con tus credenciales:
 
 ```env
 OPENWEATHER_API_KEY=tu_clave
+WINDY_API_KEY=tu_clave_windy
 GEMINI_API_KEY=tu_clave
 FRONTEND_URL=http://localhost:5173
 ```
