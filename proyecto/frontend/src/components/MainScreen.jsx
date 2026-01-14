@@ -29,11 +29,42 @@ function MainScreen() {
     const [error, setError] = useState(null);
     const [showColdStartLoader, setShowColdStartLoader] = useState(false);
 
+    // Generate a unique cache key based on critical parameters
+    const getCacheKey = () => `rumbo_cache_varese_${sessionGoal}`;
+
     useEffect(() => {
         if (profile) {
-            fetchAnalysis();
+            loadData();
         }
     }, [profile, sessionGoal]);
+
+    const loadData = async () => {
+        const cacheKey = getCacheKey();
+        const cached = sessionStorage.getItem(cacheKey);
+
+        // 1. Try Cache First
+        if (cached) {
+            try {
+                const { timestamp, data } = JSON.parse(cached);
+                const ageMinutes = (Date.now() - timestamp) / (1000 * 60);
+
+                if (ageMinutes < 30) {
+                    console.log(`📦 Serving from cache (${Math.round(ageMinutes)}m old)`);
+                    setTimelineData(data);
+                    setSelectedIndex(0);
+                    setLoading(false);
+                    return;
+                } else {
+                    console.log('⌛ Cache expired, refetching...');
+                }
+            } catch (e) {
+                console.warn('Cache parse error', e);
+            }
+        }
+
+        // 2. Fetch Fresh Data
+        await fetchAnalysis();
+    };
 
     const fetchAnalysis = async () => {
         setLoading(true);
@@ -50,6 +81,12 @@ function MainScreen() {
                 ...profile,
                 session_goal: sessionGoal
             });
+
+            // Save to Cache
+            sessionStorage.setItem(getCacheKey(), JSON.stringify({
+                timestamp: Date.now(),
+                data: data
+            }));
 
             setTimelineData(data);
             setSelectedIndex(0); // Reset a "Ahora"

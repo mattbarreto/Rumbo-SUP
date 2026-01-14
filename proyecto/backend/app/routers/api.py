@@ -35,6 +35,7 @@ async def analyze_conditions(request: AnalyzeRequest):
         from app.services.stormglass_provider import StormglassProvider
         from app.services.openmeteo_provider import OpenMeteoProvider
         from app.services.openweather_provider import OpenWeatherProvider
+        from app.services.windy_provider import WindyProvider
         from app.services.weather_service import WeatherService
         from app.services.noaa_tides_provider import NOAATidesProvider
         import os
@@ -44,11 +45,13 @@ async def analyze_conditions(request: AnalyzeRequest):
         stormglass = StormglassProvider(tide_provider=noaa_tides) if os.getenv("STORMGLASS_API_KEY") else None
         openweather = OpenWeatherProvider()
         openmeteo = OpenMeteoProvider(tide_provider=noaa_tides)
+        windy = WindyProvider(tide_provider=noaa_tides)
         
         hybrid_provider = HybridWeatherProvider(
             stormglass_provider=stormglass,
             openweather_provider=openweather,
             openmeteo_provider=openmeteo,
+            windy_provider=windy,
             tide_provider=noaa_tides
         )
         weather_service = WeatherService(hybrid_provider)
@@ -154,6 +157,7 @@ async def get_timeline(request: TimelineRequest):
         from app.services.stormglass_provider import StormglassProvider
         from app.services.openmeteo_provider import OpenMeteoProvider
         from app.services.openweather_provider import OpenWeatherProvider
+        from app.services.windy_provider import WindyProvider
         from app.services.weather_service import WeatherService
         from app.services.noaa_tides_provider import NOAATidesProvider
         from app.services.sensei_engine import SenseiEngine
@@ -164,11 +168,13 @@ async def get_timeline(request: TimelineRequest):
         stormglass = StormglassProvider(tide_provider=noaa_tides) if os.getenv("STORMGLASS_API_KEY") else None
         openweather = OpenWeatherProvider()
         openmeteo = OpenMeteoProvider(tide_provider=noaa_tides)
+        windy = WindyProvider(tide_provider=noaa_tides)
         
         hybrid_provider = HybridWeatherProvider(
             stormglass_provider=stormglass,
             openweather_provider=openweather,
             openmeteo_provider=openmeteo,
+            windy_provider=windy,
             tide_provider=noaa_tides
         )
         weather_service = WeatherService(hybrid_provider)
