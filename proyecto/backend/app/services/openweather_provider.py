@@ -1,10 +1,9 @@
-import httpx
-import os
-import logging
-import asyncio
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional
+import logging
+import os
 from app.services.weather_service import WeatherProvider
+from app.services.http_client import http_client
 from app.models.schemas import WeatherData, WindData, WaveData, TideData, AtmosphereData
 
 logger = logging.getLogger(__name__)
@@ -29,22 +28,20 @@ class OpenWeatherProvider(WeatherProvider):
         if not self.api_key:
             raise ValueError("API Key faltante")
             
-        async with httpx.AsyncClient() as client:
-            try:
-                params = {
-                    "lat": lat,
-                    "lon": lon,
-                    "appid": self.api_key,
-                    "units": "metric"
-                }
-                response = await client.get(f"{self.BASE_URL}/weather", params=params, timeout=10.0)
-                response.raise_for_status()
-                data = response.json()
-                
-                return self._map_to_weather_data(data)
-            except Exception as e:
-                logger.error(f"Error fetching OpenWeather conditions: {e}")
-                raise
+        try:
+            params = {
+                "lat": lat,
+                "lon": lon,
+                "appid": self.api_key,
+                "units": "metric"
+            }
+            # Usa http_client.get que ya valida status y hace retries
+            data = await http_client.get(f"{self.BASE_URL}/weather", params=params)
+            
+            return self._map_to_weather_data(data)
+        except Exception as e:
+            logger.error(f"Error fetching OpenWeather conditions: {e}")
+            raise
 
     async def get_forecast(self, lat: float, lon: float, hours: int = 24) -> List[WeatherData]:
         """Obtiene pronóstico combinando Current + Forecast para asegurar inicio en hora actual"""
@@ -140,23 +137,20 @@ class OpenWeatherProvider(WeatherProvider):
         return final_list[:hours]
 
     async def _fetch_raw_forecast(self, lat, lon, hours):
-        """Helper para obtener solo la lista raw de forecast"""
-        async with httpx.AsyncClient() as client:
-            params = {
-                "lat": lat,
-                "lon": lon,
-                "appid": self.api_key,
-                "units": "metric",
-                "cnt": int(hours / 3) + 4 # Pedir extra por si acaso
-            }
-            response = await client.get(f"{self.BASE_URL}/forecast", params=params, timeout=10.0)
-            response.raise_for_status()
-            data = response.json()
-            
-            result = []
-            for item in data.get("list", []):
-                result.append(self._map_to_weather_data(item))
-            return result
+        """Helper para obtener solo la lista raw de forecast usando ResilientHttpClient"""
+        params = {
+            "lat": lat,
+            "lon": lon,
+            "appid": self.api_key,
+            "units": "metric",
+            "cnt": int(hours / 3) + 4 # Pedir extra por si acaso
+        }
+        data = await http_client.get(f"{self.BASE_URL}/forecast", params=params)
+        
+        result = []
+        for item in data.get("list", []):
+            result.append(self._map_to_weather_data(item))
+        return result
 
     def _map_to_weather_data(self, data: dict) -> WeatherData:
         """Mapea respuesta JSON de OpenWeather a WeatherData"""

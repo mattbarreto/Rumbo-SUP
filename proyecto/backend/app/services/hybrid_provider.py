@@ -16,11 +16,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Cache global simple (en memoria)
+# Cache global simple (en memoria) con soporte STALE
 # Key: "lat,lon" -> Value: (timestamp, WeatherData)
 _weather_cache: Dict[str, Tuple[datetime, WeatherData]] = {}
 _forecast_cache: Dict[str, Tuple[datetime, List[WeatherData]]] = {}
-CACHE_TTL_MINUTES = 30
+
+CACHE_TTL_MINUTES = 30       # Datos frescos
+CACHE_STALE_HOURS = 6        # Datos "viejos" aceptables en emergencia
 
 
 class HybridWeatherProvider(WeatherProvider):
@@ -43,9 +45,14 @@ class HybridWeatherProvider(WeatherProvider):
         return f"{round(lat, 2)},{round(lon, 2)}"
     
     def _is_cache_valid(self, cached_time: datetime) -> bool:
-        """Verifica si el caché aún es válido"""
+        """Verifica si el caché está FRESCO"""
         now = datetime.now(timezone.utc)
         return (now - cached_time) < timedelta(minutes=CACHE_TTL_MINUTES)
+
+    def _is_cache_stale_but_usable(self, cached_time: datetime) -> bool:
+        """Verifica si el caché es VIEJO pero aceptable por emergencia"""
+        now = datetime.now(timezone.utc)
+        return (now - cached_time) < timedelta(hours=CACHE_STALE_HOURS)
     
     async def get_conditions(self, lat: float, lon: float) -> WeatherData:
         """Obtiene condiciones con caché y fallback"""
@@ -87,9 +94,22 @@ class HybridWeatherProvider(WeatherProvider):
                 return data
             except Exception as e:
                 logger.error(f"❌ OpenWeather also failed: {e}")
-                raise
+                # No hacemos raise aún, intentamos Stale Cache abajo
+
         
-        raise ValueError("No weather providers available")
+        # 5. Fallback a Cache STALE (Último recurso)
+        if cache_key in _weather_cache:
+            cached_time, cached_data = _weather_cache[cache_key]
+            if self._is_cache_stale_but_usable(cached_time):
+                age_minutes = int((datetime.now(timezone.utc) - cached_time).total_seconds() / 60)
+                logger.warning(f"⚠️ API FAILURE: Serving STALE data from cache (Age: {age_minutes} min)")
+                
+                # Marcar data como Stale en metadatos (si existiera campo, por ahora log)
+                # cached_data.confidence_factors.data_freshness = 0.5 (Idealmente)
+                return cached_data
+
+        logger.error("❌ CRITICAL: All providers failed and no usable cache available.")
+        raise ValueError("Servicio meteorológico no disponible temporalmente.")
     
     async def get_forecast(self, lat: float, lon: float, hours: int = 12) -> List[WeatherData]:
         """Obtiene forecast con caché y fallback"""
@@ -134,9 +154,18 @@ class HybridWeatherProvider(WeatherProvider):
                     return data
             except Exception as e:
                 logger.error(f"❌ OpenWeather forecast also failed: {e}")
-                raise
+                # No hacemos raise aún, intentamos Stale Cache abajo
         
-        raise ValueError("No weather providers available for forecast")
+        # 5. Cache Stale para Forecast
+        if cache_key in _forecast_cache:
+            cached_time, cached_data = _forecast_cache[cache_key]
+            if self._is_cache_stale_but_usable(cached_time):
+                age_minutes = int((datetime.now(timezone.utc) - cached_time).total_seconds() / 60)
+                logger.warning(f"⚠️ API FAILURE: Serving STALE FORECAST from cache (Age: {age_minutes} min)")
+                return cached_data[:hours]
+
+        logger.error("❌ CRITICAL: All forecast providers failed.")
+        raise ValueError("Servicio de pronóstico no disponible.")
 
 
 def clear_cache():

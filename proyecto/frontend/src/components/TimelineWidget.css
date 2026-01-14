@@ -102,7 +102,14 @@
     box-shadow: 0 0 10px var(--danger-coral);
 }
 
-.effort-mini-icon {
-    font-size: 14px;
-    opacity: 0.8;
+.effort-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    opacity: 0.9;
+    transition: transform 0.2s ease;
+}
+
+.timeline-block:hover .effort-icon {
+    transform: scale(1.1);
 }
