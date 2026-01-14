@@ -1,10 +1,7 @@
 """
-Hybrid Weather Provider with Caching
-
-Combina múltiples providers con:
-1. Caché en memoria (30 min)
-2. Stormglass como primario (más confiable)
-3. OpenMeteo como fallback
+Weather Provider - OpenMeteo Only
+Prioriza datos REALES para deportistas de SUP.
+Caché agresivo para evitar rate limits.
 """
 
 import asyncio
@@ -16,175 +13,118 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Cache global simple (en memoria) con soporte STALE
-# Key: "lat,lon" -> Value: (timestamp, WeatherData)
+# Cache global (en memoria) - 15 minutos es suficiente para datos meteorológicos
 _weather_cache: Dict[str, Tuple[datetime, WeatherData]] = {}
 _forecast_cache: Dict[str, Tuple[datetime, List[WeatherData]]] = {}
 
-CACHE_TTL_MINUTES = 30       # Datos frescos
-CACHE_STALE_HOURS = 6        # Datos "viejos" aceptables en emergencia
+CACHE_TTL_MINUTES = 15  # Datos frescos (OpenMeteo actualiza cada hora)
 
 
 class HybridWeatherProvider(WeatherProvider):
     """
-    Provider híbrido que:
-    1. Revisa caché primero
-    2. Intenta Stormglass (si hay API key)
-    3. Fallback a OpenMeteo
-    4. Cachea resultados
+    Provider simplificado - SOLO OpenMeteo.
+    Datos reales y precisos para deportistas de SUP.
     """
     
-    
     def __init__(self, stormglass_provider=None, openweather_provider=None, openmeteo_provider=None, windy_provider=None, tide_provider=None):
-        self.stormglass = stormglass_provider
-        self.openweather = openweather_provider
+        # Solo usamos OpenMeteo - los demás están para compatibilidad pero no se usan
         self.openmeteo = openmeteo_provider
-        self.windy = windy_provider
         self.tide_provider = tide_provider
+        
+        if not self.openmeteo:
+            logger.error("❌ CRÍTICO: OpenMeteo provider no configurado!")
     
     def _get_cache_key(self, lat: float, lon: float) -> str:
         """Genera key de caché redondeando coordenadas"""
         return f"{round(lat, 2)},{round(lon, 2)}"
     
     def _is_cache_valid(self, cached_time: datetime) -> bool:
-        """Verifica si el caché está FRESCO"""
+        """Verifica si el caché está fresco (15 min)"""
         now = datetime.now(timezone.utc)
-        return (now - cached_time) < timedelta(minutes=CACHE_TTL_MINUTES)
+        age = now - cached_time
+        return age < timedelta(minutes=CACHE_TTL_MINUTES)
 
-    def _is_cache_stale_but_usable(self, cached_time: datetime) -> bool:
-        """Verifica si el caché es VIEJO pero aceptable por emergencia"""
-        now = datetime.now(timezone.utc)
-        return (now - cached_time) < timedelta(hours=CACHE_STALE_HOURS)
-    
     async def get_conditions(self, lat: float, lon: float) -> WeatherData:
-        """Obtiene condiciones con caché y fallback"""
+        """Obtiene condiciones actuales - SOLO OpenMeteo con caché"""
         cache_key = self._get_cache_key(lat, lon)
         
-        # 1. Revisar caché
+        # 1. Revisar caché PRIMERO (evita llamadas innecesarias)
         if cache_key in _weather_cache:
             cached_time, cached_data = _weather_cache[cache_key]
             if self._is_cache_valid(cached_time):
-                logger.info(f"📦 Cache hit for {cache_key}")
+                age_sec = int((datetime.now(timezone.utc) - cached_time).total_seconds())
+                logger.info(f"📦 Cache HIT - datos de hace {age_sec}s")
                 return cached_data
         
-        # 2. Intentar Stormglass primero (Premium)
-        if self.stormglass:
-            try:
-                data = await self.stormglass.get_conditions(lat, lon)
-                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
-                logger.info("✅ Stormglass success, cached")
-                return data
-            except Exception as e:
-                logger.warning(f"⚠️ Stormglass failed: {e}, trying OpenWeather...")
+        # 2. Llamar a OpenMeteo (única fuente)
+        if not self.openmeteo:
+            raise ValueError("OpenMeteo provider no configurado")
         
-        # 3. OpenWeather (Acceso estable desde Render - viento confiable)
-        if self.openweather:
-            try:
-                data = await self.openweather.get_conditions(lat, lon)
-                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
-                logger.info("✅ OpenWeather success, cached")
-                return data
-            except Exception as e:
-                logger.warning(f"⚠️ OpenWeather failed: {e}, trying OpenMeteo...")
-
-        # 4. Fallback a OpenMeteo (puede estar rate-limited)
-        if self.openmeteo:
-            try:
-                data = await self.openmeteo.get_conditions(lat, lon)
-                
-                # If OpenMeteo returns "zombie" data (No Wind AND No Waves), reject it
-                if data.wind.speed_kmh is None and data.waves.height_m is None:
-                    logger.warning("⚠️ OpenMeteo returned empty data. Triggering fallback...")
-                    raise ValueError("OpenMeteo returned empty/invalid data")
-                
-                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
-                logger.info("✅ OpenMeteo success, cached")
-                return data
-            except Exception as e:
-                logger.warning(f"⚠️ OpenMeteo failed: {e}, trying Windy...")
-
-        # 5. Windy API (último intento, puede tener problemas de parámetros)
-        if self.windy:
-            try:
-                data = await self.windy.get_conditions(lat, lon)
-                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
-                logger.info("✅ Windy success, cached")
-                return data
-            except Exception as e:
-                logger.error(f"❌ Windy also failed: {e}")
-                # No hacemos raise aún, intentamos Stale Cache abajo
-
-
-        
-        # 5. Fallback a Cache STALE (Último recurso)
-        if cache_key in _weather_cache:
-            cached_time, cached_data = _weather_cache[cache_key]
-            if self._is_cache_stale_but_usable(cached_time):
-                age_minutes = int((datetime.now(timezone.utc) - cached_time).total_seconds() / 60)
-                logger.warning(f"⚠️ API FAILURE: Serving STALE data from cache (Age: {age_minutes} min)")
-                
-                # Marcar data como Stale en metadatos (si existiera campo, por ahora log)
-                # cached_data.confidence_factors.data_freshness = 0.5 (Idealmente)
+        try:
+            logger.info("🌐 Llamando a OpenMeteo API...")
+            data = await self.openmeteo.get_conditions(lat, lon)
+            
+            # Validar que recibimos datos reales
+            if data.wind.speed_kmh is None:
+                logger.error("❌ OpenMeteo retornó datos vacíos de viento")
+                raise ValueError("OpenMeteo no retornó datos de viento")
+            
+            # Guardar en caché
+            _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
+            logger.info(f"✅ OpenMeteo: Viento {data.wind.speed_kmh:.1f} km/h, Olas {data.waves.height_m:.2f}m")
+            return data
+            
+        except Exception as e:
+            logger.error(f"❌ OpenMeteo falló: {e}")
+            
+            # Si hay caché viejo, usarlo como emergencia
+            if cache_key in _weather_cache:
+                cached_time, cached_data = _weather_cache[cache_key]
+                age_min = int((datetime.now(timezone.utc) - cached_time).total_seconds() / 60)
+                logger.warning(f"⚠️ Usando caché de emergencia (edad: {age_min} min)")
                 return cached_data
-
-        logger.error("❌ CRITICAL: All providers failed and no usable cache available.")
-        raise ValueError("Servicio meteorológico no disponible temporalmente.")
+            
+            raise ValueError(f"OpenMeteo no disponible y no hay caché: {e}")
     
     async def get_forecast(self, lat: float, lon: float, hours: int = 12) -> List[WeatherData]:
-        """Obtiene forecast con caché y fallback"""
+        """Obtiene forecast - SOLO OpenMeteo con caché"""
         cache_key = f"{self._get_cache_key(lat, lon)}_forecast"
         
-        # 1. Revisar caché
+        # 1. Revisar caché PRIMERO
         if cache_key in _forecast_cache:
             cached_time, cached_data = _forecast_cache[cache_key]
             if self._is_cache_valid(cached_time):
-                logger.info(f"📦 Forecast cache hit for {cache_key}")
+                age_sec = int((datetime.now(timezone.utc) - cached_time).total_seconds())
+                logger.info(f"📦 Forecast cache HIT - datos de hace {age_sec}s")
                 return cached_data[:hours]
         
-        # 2. Intentar Stormglass primero
-        if self.stormglass:
-            try:
-                data = await self.stormglass.get_forecast(lat, lon, hours)
-                if data:
-                    _forecast_cache[cache_key] = (datetime.now(timezone.utc), data)
-                    logger.info("✅ Stormglass forecast success, cached")
-                    return data
-            except Exception as e:
-                logger.warning(f"⚠️ Stormglass forecast failed: {e}, trying OpenWeather...")
+        # 2. Llamar a OpenMeteo (única fuente)
+        if not self.openmeteo:
+            raise ValueError("OpenMeteo provider no configurado")
         
-        # 3. OpenWeather forecast (acceso estable, tiene viento)
-        if self.openweather:
-            try:
-                data = await self.openweather.get_forecast(lat, lon, hours)
-                if data:
-                    _forecast_cache[cache_key] = (datetime.now(timezone.utc), data)
-                    logger.info("✅ OpenWeather forecast success, cached")
-                    return data
-            except Exception as e:
-                logger.warning(f"⚠️ OpenWeather forecast failed: {e}, trying OpenMeteo...")
-
-        # 4. OpenMeteo forecast (puede estar rate-limited)
-        if self.openmeteo:
-            try:
-                data = await self.openmeteo.get_forecast(lat, lon, hours)
-                if data:
-                    _forecast_cache[cache_key] = (datetime.now(timezone.utc), data)
-                    logger.info("✅ OpenMeteo forecast success, cached")
-                    return data
-            except Exception as e:
-                logger.error(f"❌ OpenMeteo forecast failed: {e}")
-                # No hacemos raise aún, intentamos Stale Cache abajo
-        
-        # 5. Cache Stale para Forecast
-        if cache_key in _forecast_cache:
-            cached_time, cached_data = _forecast_cache[cache_key]
-            if self._is_cache_stale_but_usable(cached_time):
-                age_minutes = int((datetime.now(timezone.utc) - cached_time).total_seconds() / 60)
-                logger.warning(f"⚠️ API FAILURE: Serving STALE FORECAST from cache (Age: {age_minutes} min)")
+        try:
+            logger.info("🌐 Llamando a OpenMeteo API (forecast)...")
+            data = await self.openmeteo.get_forecast(lat, lon, hours)
+            
+            if not data:
+                raise ValueError("OpenMeteo no retornó datos de forecast")
+            
+            # Guardar en caché
+            _forecast_cache[cache_key] = (datetime.now(timezone.utc), data)
+            logger.info(f"✅ OpenMeteo forecast: {len(data)} horas de datos")
+            return data
+            
+        except Exception as e:
+            logger.error(f"❌ OpenMeteo forecast falló: {e}")
+            
+            # Usar caché viejo como emergencia
+            if cache_key in _forecast_cache:
+                cached_time, cached_data = _forecast_cache[cache_key]
+                age_min = int((datetime.now(timezone.utc) - cached_time).total_seconds() / 60)
+                logger.warning(f"⚠️ Usando forecast en caché de emergencia (edad: {age_min} min)")
                 return cached_data[:hours]
-
-        logger.error("❌ CRITICAL: All forecast providers failed.")
-        raise ValueError("Servicio de pronóstico no disponible.")
+            
+            raise ValueError(f"OpenMeteo forecast no disponible y no hay caché: {e}")
 
 
 def clear_cache():
@@ -192,4 +132,5 @@ def clear_cache():
     global _weather_cache, _forecast_cache
     _weather_cache = {}
     _forecast_cache = {}
-    logger.info("🧹 Weather cache cleared")
+    logger.info("🧹 Cache limpiado")
+
