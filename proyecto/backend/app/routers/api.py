@@ -256,3 +256,11 @@ async def debug_openmeteo():
             "error_message": str(e),
             "traceback": traceback.format_exc()
         }
+
+@router.get("/audit")
+async def audit_system():
+    """System-wide Forensic Audit of Weather Providers"""
+    from app.services.audit_service import AuditService
+    audit = AuditService()
+    report = await audit.run_audit()
+    return report
