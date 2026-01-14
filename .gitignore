@@ -45,5 +45,6 @@ proyecto/backend/logs/
 
 # Internal documentation and planning (keep local only)
 docs/
+
 DEPLOY.md
 .venv/
