@@ -44,7 +44,7 @@ proyecto/backend/logs/
 !.env.example
 
 # Internal documentation and planning (keep local only)
-#docs/
+docs/
 test_weather_apis.py
 
 DEPLOY.md
