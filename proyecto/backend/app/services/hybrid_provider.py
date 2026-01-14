@@ -75,36 +75,9 @@ class HybridWeatherProvider(WeatherProvider):
                 logger.info("✅ Stormglass success, cached")
                 return data
             except Exception as e:
-                logger.warning(f"⚠️ Stormglass failed: {e}, trying Windy...")
+                logger.warning(f"⚠️ Stormglass failed: {e}, trying OpenWeather...")
         
-        # 3. Windy API (Fuente Principal - Datos precisos para Mar del Plata)
-        if self.windy:
-            try:
-                data = await self.windy.get_conditions(lat, lon)
-                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
-                logger.info("✅ Windy success, cached")
-                return data
-            except Exception as e:
-                logger.warning(f"⚠️ Windy failed: {e}, trying OpenMeteo...")
-
-        # 4. Fallback a OpenMeteo (Gratuito, siempre disponible)
-        if self.openmeteo:
-            try:
-                data = await self.openmeteo.get_conditions(lat, lon)
-                
-                # CRITICAL FIX: If OpenMeteo returns "zombie" data (No Wind AND No Waves),
-                # we must reject it to trigger next fallback.
-                if data.wind.speed_kmh is None and data.waves.height_m is None:
-                    logger.warning("⚠️ OpenMeteo returned empty data (Zombie). Triggering fallback...")
-                    raise ValueError("OpenMeteo returned empty/invalid data")
-                
-                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
-                logger.info("✅ OpenMeteo success, cached")
-                return data
-            except Exception as e:
-                logger.warning(f"⚠️ OpenMeteo failed: {e}, trying OpenWeather...")
-
-        # 5. Fallback a OpenWeather (Básico: Solo Viento/Clima)
+        # 3. OpenWeather (Acceso estable desde Render - viento confiable)
         if self.openweather:
             try:
                 data = await self.openweather.get_conditions(lat, lon)
@@ -112,7 +85,33 @@ class HybridWeatherProvider(WeatherProvider):
                 logger.info("✅ OpenWeather success, cached")
                 return data
             except Exception as e:
-                logger.error(f"❌ OpenWeather also failed: {e}")
+                logger.warning(f"⚠️ OpenWeather failed: {e}, trying OpenMeteo...")
+
+        # 4. Fallback a OpenMeteo (puede estar rate-limited)
+        if self.openmeteo:
+            try:
+                data = await self.openmeteo.get_conditions(lat, lon)
+                
+                # If OpenMeteo returns "zombie" data (No Wind AND No Waves), reject it
+                if data.wind.speed_kmh is None and data.waves.height_m is None:
+                    logger.warning("⚠️ OpenMeteo returned empty data. Triggering fallback...")
+                    raise ValueError("OpenMeteo returned empty/invalid data")
+                
+                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
+                logger.info("✅ OpenMeteo success, cached")
+                return data
+            except Exception as e:
+                logger.warning(f"⚠️ OpenMeteo failed: {e}, trying Windy...")
+
+        # 5. Windy API (último intento, puede tener problemas de parámetros)
+        if self.windy:
+            try:
+                data = await self.windy.get_conditions(lat, lon)
+                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
+                logger.info("✅ Windy success, cached")
+                return data
+            except Exception as e:
+                logger.error(f"❌ Windy also failed: {e}")
                 # No hacemos raise aún, intentamos Stale Cache abajo
 
 
@@ -151,20 +150,9 @@ class HybridWeatherProvider(WeatherProvider):
                     logger.info("✅ Stormglass forecast success, cached")
                     return data
             except Exception as e:
-                logger.warning(f"⚠️ Stormglass forecast failed: {e}, trying OpenMeteo...")
+                logger.warning(f"⚠️ Stormglass forecast failed: {e}, trying OpenWeather...")
         
-        # 3. Intentar OpenMeteo (Fuente Principal)
-        if self.openmeteo:
-            try:
-                data = await self.openmeteo.get_forecast(lat, lon, hours)
-                if data:
-                    _forecast_cache[cache_key] = (datetime.now(timezone.utc), data)
-                    logger.info("✅ OpenMeteo forecast success, cached")
-                    return data
-            except Exception as e:
-                logger.warning(f"⚠️ OpenMeteo forecast failed: {e}, trying OpenWeather...")
-
-        # 4. Intentar OpenWeather
+        # 3. OpenWeather forecast (acceso estable, tiene viento)
         if self.openweather:
             try:
                 data = await self.openweather.get_forecast(lat, lon, hours)
@@ -173,7 +161,18 @@ class HybridWeatherProvider(WeatherProvider):
                     logger.info("✅ OpenWeather forecast success, cached")
                     return data
             except Exception as e:
-                logger.error(f"❌ OpenWeather forecast also failed: {e}")
+                logger.warning(f"⚠️ OpenWeather forecast failed: {e}, trying OpenMeteo...")
+
+        # 4. OpenMeteo forecast (puede estar rate-limited)
+        if self.openmeteo:
+            try:
+                data = await self.openmeteo.get_forecast(lat, lon, hours)
+                if data:
+                    _forecast_cache[cache_key] = (datetime.now(timezone.utc), data)
+                    logger.info("✅ OpenMeteo forecast success, cached")
+                    return data
+            except Exception as e:
+                logger.error(f"❌ OpenMeteo forecast failed: {e}")
                 # No hacemos raise aún, intentamos Stale Cache abajo
         
         # 5. Cache Stale para Forecast
