@@ -32,8 +32,9 @@ class HybridWeatherProvider(WeatherProvider):
     4. Cachea resultados
     """
     
-    def __init__(self, stormglass_provider=None, openmeteo_provider=None, tide_provider=None):
+    def __init__(self, stormglass_provider=None, openweather_provider=None, openmeteo_provider=None, tide_provider=None):
         self.stormglass = stormglass_provider
+        self.openweather = openweather_provider
         self.openmeteo = openmeteo_provider
         self.tide_provider = tide_provider
     
@@ -65,7 +66,17 @@ class HybridWeatherProvider(WeatherProvider):
                 logger.info("✅ Stormglass success, cached")
                 return data
             except Exception as e:
-                logger.warning(f"⚠️ Stormglass failed: {e}, trying OpenMeteo...")
+                logger.warning(f"⚠️ Stormglass failed: {e}, trying OpenWeather...")
+        
+        # 3. Intentar OpenWeather
+        if self.openweather:
+            try:
+                data = await self.openweather.get_conditions(lat, lon)
+                _weather_cache[cache_key] = (datetime.now(timezone.utc), data)
+                logger.info("✅ OpenWeather success, cached")
+                return data
+            except Exception as e:
+                logger.warning(f"⚠️ OpenWeather failed: {e}, trying OpenMeteo...")
         
         # 3. Fallback a OpenMeteo
         if self.openmeteo:
@@ -100,7 +111,18 @@ class HybridWeatherProvider(WeatherProvider):
                     logger.info("✅ Stormglass forecast success, cached")
                     return data
             except Exception as e:
-                logger.warning(f"⚠️ Stormglass forecast failed: {e}, trying OpenMeteo...")
+                logger.warning(f"⚠️ Stormglass forecast failed: {e}, trying OpenWeather...")
+        
+        # 3. Intentar OpenWeather
+        if self.openweather:
+            try:
+                data = await self.openweather.get_forecast(lat, lon, hours)
+                if data:
+                    _forecast_cache[cache_key] = (datetime.now(timezone.utc), data)
+                    logger.info("✅ OpenWeather forecast success, cached")
+                    return data
+            except Exception as e:
+                logger.warning(f"⚠️ OpenWeather forecast failed: {e}, trying OpenMeteo...")
         
         # 3. Fallback a OpenMeteo
         if self.openmeteo:

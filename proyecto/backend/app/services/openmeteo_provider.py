@@ -2,7 +2,7 @@ import httpx
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List
 from app.services.weather_service import WeatherProvider
-from app.models.schemas import WeatherData, WindData, WaveData, TideData
+from app.models.schemas import WeatherData, WindData, WaveData, TideData, AtmosphereData
 import logging
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
@@ -80,7 +80,7 @@ class OpenMeteoProvider(WeatherProvider):
                 forecast_params = {
                     "latitude": lat,
                     "longitude": lon,
-                    "hourly": "wind_speed_10m,wind_direction_10m",
+                    "hourly": "wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weathercode,cloudcover,uv_index,visibility",
                     "timezone": "America/Argentina/Buenos_Aires",
                     "forecast_days": 2
                 }
@@ -99,7 +99,7 @@ class OpenMeteoProvider(WeatherProvider):
                 marine_params = {
                     "latitude": lat,
                     "longitude": lon,
-                    "hourly": "wave_height",
+                    "hourly": "wave_height,wave_period,wave_direction",
                     "timezone": "America/Argentina/Buenos_Aires",
                     "forecast_days": 2
                 }
@@ -162,12 +162,13 @@ class OpenMeteoProvider(WeatherProvider):
         max_idx = min(start_idx + limit_hours, len(times))
         
         for i in range(start_idx, max_idx):
-            wd = self._extract_combined_weather_data(forecast_hourly, marine_hourly, i, tide_state)
+            relative_offset = i - start_idx
+            wd = self._extract_combined_weather_data(forecast_hourly, marine_hourly, i, tide_state, hour_offset=relative_offset)
             result.append(wd)
             
         return result
 
-    def _extract_combined_weather_data(self, forecast_hourly: dict, marine_hourly: dict, index: int, tide_state: str) -> WeatherData:
+    def _extract_combined_weather_data(self, forecast_hourly: dict, marine_hourly: dict, index: int, tide_state: str, hour_offset: int = 0) -> WeatherData:
         """Extrae y combina datos de viento (forecast) y olas (marine) para un índice específico - CON VALIDACIÓN"""
         forecast_times = forecast_hourly.get("time", [])
         
@@ -175,33 +176,64 @@ class OpenMeteoProvider(WeatherProvider):
         if index >= len(forecast_times) and len(forecast_times) > 0:
             index = len(forecast_times) - 1
         elif len(forecast_times) == 0:
-            # Fallback total si no hay datos
+            # Fallback total si no hay datos - usar offset para generar timestamp secuencial
             logger.warning(f"No hay datos de tiempo en forecast para índice {index}")
-            return self._create_fallback_weather_data(0, 0, tide_state)
+            return self._create_fallback_weather_data(0, 0, tide_state, hour_offset=hour_offset)
         
         # Timestamp siempre viene del forecast (o marine como fallback)
         timestamp = forecast_times[index] if forecast_times else datetime.now(timezone.utc).isoformat()
         
-        # Obtener viento desde Forecast API (CON VALIDACIÓN)
-        wind_speeds = forecast_hourly.get("wind_speed_10m", [])
-        wind_directions = forecast_hourly.get("wind_direction_10m", [])
+        # Helper para extracción segura
+        def get_val(source, key, idx, type_func=float):
+            arr = source.get(key, [])
+            if idx < len(arr) and arr[idx] is not None:
+                try:
+                    return type_func(arr[idx])
+                except (ValueError, TypeError):
+                    return None
+            return None
+
+        # --- Viento ---
+        wind_speed = get_val(forecast_hourly, "wind_speed_10m", index)
+        wind_direction = get_val(forecast_hourly, "wind_direction_10m", index, int)
         
-        wind_speed = wind_speeds[index] if index < len(wind_speeds) else None
-        wind_direction = wind_directions[index] if index < len(wind_directions) else None
+        # --- Olas (Marine) ---
+        wave_height = get_val(marine_hourly, "wave_height", index)
+        wave_period = get_val(marine_hourly, "wave_period", index)
+        wave_direction = get_val(marine_hourly, "wave_direction", index, int)
         
-        # Obtener olas desde Marine API (CON VALIDACIÓN)
-        wave_heights = marine_hourly.get("wave_height", [])
-        wave_height = wave_heights[index] if index < len(wave_heights) else None
-        
-        # Crear objetos con None si no hay datos (cliente maneja el "N/A")
+        # --- Atmósfera (Forecast) ---
+        temp = get_val(forecast_hourly, "temperature_2m", index)
+        precip = get_val(forecast_hourly, "precipitation", index)
+        clouds = get_val(forecast_hourly, "cloudcover", index, int)
+        uv = get_val(forecast_hourly, "uv_index", index)
+        visibility = get_val(forecast_hourly, "visibility", index)
+        # Convertir visibilidad de metros a km si es necesario (OpenMeteo da metros)
+        if visibility is not None:
+            visibility = visibility / 1000.0
+            
+        wcode = get_val(forecast_hourly, "weathercode", index, int)
+
+        # Construir objetos
         wind_data = WindData(
-            speed_kmh=float(wind_speed) if wind_speed is not None else None,
-            direction_deg=int(wind_direction) if wind_direction is not None else None,
+            speed_kmh=wind_speed,
+            direction_deg=wind_direction,
             relative_direction=None
         )
         
         wave_data = WaveData(
-            height_m=float(wave_height) if wave_height is not None else None
+            height_m=wave_height,
+            period_s=wave_period,
+            direction_deg=wave_direction
+        )
+        
+        atmosphere_data = AtmosphereData(
+            temperature_c=temp,
+            precipitation_mm=precip,
+            cloud_cover_pct=clouds,
+            uv_index=uv,
+            visibility_km=visibility,
+            weather_code=wcode
         )
         
         tide_data = TideData(state=tide_state)
@@ -209,56 +241,61 @@ class OpenMeteoProvider(WeatherProvider):
         return WeatherData(
             wind=wind_data,
             waves=wave_data,
+            atmosphere=atmosphere_data,
             tide=tide_data,
             timestamp=timestamp,
             provider="openmeteo_combined"
         )
 
     def _find_current_index(self, times: List[str]) -> int:
-        """Encuentra el índice de la hora actual en el array de tiempos - MEJORADO"""
+        """Encuentra el índice de la hora que contiene el momento actual.
+        
+        NOTA: OpenMeteo con timezone America/Argentina/Buenos_Aires devuelve
+        timestamps en hora local Argentina SIN offset (ej: "2026-01-14T09:00").
+        
+        Buscamos la hora que CONTIENE el momento actual. Por ejemplo, si son 
+        las 09:13, queremos retornar el índice de las 09:00, no las 10:00.
+        """
         if not times:
             return 0
             
         try:
-            # Parsear el primer timestamp
-            first_time_str = times[0]
-            
-            # OpenMeteo con timezone devuelve formato: "2024-01-13T14:00"
-            # Intentar parsear como naive primero
-            if 'T' in first_time_str:
-                # Formato ISO sin timezone
-                first_time = datetime.fromisoformat(first_time_str.replace('Z', '+00:00'))
-            else:
-                # Fallback
-                first_time = datetime.fromisoformat(first_time_str)
-            
-            # Hacer first_time naive si tiene tzinfo
-            if first_time.tzinfo:
-                first_time = first_time.replace(tzinfo=None)
-            
-            # Obtener hora actual en Argentina (UTC-3) como naive
+            # Obtener hora actual en Argentina (UTC-3) 
             now_utc = datetime.now(timezone.utc)
-            now_argentina = now_utc - timedelta(hours=3)
-            now_naive = now_argentina.replace(tzinfo=None)
+            argentina_offset = timedelta(hours=-3)
+            now_argentina = (now_utc + argentina_offset).replace(tzinfo=None)
             
-            # Calcular diferencia en horas
-            diff_seconds = (now_naive - first_time).total_seconds()
-            diff_hours = int(diff_seconds / 3600)
+            # Truncar a la hora (sin minutos/segundos) para comparar
+            now_hour = now_argentina.replace(minute=0, second=0, microsecond=0)
             
-            # Retornar índice válido (no negativo, no mayor que len)
-            return max(0, min(diff_hours, len(times) - 1))
+            # Buscar la primera hora >= la hora actual truncada
+            for i, time_str in enumerate(times):
+                # OpenMeteo formato: "2026-01-14T09:00" (hora Argentina sin offset)
+                entry_time = datetime.fromisoformat(time_str.split('+')[0].split('Z')[0])
+                
+                # Si la hora del registro es >= la hora actual (truncada), usamos este índice
+                if entry_time >= now_hour:
+                    return i
+            
+            # Fallback: último índice disponible
+            return len(times) - 1
             
         except Exception as e:
             logger.error(f"Error calculando índice de tiempo: {e}")
             return 0
 
-    def _create_fallback_weather_data(self, lat: float, lon: float, tide_state: str = "rising") -> WeatherData:
-        """Crea WeatherData con valores None para indicar falta de datos"""
+    def _create_fallback_weather_data(self, lat: float, lon: float, tide_state: str = "rising", hour_offset: int = 0) -> WeatherData:
+        """Crea WeatherData con valores None pero con timestamp secuencial correcto"""
+        # Generar timestamp basado en hora actual + offset
+        now_utc = datetime.now(timezone.utc)
+        target_time = now_utc + timedelta(hours=hour_offset)
+        
         return WeatherData(
             wind=WindData(speed_kmh=None, direction_deg=None, relative_direction=None),
-            waves=WaveData(height_m=None),
+            waves=WaveData(height_m=None, period_s=None, direction_deg=None),
+            atmosphere=AtmosphereData(),
             tide=TideData(state=tide_state),
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=target_time.isoformat(),
             provider="openmeteo_fallback"
         )
         
@@ -268,7 +305,7 @@ class OpenMeteoProvider(WeatherProvider):
         forecast_params = {
             "latitude": lat,
             "longitude": lon,
-            "hourly": "wind_speed_10m,wind_direction_10m",
+            "hourly": "wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weathercode,cloudcover,uv_index,visibility",
             "timezone": "America/Argentina/Buenos_Aires",
             "forecast_days": 1
         }
@@ -286,7 +323,7 @@ class OpenMeteoProvider(WeatherProvider):
         marine_params = {
             "latitude": lat,
             "longitude": lon,
-            "hourly": "wave_height",
+            "hourly": "wave_height,wave_period,wave_direction",
             "timezone": "America/Argentina/Buenos_Aires",
             "forecast_days": 1
         }

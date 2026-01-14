@@ -18,6 +18,16 @@ class WindData(BaseModel):
 
 class WaveData(BaseModel):
     height_m: Optional[float] = Field(None, ge=0, description="Altura de olas en metros")
+    period_s: Optional[float] = Field(None, ge=0, description="Periodo de olas en segundos")
+    direction_deg: Optional[int] = Field(None, ge=0, le=360, description="Dirección de olas en grados")
+
+class AtmosphereData(BaseModel):
+    temperature_c: Optional[float] = Field(None, description="Temperatura ambiente en °C")
+    precipitation_mm: Optional[float] = Field(None, ge=0, description="Precipitación en mm")
+    cloud_cover_pct: Optional[int] = Field(None, ge=0, le=100, description="Cobertura de nubes %")
+    uv_index: Optional[float] = Field(None, ge=0, description="Índice UV máximo")
+    visibility_km: Optional[float] = Field(None, ge=0, description="Visibilidad en km")
+    weather_code: Optional[int] = Field(None, description="Código WMO de clima")
 
 class TideData(BaseModel):
     state: Literal["rising", "falling", "high", "low"] = Field(..., description="Estado de la marea")
@@ -25,6 +35,7 @@ class TideData(BaseModel):
 class WeatherData(BaseModel):
     wind: WindData
     waves: WaveData
+    atmosphere: Optional[AtmosphereData] = None
     tide: TideData
     timestamp: str = Field(..., description="Timestamp de los datos")
     provider: str = Field(default="openmeteo", description="Proveedor de datos")

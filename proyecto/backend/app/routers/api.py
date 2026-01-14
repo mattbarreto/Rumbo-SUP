@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.models.schemas import AnalyzeRequest, AnalyzeResponse, ExplanationRequest, ExplanationResponse, NearestSpotResponse, TimelineRequest, TimelineResponse, TimelinePoint
 from app.config.spots import SPOTS
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from tenacity import RetryError
 from httpx import ConnectTimeout, ReadTimeout
 import math
@@ -34,6 +34,7 @@ async def analyze_conditions(request: AnalyzeRequest):
         from app.services.hybrid_provider import HybridWeatherProvider
         from app.services.stormglass_provider import StormglassProvider
         from app.services.openmeteo_provider import OpenMeteoProvider
+        from app.services.openweather_provider import OpenWeatherProvider
         from app.services.weather_service import WeatherService
         from app.services.noaa_tides_provider import NOAATidesProvider
         import os
@@ -41,10 +42,12 @@ async def analyze_conditions(request: AnalyzeRequest):
         # Configurar providers
         noaa_tides = NOAATidesProvider()
         stormglass = StormglassProvider(tide_provider=noaa_tides) if os.getenv("STORMGLASS_API_KEY") else None
+        openweather = OpenWeatherProvider()
         openmeteo = OpenMeteoProvider(tide_provider=noaa_tides)
         
         hybrid_provider = HybridWeatherProvider(
             stormglass_provider=stormglass,
+            openweather_provider=openweather,
             openmeteo_provider=openmeteo,
             tide_provider=noaa_tides
         )
@@ -150,6 +153,7 @@ async def get_timeline(request: TimelineRequest):
         from app.services.hybrid_provider import HybridWeatherProvider
         from app.services.stormglass_provider import StormglassProvider
         from app.services.openmeteo_provider import OpenMeteoProvider
+        from app.services.openweather_provider import OpenWeatherProvider
         from app.services.weather_service import WeatherService
         from app.services.noaa_tides_provider import NOAATidesProvider
         from app.services.sensei_engine import SenseiEngine
@@ -158,10 +162,12 @@ async def get_timeline(request: TimelineRequest):
         # Configurar providers
         noaa_tides = NOAATidesProvider()
         stormglass = StormglassProvider(tide_provider=noaa_tides) if os.getenv("STORMGLASS_API_KEY") else None
+        openweather = OpenWeatherProvider()
         openmeteo = OpenMeteoProvider(tide_provider=noaa_tides)
         
         hybrid_provider = HybridWeatherProvider(
             stormglass_provider=stormglass,
+            openweather_provider=openweather,
             openmeteo_provider=openmeteo,
             tide_provider=noaa_tides
         )
@@ -178,10 +184,27 @@ async def get_timeline(request: TimelineRequest):
             result = engine.analyze(wd, request.spot_id, request.user)
             
             # Formatear hora
+            # Formatear hora en zona horaria Argentina
             try:
-                ts = datetime.fromisoformat(wd.timestamp)
-                label = ts.strftime("%H:%M")
-            except:
+                # Parsear timestamp (puede venir con z u offset)
+                ts = datetime.fromisoformat(wd.timestamp.replace('Z', '+00:00'))
+                
+                # Si no tiene timezone, asumir UTC (OpenMeteo raw) o Local según corresponda?
+                # Para estar seguros, si viene de OpenMeteo con nuestro fix, debería ser correcto
+                # Pero aseguramos conversión a Argentina para display
+                if ts.tzinfo is None:
+                    # Asumimos que si no tiene tz, ya es local o es UTC naive
+                    # En nuestro caso OpenMeteo devuelve local naive
+                    pass
+                else:
+                    # Convertir a Argentina (UTC-3)
+                    argentina_offset = timedelta(hours=-3)
+                    ts = ts.astimezone(timezone(argentina_offset))
+                    
+                # Mostrar siempre la hora en punto (XX:00)
+                label = ts.strftime("%H:00")
+            except Exception as e:
+                logger.error(f"Error formatting time {wd.timestamp}: {e}")
                 label = "--:--"
                 
             timeline_points.append(TimelinePoint(
