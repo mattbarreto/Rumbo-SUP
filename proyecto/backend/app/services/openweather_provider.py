@@ -1,6 +1,7 @@
 import httpx
 import os
 import logging
+import asyncio
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 from app.services.weather_service import WeatherProvider
@@ -12,6 +13,8 @@ class OpenWeatherProvider(WeatherProvider):
     """
     Proveedor de datos usando OpenWeatherMap API (Plan Gratuito)
     Docs: https://openweathermap.org/forecast5
+    Estrategia de Tiempo: Combina /weather (Current) + /forecast (3-hour steps)
+    para asegurar continuidad desde la hora actual.
     """
     
     BASE_URL = "https://api.openweathermap.org/data/2.5"
@@ -41,57 +44,119 @@ class OpenWeatherProvider(WeatherProvider):
                 return self._map_to_weather_data(data)
             except Exception as e:
                 logger.error(f"Error fetching OpenWeather conditions: {e}")
-                # Re-lanzar para que el HybridProvider use fallback
                 raise
 
     async def get_forecast(self, lat: float, lon: float, hours: int = 24) -> List[WeatherData]:
-        """Obtiene pronóstico 3-horario (5 days)"""
+        """Obtiene pronóstico combinando Current + Forecast para asegurar inicio en hora actual"""
         if not self.api_key:
             raise ValueError("API Key faltante")
             
-        async with httpx.AsyncClient() as client:
-            try:
-                params = {
-                    "lat": lat,
-                    "lon": lon,
-                    "appid": self.api_key,
-                    "units": "metric",
-                    "cnt": int(hours / 3) + 2  # Pedir suficientes puntos (cada punto es 3hs)
-                }
-                response = await client.get(f"{self.BASE_URL}/forecast", params=params, timeout=10.0)
-                response.raise_for_status()
-                data = response.json()
+        # 1. Ejecutar Current y Forecast SECUENCIALMENTE para evitar rate limits o bloqueos
+        # Current es crítico para el punto de partida (Hora actual)
+        current_wd = None
+        forecast_list = []
+        
+        try:
+             # Fetch Current
+             current_wd = await self.get_conditions(lat, lon)
+             logger.info(f"✅ DEBUG: Current weather fetch success: {current_wd.timestamp}")
+        except Exception as e:
+             logger.error(f"❌ DEBUG: Current weather fetch failed: {e}")
+             current_wd = None
+             
+        try:
+             # Fetch Forecast
+             forecast_list = await self._fetch_raw_forecast(lat, lon, hours)
+             logger.info(f"✅ DEBUG: Forecast list fetch success: {len(forecast_list)} items")
+        except Exception as e:
+             logger.error(f"❌ DEBUG: Forecast fetch failed: {e}")
+             if current_wd: return [current_wd] # Devolver al menos lo que tenemos
+             raise e
+            
+        # 2. Procesar Forecast (Interpolación 3h -> 1h)
+        processed_forecast = []
+        for wd in forecast_list:
+            processed_forecast.append(wd)
+            # Rellenar huecos hacia adelante (3h steps -> 1h steps)
+            current_ts = datetime.fromisoformat(wd.timestamp.replace("Z", "+00:00"))
+            for offset in range(1, 3):
+                next_ts = current_ts + timedelta(hours=offset)
+                wd_clone = wd.model_copy(deep=True)
+                wd_clone.timestamp = next_ts.isoformat()
+                processed_forecast.append(wd_clone)
+        
+        # Ordenar forecast procesado
+        processed_forecast.sort(key=lambda x: x.timestamp)
+        
+        # 3. Integrar CurrentWeather al inicio
+        final_list = []
+        
+        if current_wd:
+            # Normalizar current timestamp al inicio de la hora exacta
+            # Ej: 15:48 -> 15:00
+            curr_dt = datetime.fromisoformat(current_wd.timestamp.replace("Z", "+00:00"))
+            curr_hour = curr_dt.replace(minute=0, second=0, microsecond=0)
+            current_wd.timestamp = curr_hour.isoformat()
+            
+            final_list.append(current_wd)
+            
+            # Rellenar hueco entre Current y el primer Forecast
+            if processed_forecast:
+                first_forecast_dt = datetime.fromisoformat(processed_forecast[0].timestamp.replace("Z", "+00:00"))
                 
-                result = []
-                # El endpoint retorna lista "list"
-                for item in data.get("list", []):
-                    wd = self._map_to_weather_data(item)
-                    result.append(wd)
-                    
-                    # Interpolar horas intermedias?
-                    # Por simplicidad, OpenWeather ofrece datos cada 3hs en free tier.
-                    # Para tener hora a hora, podríamos repetir o interpolar.
-                    # Vamos a implementar una repetición simple para llenar los huecos 
-                    # si es necesario, o dejar que el sistema use puntos cada 3hs.
-                    # El sistema espera hora a hora.
-                    
-                    # Generar +1h y +2h clonados (interpolación simple sticky)
-                    # Esto es un "hack" para llenar la timeline horaria con datos 3-horarios
-                    current_ts = datetime.fromisoformat(wd.timestamp)
-                    for offset in range(1, 3):
-                         # Clonar data pero cambiar timestamp
-                        next_ts = current_ts + timedelta(hours=offset)
-                        wd_clone = wd.model_copy(deep=True)
-                        wd_clone.timestamp = next_ts.isoformat()
-                        result.append(wd_clone)
+                # Si hay hueco (ej: Current 15:00, First Forecast 18:00)
+                # Rellenar 16:00, 17:00 con datos de Current
+                gap_hours = int((first_forecast_dt - curr_hour).total_seconds() / 3600)
                 
-                # Filtrar y ordenar por timestamp, cortar a 'hours' length
-                result.sort(key=lambda x: x.timestamp)
-                return result[:hours]
+                for i in range(1, gap_hours):
+                    fill_ts = curr_hour + timedelta(hours=i)
+                    fill_wd = current_wd.model_copy(deep=True)
+                    fill_wd.timestamp = fill_ts.isoformat()
+                    final_list.append(fill_wd)
+        
+        # 4. Combinar con forecast (evitando duplicados de hora)
+        # Usamos un set para trackear horas ya agregadas
+        seen_hours = set()
+        for item in final_list:
+            seen_hours.add(item.timestamp)
+            
+        for item in processed_forecast:
+            # Si esta hora ya la cubrimos con Current (o relleno), saltar
+            # (Prefers Current data over Forecast data for overlapping hours)
+            if item.timestamp not in seen_hours:
+                # Solo agregar si es futuro respecto al último que tenemos
+                # O simplemente agregar y luego filtrar/ordenar
+                final_list.append(item)
+                seen_hours.add(item.timestamp)
 
-            except Exception as e:
-                logger.error(f"Error fetching OpenWeather forecast: {e}")
-                raise
+        # 5. Filtrar items pasados (mantener desde hora actual)
+        now_hour = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
+        final_list = [
+            x for x in final_list 
+            if datetime.fromisoformat(x.timestamp.replace("Z", "+00:00")) >= now_hour
+        ]
+        
+        final_list.sort(key=lambda x: x.timestamp)
+        return final_list[:hours]
+
+    async def _fetch_raw_forecast(self, lat, lon, hours):
+        """Helper para obtener solo la lista raw de forecast"""
+        async with httpx.AsyncClient() as client:
+            params = {
+                "lat": lat,
+                "lon": lon,
+                "appid": self.api_key,
+                "units": "metric",
+                "cnt": int(hours / 3) + 4 # Pedir extra por si acaso
+            }
+            response = await client.get(f"{self.BASE_URL}/forecast", params=params, timeout=10.0)
+            response.raise_for_status()
+            data = response.json()
+            
+            result = []
+            for item in data.get("list", []):
+                result.append(self._map_to_weather_data(item))
+            return result
 
     def _map_to_weather_data(self, data: dict) -> WeatherData:
         """Mapea respuesta JSON de OpenWeather a WeatherData"""
@@ -105,7 +170,7 @@ class OpenWeatherProvider(WeatherProvider):
             
         # Viento
         wind = data.get("wind", {})
-        wind_speed = wind.get("speed") # m/s
+        wind_speed = wind.get("speed") # m/s (default metric)
         wind_deg = wind.get("deg")
         
         if wind_speed is not None:
