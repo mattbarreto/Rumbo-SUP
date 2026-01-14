@@ -108,16 +108,31 @@ class SenseiEngine:
         # 2. Obtener el paquete completo de micro-narrativas
         scenario = get_scenario(scenario_id)
         
-        # 3. Retornar directamente las frases humanas (no tags)
+        # 3. Inyección Dinámica de Consejos (UV, Lluvia)
+        strategy_addite = ""
+        risk_addite = ""
+        
+        if "uv_alto" in flags:
+            uv_val = weather.atmosphere.uv_index
+            strategy_addite += f" ☀️ El sol está muy fuerte (UV {uv_val:.1f}). Usá lycra, gorro y mucho protector solar."
+            
+        if "lluvia" in flags:
+            driver = "lluvia" if "lluvia" in flags else "" # Placeholder
+            risk_addite += " 🌧️ La lluvia reduce la visibilidad y enfría el cuerpo rápido. "
+            
+        if "mar_picado" in flags:
+            risk_addite += " 🌊 El mar está picado (periodo corto), te va a costar más mantener el equilibrio."
+
+        # 4. Retornar semántica enriquecida
         return SemanticAnalysis(
             scenario_id=scenario.id,
             driver_desc=scenario.driver_desc,
             behavior_desc=scenario.behavior_desc,
             body_desc=scenario.body_desc,
-            risk_desc=scenario.risk_desc,
+            risk_desc=scenario.risk_desc + risk_addite,
             avoid_desc=scenario.avoid_desc,
             visual_cues=scenario.visual_cues,
-            strategy_desc=scenario.strategy_desc,
+            strategy_desc=scenario.strategy_desc + strategy_addite,
             beginner_tip=scenario.beginner_tip,
             advanced_tip=scenario.advanced_tip,
             learning_focus=scenario.learning_focus
@@ -146,7 +161,7 @@ class SenseiEngine:
             return "onshore"  # Sopla hacia la playa
         else:
             return "cross"  # Viento paralelo a costa
-    
+            
     def _evaluate_flags(
         self, 
         weather: WeatherData, 
@@ -161,21 +176,50 @@ class SenseiEngine:
         # Safe defaults for None
         wind_speed = weather.wind.speed_kmh if weather.wind.speed_kmh is not None else 0.0
         wave_height = weather.waves.height_m if weather.waves.height_m is not None else 0.0
+        wave_period = weather.waves.period_s if weather.waves.period_s is not None else 0.0
         
-        # Flag: Viento fuerte
+        # --- Flags Críticos de Seguridad ---
+        
+        # Tormenta Eléctrica (Códigos WMO 95, 96, 99)
+        wcode = weather.atmosphere.weather_code
+        if wcode in [95, 96, 99]:
+            flags.append("tormenta_electrica")
+            
+        # Visibilidad Nula (< 1km)
+        vis = weather.atmosphere.visibility_km
+        if vis is not None and vis < 1.0:
+            flags.append("visibilidad_nula")
+        
+        # --- Flags de Condiciones ---
+        
+        # Viento fuerte
         if wind_speed > 30:
             flags.append("viento_fuerte")
         
-        # Flag: Riesgo de deriva (offshore + inflable)
+        # Riesgo de deriva (offshore + inflable)
         if (weather.wind.relative_direction == "offshore" and 
             user.board_type == "inflable"):
             flags.append("riesgo_deriva")
         
-        # Flag: Olas grandes
+        # Olas grandes
         if wave_height > 1.5:
             flags.append("olas_grandes")
+            
+        # Mar Picado (Choppy): Periodo corto con cierta altura
+        if wave_period > 0 and wave_period < 5.0 and wave_height > 0.5:
+            flags.append("mar_picado")
         
-        # Flag: Principiante en condiciones moderadas
+        # Lluvia
+        precip = weather.atmosphere.precipitation_mm
+        if precip is not None and precip > 0.5:
+            flags.append("lluvia")
+            
+        # UV Alto
+        uv = weather.atmosphere.uv_index
+        if uv is not None and uv >= 6.0:
+            flags.append("uv_alto")
+        
+        # Principiante en condiciones moderadas
         if (user.experience == "beginner" and 
             (wind_speed > 20 or wave_height > 1.0)):
             flags.append("principiante_condiciones_moderadas")
@@ -236,6 +280,16 @@ class SenseiEngine:
         # Ajuste por offshore (siempre reduce seguridad)
         if weather.wind.relative_direction == "offshore":
             score -= 15
+            
+        # Penalización por Mar Picado (inestabilidad)
+        if "mar_picado" in flags:
+            score -= 10
+            
+        # Penalización por Visibilidad/Lluvia
+        if "visibilidad_nula" in flags or "tormenta_electrica" in flags:
+            score = 0  # CRÍTICO: Anular seguridad
+        elif "lluvia" in flags:
+            score -= 10
         
         # Clamp entre 0-100
         return max(0, min(100, int(score)))
@@ -267,6 +321,10 @@ class SenseiEngine:
         
         # Olas aumentan esfuerzo
         effort += wave_height * 15
+        
+        # Mar Picado aumenta esfuerzo significativamente (constante corrección)
+        if weather.waves.period_s and weather.waves.period_s < 5.0 and wave_height > 0.5:
+            effort += 20
         
         # Clamp entre 0-100
         return max(0, min(100, int(effort)))

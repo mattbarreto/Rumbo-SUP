@@ -187,6 +187,26 @@ SCENARIOS = {
         advanced_tip="Buen día para un workout intenso. Establecé un tiempo límite y respetalo.",
         learning_focus="Si lográs mantener el control en condiciones mixtas y volvés con energía de reserva, estás gestionando bien el esfuerzo."
     ),
+    # ───────────────────────────────────────────────────────────────
+    # ESCENARIO: Tormenta o Visibilidad Nula (PELIGRO CRÍTICO)
+    # ───────────────────────────────────────────────────────────────
+    "tormenta_peligrosa": ScenarioOutput(
+        id="tormenta_peligrosa",
+        driver_desc="Hay riesgo de actividad eléctrica o visibilidad nula. El ambiente es hostil.",
+        behavior_desc="El cielo está amenazante, hay truenos, rayos o niebla cerrada que te impide ver la costa.",
+        body_desc="Sentís la presión baja o la humedad extrema. La estática en el aire es señal de peligro inminente.",
+        risk_desc="PELIGRO DE MUERTE por rayo o pérdida total de orientación. El agua es conductora. Si hay niebla, podés perder la referencia de la costa en segundos.",
+        avoid_desc="NO ENTRES AL AGUA BAJO NINGUNA CIRCUNSTANCIA. Si estás adentro, SALÍ YA MISMO.",
+        visual_cues=[
+            "Nubes verticales de gran desarrollo (Cumulonimbus)",
+            "Relámpagos o truenos (aunque suenen lejos)",
+            "No ves objetos a más de 500 metros (niebla)"
+        ],
+        strategy_desc="Quedate en tierra firme, lejos del agua y de árboles altos. Buscá refugio cerrado.",
+        beginner_tip="Hoy el SUP está prohibido por seguridad.",
+        advanced_tip="Ni los más expertos entran con tormenta eléctrica. Respetá la regla de oro.",
+        learning_focus="La lección de hoy es saber cuándo NO entrar. La seguridad es la prioridad absoluta."
+    ),
 }
 
 
@@ -198,6 +218,10 @@ def classify_scenario(
     flags: List[str]
 ) -> str:
     """Clasifica las condiciones en UN escenario coherente."""
+    
+    # Critical overrides
+    if "tormenta_electrica" in flags or "visibilidad_nula" in flags:
+        return "tormenta_peligrosa"
     
     # Safe defaults for None values
     wind_speed = wind_speed if wind_speed is not None else 0.0
