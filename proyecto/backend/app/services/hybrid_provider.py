@@ -82,6 +82,12 @@ class HybridWeatherProvider(WeatherProvider):
                 try:
                     data = await self.openmeteo.get_conditions(lat, lon)
                     
+                    # CRITICAL FIX: If OpenMeteo returns "zombie" data (No Wind AND No Waves),
+                    # we must reject it to trigger the Windy fallback.
+                    if data.wind.speed_kmh is None and data.waves.height_m is None:
+                        logger.warning("⚠️ OpenMeteo returned empty data (Zombie). Triggering fallback...")
+                        raise ValueError("OpenMeteo returned empty/invalid data")
+                    
                     # --- HYBRID MERGE LOGIC (FRANKENSTEIN FIX) ---
                     # Si OpenMeteo no trajo viento (posible bloqueo de Forecast API)
                     # pero OpenWeather está disponible, intentamos rellenar el hueco.
