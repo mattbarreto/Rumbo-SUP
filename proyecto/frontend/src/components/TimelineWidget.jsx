@@ -1,9 +1,24 @@
 import React from 'react';
 import './TimelineWidget.css';
+import { EffortLowIcon, EffortMediumIcon, EffortHighIcon } from './EffortIcons';
 
 const TimelineWidget = ({ timeline, onPointSelect, selectedIndex }) => {
     // Si no hay timeline, no renderizar nada o skeleton
     if (!timeline || timeline.length === 0) return null;
+
+    // Mapeo de nivel de esfuerzo a componente SVG
+    const getEffortIcon = (effort) => {
+        switch (effort) {
+            case 'bajo':
+                return <EffortLowIcon size={28} className="effort-icon" />;
+            case 'medio':
+                return <EffortMediumIcon size={28} className="effort-icon" />;
+            case 'alto':
+                return <EffortHighIcon size={28} className="effort-icon" />;
+            default:
+                return <EffortMediumIcon size={28} className="effort-icon" />;
+        }
+    };
 
     return (
         <div className="timeline-widget">
@@ -31,14 +46,10 @@ const TimelineWidget = ({ timeline, onPointSelect, selectedIndex }) => {
                             {/* Traffic Light Indicator */}
                             <div className="traffic-light-indicator"></div>
 
-                            {/* Optional: We can keep the effort icon or remove it to reduce noise. 
-                                Keeping it small for now as per "Thumb Zone" usually implies less clutter, 
-                                but user didn't explicitly ask to remove it. */}
-                            <span className="effort-mini-icon" title={`Esfuerzo: ${effort}`}>
-                                {effort === 'alto' && '🔥'}
-                                {effort === 'medio' && '💧'}
-                                {effort === 'bajo' && '😌'}
-                            </span>
+                            {/* Effort Icon (SVG - Transparent) */}
+                            <div className="effort-icon-wrapper" title={`Esfuerzo: ${effort}`}>
+                                {getEffortIcon(effort)}
+                            </div>
                         </div>
                     );
                 })}
@@ -48,3 +59,5 @@ const TimelineWidget = ({ timeline, onPointSelect, selectedIndex }) => {
 };
 
 export default TimelineWidget;
+
+

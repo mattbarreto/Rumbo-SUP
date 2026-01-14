@@ -1,10 +1,9 @@
-import httpx
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List
 from app.services.weather_service import WeatherProvider
+from app.services.http_client import http_client
 from app.models.schemas import WeatherData, WindData, WaveData, TideData, AtmosphereData
 import logging
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 logger = logging.getLogger(__name__)
 
@@ -42,22 +41,21 @@ class OpenMeteoProvider(WeatherProvider):
         forecast_data = None
         marine_data = None
         
-        async with httpx.AsyncClient() as client:
-            # Request 1: Viento desde Weather Forecast API
-            try:
-                forecast_data = await self._fetch_forecast_data(client, lat, lon)
-                logger.info("✅ Forecast API: datos de viento obtenidos")
-            except Exception as e:
-                logger.error(f"❌ Forecast API failed: {e}")
-                # Continuar - intentaremos obtener datos parciales
-            
-            # Request 2: Olas desde Marine API
-            try:
-                marine_data = await self._fetch_marine_data(client, lat, lon)
-                logger.info("✅ Marine API: datos de olas obtenidos")
-            except Exception as e:
-                logger.error(f"❌ Marine API failed: {e}")
-                # Continuar - intentaremos obtener datos parciales
+        # Request 1: Viento desde Weather Forecast API
+        try:
+            forecast_data = await self._fetch_forecast_data(lat, lon)
+            logger.info("✅ Forecast API: datos de viento obtenidos")
+        except Exception as e:
+            logger.error(f"❌ Forecast API failed: {e}")
+            # Continuar - intentaremos obtener datos parciales
+        
+        # Request 2: Olas desde Marine API
+        try:
+            marine_data = await self._fetch_marine_data(lat, lon)
+            logger.info("✅ Marine API: datos de olas obtenidos")
+        except Exception as e:
+            logger.error(f"❌ Marine API failed: {e}")
+            # Continuar - intentaremos obtener datos parciales
         
         # Verificar que al menos una API funcionó
         if forecast_data is None and marine_data is None:
@@ -74,45 +72,41 @@ class OpenMeteoProvider(WeatherProvider):
         forecast_data = None
         marine_data = None
         
-        async with httpx.AsyncClient() as client:
-            # Request 1: Viento
-            try:
-                forecast_params = {
-                    "latitude": lat,
-                    "longitude": lon,
-                    "hourly": "wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weathercode,cloudcover,uv_index,visibility",
-                    "timezone": "UTC",
-                    "forecast_days": 2,
-                    "models": "best_match"
-                }
-                forecast_response = await client.get(
-                    self.FORECAST_URL,
-                    params=forecast_params,
-                    timeout=10.0
-                )
-                forecast_response.raise_for_status()
-                forecast_data = forecast_response.json()
-            except Exception as e:
-                logger.error(f"Forecast API forecast failed: {e}")
-            
-            # Request 2: Olas
-            try:
-                marine_params = {
-                    "latitude": lat,
-                    "longitude": lon,
-                    "hourly": "wave_height,wave_period,wave_direction",
-                    "timezone": "UTC",
-                    "forecast_days": 2
-                }
-                marine_response = await client.get(
-                    self.MARINE_URL,
-                    params=marine_params,
-                    timeout=10.0
-                )
-                marine_response.raise_for_status()
-                marine_data = marine_response.json()
-            except Exception as e:
-                logger.error(f"Marine API forecast failed: {e}")
+        # Request 1: Viento
+        try:
+            forecast_params = {
+                "latitude": lat,
+                "longitude": lon,
+                "hourly": "wind_speed_10m,wind_direction_10m,temperature_2m,precipitation,weathercode,cloudcover,uv_index,visibility",
+                "timezone": "UTC",
+                "forecast_days": 2,
+                "models": "best_match"
+            }
+            # Usa http_client.get que ya valida status y hace retries
+            forecast_response_json = await http_client.get(
+                self.FORECAST_URL,
+                params=forecast_params
+            )
+            forecast_data = forecast_response_json
+        except Exception as e:
+            logger.error(f"Forecast API forecast failed: {e}")
+        
+        # Request 2: Olas
+        try:
+            marine_params = {
+                "latitude": lat,
+                "longitude": lon,
+                "hourly": "wave_height,wave_period,wave_direction",
+                "timezone": "UTC",
+                "forecast_days": 2
+            }
+            marine_response_json = await http_client.get(
+                self.MARINE_URL,
+                params=marine_params
+            )
+            marine_data = marine_response_json
+        except Exception as e:
+            logger.error(f"Marine API forecast failed: {e}")
             
         if forecast_data is None and marine_data is None:
             raise ValueError("Ambas APIs fallaron - no se puede obtener pronóstico")
@@ -297,9 +291,8 @@ class OpenMeteoProvider(WeatherProvider):
             provider="openmeteo_fallback"
         )
         
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10), retry=retry_if_exception_type(httpx.TransportError))
-    async def _fetch_forecast_data(self, client, lat, lon):
-        """Helper con retry para Forecast API"""
+    async def _fetch_forecast_data(self, lat, lon):
+        """Helper para Forecast API usando ResilientHttpClient"""
         forecast_params = {
             "latitude": lat,
             "longitude": lon,
@@ -308,17 +301,11 @@ class OpenMeteoProvider(WeatherProvider):
             "forecast_days": 1,
             "models": "best_match"
         }
-        forecast_response = await client.get(
-            self.FORECAST_URL,
-            params=forecast_params,
-            timeout=10.0
-        )
-        forecast_response.raise_for_status()
-        return forecast_response.json()
+        # Delegamos retry/timeout a http_client
+        return await http_client.get(self.FORECAST_URL, params=forecast_params)
         
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10), retry=retry_if_exception_type(httpx.TransportError))
-    async def _fetch_marine_data(self, client, lat, lon):
-        """Helper con retry para Marine API"""
+    async def _fetch_marine_data(self, lat, lon):
+        """Helper para Marine API usando ResilientHttpClient"""
         marine_params = {
             "latitude": lat,
             "longitude": lon,
@@ -326,13 +313,7 @@ class OpenMeteoProvider(WeatherProvider):
             "timezone": "UTC",
             "forecast_days": 1
         }
-        marine_response = await client.get(
-            self.MARINE_URL,
-            params=marine_params,
-            timeout=10.0
-        )
-        marine_response.raise_for_status()
-        return marine_response.json()
+        return await http_client.get(self.MARINE_URL, params=marine_params)
 
     async def _get_tide_state(self, lat, lon) -> str:
         if self.tide_provider:

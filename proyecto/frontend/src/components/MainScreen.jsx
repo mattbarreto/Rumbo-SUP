@@ -8,7 +8,9 @@ import WindVisualizer from './WindVisualizer';
 import TimelineWidget from './TimelineWidget';
 import SessionGoalSelector from './SessionGoalSelector';
 import MetricCard from './MetricCard';
+import metricCard from './MetricCard';
 import { WindIcon, WaveIcon, TideIcon, RefreshIcon, SettingsIcon, BrainIcon, LocationIcon, TimeIcon, ShieldIcon, EffortIcon, EnjoymentIcon, AlertIcon, ShareIcon } from './Icons';
+import { WindIconMinimal, DirectionIconMinimal, WaveIconMinimal, UpdateIconMinimal, BrainIconMinimal, ShieldIconMinimal, EffortIconMinimal, EnjoymentIconMinimal } from './WeatherIcons';
 import RumboPanel from './RumboPanel';
 import OceanSkeleton from './OceanSkeleton';
 import ColdStartLoader from './ColdStartLoader';
@@ -245,21 +247,21 @@ function MainScreen() {
                         label="Viento"
                         value={weather.wind.speed_kmh !== null ? Math.round(weather.wind.speed_kmh) : null}
                         unit="km/h"
-                        icon="💨"
+                        icon={<WindIconMinimal size={24} />}
                         threshold="wind"
                     />
                     <MetricCard
                         label="Dirección"
                         value={weather.wind.direction_deg !== null ? weather.wind.direction_deg + '°' : null}
                         unit=""
-                        icon="🧭"
+                        icon={<DirectionIconMinimal size={24} />}
                         threshold={null}
                     />
                     <MetricCard
                         label="Olas"
                         value={weather.waves.height_m !== null ? weather.waves.height_m.toFixed(1) : null}
                         unit="m"
-                        icon="🌊"
+                        icon={<WaveIconMinimal size={24} />}
                         threshold="wave"
                     />
 
@@ -268,21 +270,21 @@ function MainScreen() {
                         label="Seguridad"
                         value={result.scores.seguridad}
                         unit="%"
-                        icon={<ShieldIcon size={24} />}
+                        icon={<ShieldIconMinimal size={24} />}
                         threshold={null}
                     />
                     <MetricCard
                         label="Esfuerzo"
                         value={result.scores.esfuerzo}
                         unit="%"
-                        icon={<EffortIcon size={24} />}
+                        icon={<EffortIconMinimal size={24} />}
                         threshold={null} // Manual severity handling could be added
                     />
                     <MetricCard
                         label="Disfrute"
                         value={result.scores.disfrute}
                         unit="%"
-                        icon={<EnjoymentIcon size={24} />}
+                        icon={<EnjoymentIconMinimal size={24} />}
                         threshold={null}
                     />
                 </div>
@@ -343,7 +345,7 @@ function MainScreen() {
                 <div className="actions-section">
                     {!isForecast && (
                         <button className="btn btn-primary btn-large" onClick={handleRefresh}>
-                            🔄 Actualizar
+                            <UpdateIconMinimal size={20} style={{ marginRight: '8px' }} /> Actualizar
                         </button>
                     )}
                     <button
@@ -352,7 +354,7 @@ function MainScreen() {
                             state: { user: profile, weather, result }
                         })}
                     >
-                        🧠 Análisis del Guía
+                        <BrainIconMinimal size={20} style={{ marginRight: '8px' }} /> Análisis del Guía
                     </button>
                 </div>
             </div>
