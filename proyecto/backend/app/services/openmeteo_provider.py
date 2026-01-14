@@ -159,9 +159,9 @@ class OpenMeteoProvider(WeatherProvider):
         times = forecast_hourly.get("time", []) or marine_hourly.get("time", [])
         
         if not times:
-            # Fallback completo: crear datos con valores actuales
-            logger.warning("No hay datos de tiempo disponibles, usando valores por defecto")
-            return self._create_fallback_weather_data(lat, lon)
+            # En lugar de retornar datos vacíos, lanzar excepción para activar fallback
+            logger.error("OpenMeteo: No hay datos horarios disponibles en respuesta")
+            raise ValueError("OpenMeteo _parse_combined_response: No time series data available")
             
         # Encontrar índice actual
         current_idx = self._find_current_index(times)
@@ -180,8 +180,8 @@ class OpenMeteoProvider(WeatherProvider):
         times = forecast_hourly.get("time", []) or marine_hourly.get("time", [])
         
         if not times:
-            logger.warning("No hay datos de pronóstico disponibles")
-            return []
+            logger.error("OpenMeteo Forecast: No hay datos de pronóstico disponibles")
+            raise ValueError("OpenMeteo _parse_combined_forecast_response: No time series data in response")
             
         start_idx = self._find_current_index(times)
         result = []
