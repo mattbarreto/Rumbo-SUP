@@ -102,8 +102,10 @@ class OpenMeteoProvider(WeatherProvider):
                 params=forecast_params
             )
             forecast_data = forecast_response_json
+            forecast_error = None
         except Exception as e:
             logger.error(f"Forecast API forecast failed: {e}")
+            forecast_error = str(e)
         
         # Request 2: Olas
         try:
@@ -121,6 +123,12 @@ class OpenMeteoProvider(WeatherProvider):
             marine_data = marine_response_json
         except Exception as e:
             logger.error(f"Marine API forecast failed: {e}")
+            marine_error = str(e)
+        else:
+            marine_error = None
+        
+        # Log detallado de estado después de fetch
+        logger.info(f"🔍 OpenMeteo Forecast estado: forecast_data={'Sí' if forecast_data else 'No'}, marine_data={'Sí' if marine_data else 'No'}")
         
         # Validar que al menos un API retornó datos reales
         has_forecast_data = forecast_data and forecast_data.get("hourly", {}).get("time", [])
@@ -128,11 +136,16 @@ class OpenMeteoProvider(WeatherProvider):
         
         if has_forecast_data:
             logger.info(f"✅ Forecast API forecast: {len(forecast_data['hourly']['time'])} horas")
+        else:
+            logger.warning(f"⚠️ Forecast API: sin datos horarios")
+            
         if has_marine_data:
             logger.info(f"✅ Marine API forecast: {len(marine_data['hourly']['time'])} horas")
+        else:
+            logger.warning(f"⚠️ Marine API: sin datos horarios")
             
         if not has_forecast_data and not has_marine_data:
-            raise ValueError("OpenMeteo Forecast: Ambas APIs retornaron datos vacíos")
+            raise ValueError(f"OpenMeteo Forecast: Ambas APIs retornaron datos vacíos (forecast_error={forecast_error}, marine_error={marine_error})")
             
         return await self._parse_combined_forecast_response(forecast_data, marine_data, lat, lon, hours)
 
