@@ -5,6 +5,8 @@
 ![React](https://img.shields.io/badge/frontend-React%20%2B%20Vite-61DAFB)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+🔗 **Demo en vivo**: [rumbo.matiasbarreto.com](https://rumbo.matiasbarreto.com)
+
 **Rumbo SUP** es una Aplicación Web Progresiva (PWA) diseñada para practicantes de Stand Up Paddle en Mar del Plata. Utiliza un motor híbrido de inteligencia meteorológica para analizar condiciones marítimas en tiempo real y ofrecer recomendaciones personalizadas de seguridad y disfrute, adaptadas a tu nivel de experiencia y equipamiento.
 
 ## 🎯 Arquitectura "Split Brain"
@@ -116,9 +118,14 @@ npm run dev
 
 La app estará disponible en `http://localhost:5173`.
 
-## 📦 Despliegue
+## 📦 Despliegue (Producción)
 
-La infraestructura está definida como código en `render.yaml`. El despliegue es automático en **Render.com** al hacer push a `main`.
+| Servicio | URL | Infraestructura |
+|----------|-----|----------------|
+| Frontend | `https://rumbo.matiasbarreto.com` | Nginx + Docker |
+| Backend | `https://rumbo-api.matiasbarreto.com` | FastAPI + Docker |
+
+La app corre en un **VPS con Docker y Traefik** como reverse proxy. Ver `docs/INFRAESTRUCTURA_Y_MANTENIMIENTO.md` para procedimientos de deploy.
 
 ## 🧪 Principios Arquitectónicos
 
