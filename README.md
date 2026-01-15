@@ -118,14 +118,12 @@ npm run dev
 
 La app estará disponible en `http://localhost:5173`.
 
-## 📦 Despliegue (Producción)
+## 📦 Demo en Producción
 
-| Servicio | URL | Infraestructura |
-|----------|-----|----------------|
-| Frontend | `https://rumbo.matiasbarreto.com` | Nginx + Docker |
-| Backend | `https://rumbo-api.matiasbarreto.com` | FastAPI + Docker |
-
-La app corre en un **VPS con Docker y Traefik** como reverse proxy. Ver `docs/INFRAESTRUCTURA_Y_MANTENIMIENTO.md` para procedimientos de deploy.
+| Servicio | URL |
+|----------|-----|
+| Frontend | `https://rumbo.matiasbarreto.com` |
+| Backend API | `https://rumbo-api.matiasbarreto.com` |
 
 ## 🧪 Principios Arquitectónicos
 
