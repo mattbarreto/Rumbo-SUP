@@ -39,13 +39,10 @@
     overflow: visible;
 }
 
-/* Animations - Fluid Air Displacement */
-
-/* Onshore (Hacia costa / Downward perspective) */
-/* Viento viene del horizonte (arriba/lejos) hacia cámara (abajo/cerca) */
-@keyframes flowDownSVG {
+/* Unified Horizontal Flow - Base for Rotation */
+@keyframes flowHorizontal {
     0% {
-        transform: translateY(-40px) scale(0.6);
+        transform: translateX(-80px) scale(var(--scale, 1));
         opacity: 0;
     }
 
@@ -58,73 +55,28 @@
     }
 
     100% {
-        transform: translateY(60px) scale(1.1);
+        transform: translateX(80px) scale(var(--scale, 1));
         opacity: 0;
     }
 }
 
-/* Offshore (Hacia mar / Upward perspective) */
-/* Viento va de cámara (abajo/cerca) hacia horizonte (arriba/lejos) */
-@keyframes flowUpSVG {
-    0% {
-        transform: translateY(60px) scale(1.1);
-        opacity: 0;
-    }
-
-    10% {
-        opacity: var(--opacity, 0.6);
-    }
-
-    90% {
-        opacity: var(--opacity, 0.6);
-    }
-
-    100% {
-        transform: translateY(-40px) scale(0.6);
-        opacity: 0;
-    }
+.wind-particle-rotator {
+    position: absolute;
+    width: 0;
+    height: 0;
+    /* Pivot point */
+    transform-origin: center;
+    will-change: transform;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Cross (Lateral / Flat horizon movement) */
-/* Movimiento puramente horizontal */
-@keyframes flowRightSVG {
-    0% {
-        transform: translateX(-120px);
-        opacity: 0;
-    }
-
-    10% {
-        opacity: var(--opacity, 0.6);
-    }
-
-    90% {
-        opacity: var(--opacity, 0.6);
-    }
-
-    100% {
-        transform: translateX(120px);
-        opacity: 0;
-    }
-}
-
-/* Apply animations */
-.particle-flow-down {
-    animation-name: flowDownSVG;
-    animation-timing-function: linear;
-    /* Constant speed flow */
-    animation-iteration-count: infinite;
-}
-
-.particle-flow-up {
-    animation-name: flowUpSVG;
+.wind-particle-animator {
+    animation-name: flowHorizontal;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
-}
-
-.particle-flow-right {
-    animation-name: flowRightSVG;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+    will-change: transform, opacity;
 }
 
 .coastline-svg {
@@ -169,12 +121,16 @@
 }
 
 .wind-dir-label {
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     background: rgba(0, 0, 0, 0.4);
-    padding: 2px 8px;
+    padding: 2px 6px;
     border-radius: 12px;
     margin-top: 4px;
+    white-space: nowrap;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

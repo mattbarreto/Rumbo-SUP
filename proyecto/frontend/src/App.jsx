@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import OnboardingFlow from './components/OnboardingFlow';
 import MainScreen from './components/MainScreen';
@@ -8,6 +8,33 @@ import AboutScreen from './components/AboutScreen';
 import PasswordGate from './components/PasswordGate';
 import BackgroundOcean from './components/BackgroundOcean';
 import { isMobile, isDevMode } from './utils/deviceDetection';
+
+import { AnimatePresence } from 'framer-motion';
+
+function AnimatedRoutes({ hasCompletedOnboarding, setHasCompletedOnboarding }) {
+    const location = useLocation();
+
+    return (
+        <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+                {!hasCompletedOnboarding ? (
+                    <>
+                        <Route path="/onboarding" element={<OnboardingFlow onComplete={() => setHasCompletedOnboarding(true)} />} />
+                        <Route path="*" element={<Navigate to="/onboarding" replace />} />
+                    </>
+                ) : (
+                    <>
+                        <Route path="/" element={<MainScreen />} />
+                        <Route path="/sensei" element={<SenseiScreen />} />
+                        <Route path="/profile" element={<ProfileScreen />} />
+                        <Route path="/about" element={<AboutScreen />} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </>
+                )}
+            </Routes>
+        </AnimatePresence>
+    );
+}
 
 function App() {
     const [isMobileDevice, setIsMobileDevice] = useState(true);
@@ -40,22 +67,10 @@ function App() {
         <PasswordGate>
             <BackgroundOcean />
             <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                <Routes>
-                    {!hasCompletedOnboarding ? (
-                        <>
-                            <Route path="/onboarding" element={<OnboardingFlow onComplete={() => setHasCompletedOnboarding(true)} />} />
-                            <Route path="*" element={<Navigate to="/onboarding" replace />} />
-                        </>
-                    ) : (
-                        <>
-                            <Route path="/" element={<MainScreen />} />
-                            <Route path="/sensei" element={<SenseiScreen />} />
-                            <Route path="/profile" element={<ProfileScreen />} />
-                            <Route path="/about" element={<AboutScreen />} />
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </>
-                    )}
-                </Routes>
+                <AnimatedRoutes
+                    hasCompletedOnboarding={hasCompletedOnboarding}
+                    setHasCompletedOnboarding={setHasCompletedOnboarding}
+                />
             </BrowserRouter>
         </PasswordGate>
     );

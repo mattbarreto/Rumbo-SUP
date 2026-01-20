@@ -43,9 +43,32 @@ proyecto/backend/logs/
 .env*
 !.env.example
 
-# Internal documentation and planning (keep local only)
+# Internal documentation and planning (KEEP LOCAL - NOT FOR PUBLIC)
 docs/
+diseño/
 test_weather_apis.py
+.agent/
+.gemini/
 
-DEPLOY.md
+# Additional Python
 .venv/
+*.egg-info/
+dist/
+build/
+
+# Lighthouse reports
+lighthouse-report.json
+proyecto/frontend/lighthouse-report.json
+
+# Mac specific
+*.DS_Store
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# Brain/conversation artifacts (AI assistant)
+brain/
+*.brain

@@ -10,10 +10,13 @@ import './MetricCard.css';
  * - Tabular numbers for consistent data scanning
  * - NO overlapping (clarity over aesthetics)
  */
+import { useSpring, animated } from 'react-spring';
+
 function MetricCard({ label, value, unit, icon, threshold }) {
     // Determine severity based on threshold
     const getSeverity = () => {
         if (!threshold) return 'neutral';
+        if (value === null || value === undefined) return 'neutral';
 
         if (label.toLowerCase().includes('viento') || label.toLowerCase().includes('wind')) {
             // Wind thresholds (km/h)
@@ -49,6 +52,19 @@ function MetricCard({ label, value, unit, icon, threshold }) {
 
     const safetyColor = getSafetyColor();
 
+    // Spring Animation for Value
+    // Distinguish between numeric values (animate) and non-numeric values (display as-is)
+    const parsedValue = Number(value);
+    const isValidNumber = !isNaN(parsedValue) && isFinite(parsedValue) && value !== null && value !== undefined;
+    const numericValue = isValidNumber ? parsedValue : 0;
+
+    // Only animate if we have a valid number
+    const { val } = useSpring({
+        from: { val: 0 },
+        val: numericValue,
+        config: { mass: 1, tension: 40, friction: 20 }
+    });
+
     return (
         <motion.div
             className={`metric-card metric-card--${severity}`}
@@ -69,15 +85,21 @@ function MetricCard({ label, value, unit, icon, threshold }) {
             </div>
 
             <div className="metric-card__body">
-                <motion.div
-                    className="metric-card__value"
-                    key={value}
-                    initial={{ scale: 1.2, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                >
-                    {value !== null && value !== undefined ? value : '-'}
-                </motion.div>
+                <animated.div className="metric-card__value">
+                    {value === null || value === undefined
+                        ? '-'
+                        : isValidNumber
+                            ? val.to(v => {
+                                // Smart formatting: if original value implies decimals (e.g. wave), keep 1 decimal
+                                // otherwise round
+                                if (label.toLowerCase().includes('ola') || label.toLowerCase().includes('wave')) {
+                                    return v.toFixed(1);
+                                }
+                                return Math.round(v);
+                            })
+                            : value /* Display non-numeric values as-is (e.g. "45°") */
+                    }
+                </animated.div>
                 <span className="metric-card__unit">{value !== null && value !== undefined ? unit : ''}</span>
             </div>
 

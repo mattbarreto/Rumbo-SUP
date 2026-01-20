@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { WaveIcon, LocationIcon, BrainIcon, EnjoymentIcon, EffortIcon, ShieldIcon } from './Icons';
+import { WaveIcon, LocationIcon, BrainIcon, EnjoymentIcon, EffortIcon, ShieldIcon, TargetIcon, TideIcon, BodyIcon } from './Icons';
 import './OnboardingFlow.css';
 
 function OnboardingFlow({ onComplete }) {
@@ -40,7 +41,17 @@ function OnboardingFlow({ onComplete }) {
     };
 
     return (
-        <div className="onboarding-page">
+        <motion.div
+            className="page onboarding-flow onboarding-page"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 30
+            }}
+        >
             <div className="onboarding-container">
 
                 {/* Step 1: Bienvenida */}
@@ -70,9 +81,14 @@ function OnboardingFlow({ onComplete }) {
                                 <span>Explicaciones que te enseñan a leer el mar</span>
                             </div>
                         </div>
-                        <button className="btn btn-primary btn-large" onClick={handleNext}>
+                        <motion.button
+                            className="btn btn-primary btn-large btn-wave"
+                            onClick={handleNext}
+                            whileTap={{ scale: 0.95, y: 2 }}
+                            transition={{ duration: 0.1 }}
+                        >
                             Comenzar
-                        </button>
+                        </motion.button>
                     </div>
                 )}
 
@@ -101,7 +117,7 @@ function OnboardingFlow({ onComplete }) {
                                     className={`radio-btn ${formData.boardType === 'inflable' ? 'active' : ''}`}
                                     onClick={() => handleInputChange('boardType', 'inflable')}
                                 >
-                                    <WaveIcon size={20} className="radio-icon" />
+                                    <BodyIcon size={20} className="radio-icon" />
                                     <div className="radio-content">
                                         <span>Inflable</span>
                                         <small>Más fácil de transportar</small>
@@ -117,6 +133,7 @@ function OnboardingFlow({ onComplete }) {
                                     className={`radio-btn ${formData.experience === 'beginner' ? 'active' : ''}`}
                                     onClick={() => handleInputChange('experience', 'beginner')}
                                 >
+                                    <TideIcon size={20} className="radio-icon" direction="falling" />
                                     <div className="radio-content">
                                         <span>Principiante</span>
                                         <small>Menos de 10 salidas</small>
@@ -126,6 +143,7 @@ function OnboardingFlow({ onComplete }) {
                                     className={`radio-btn ${formData.experience === 'intermediate' ? 'active' : ''}`}
                                     onClick={() => handleInputChange('experience', 'intermediate')}
                                 >
+                                    <TideIcon size={20} className="radio-icon" direction="neutral" />
                                     <div className="radio-content">
                                         <span>Intermedio</span>
                                         <small>Entre 10 y 50 salidas</small>
@@ -135,6 +153,7 @@ function OnboardingFlow({ onComplete }) {
                                     className={`radio-btn ${formData.experience === 'advanced' ? 'active' : ''}`}
                                     onClick={() => handleInputChange('experience', 'advanced')}
                                 >
+                                    <TideIcon size={20} className="radio-icon" direction="rising" />
                                     <div className="radio-content">
                                         <span>Avanzado</span>
                                         <small>Más de 50 salidas</small>
@@ -150,7 +169,7 @@ function OnboardingFlow({ onComplete }) {
                                     className={`radio-btn ${formData.paddlePower === 'low' ? 'active' : ''}`}
                                     onClick={() => handleInputChange('paddlePower', 'low')}
                                 >
-                                    <EffortIcon size={20} className="radio-icon" />
+                                    <TideIcon size={20} className="radio-icon" direction="falling" />
                                     <div className="radio-content">
                                         <span>Baja</span>
                                         <small>Me canso rápido</small>
@@ -160,7 +179,7 @@ function OnboardingFlow({ onComplete }) {
                                     className={`radio-btn ${formData.paddlePower === 'medium' ? 'active' : ''}`}
                                     onClick={() => handleInputChange('paddlePower', 'medium')}
                                 >
-                                    <EffortIcon size={20} className="radio-icon" />
+                                    <TideIcon size={20} className="radio-icon" direction="neutral" />
                                     <div className="radio-content">
                                         <span>Media</span>
                                         <small>Resistencia normal</small>
@@ -170,7 +189,7 @@ function OnboardingFlow({ onComplete }) {
                                     className={`radio-btn ${formData.paddlePower === 'high' ? 'active' : ''}`}
                                     onClick={() => handleInputChange('paddlePower', 'high')}
                                 >
-                                    <EffortIcon size={20} className="radio-icon" />
+                                    <TideIcon size={20} className="radio-icon" direction="rising" />
                                     <div className="radio-content">
                                         <span>Alta</span>
                                         <small>Puedo remar contra viento</small>
@@ -180,16 +199,23 @@ function OnboardingFlow({ onComplete }) {
                         </div>
 
                         <div className="button-group">
-                            <button className="btn btn-secondary" onClick={() => setStep(1)}>
+                            <motion.button
+                                className="btn btn-secondary"
+                                onClick={() => setStep(1)}
+                                whileTap={{ scale: 0.95, y: 2 }}
+                                transition={{ duration: 0.1 }}
+                            >
                                 Atrás
-                            </button>
-                            <button
-                                className="btn btn-primary"
+                            </motion.button>
+                            <motion.button
+                                className="btn btn-primary btn-wave"
                                 onClick={handleNext}
                                 disabled={!canProceed()}
+                                whileTap={{ scale: 0.95, y: 2 }}
+                                transition={{ duration: 0.1 }}
                             >
                                 Continuar
-                            </button>
+                            </motion.button>
                         </div>
                     </div>
                 )}
@@ -238,15 +264,22 @@ function OnboardingFlow({ onComplete }) {
                         </div>
 
                         <div className="button-group">
-                            <button className="btn btn-secondary" onClick={() => setStep(2)}>
+                            <motion.button
+                                className="btn btn-secondary"
+                                onClick={() => setStep(2)}
+                                whileTap={{ scale: 0.95, y: 2 }}
+                                transition={{ duration: 0.1 }}
+                            >
                                 Atrás
-                            </button>
-                            <button
-                                className="btn btn-primary"
+                            </motion.button>
+                            <motion.button
+                                className="btn btn-primary btn-wave"
                                 onClick={handleComplete}
+                                whileTap={{ scale: 0.95, y: 2 }}
+                                transition={{ duration: 0.1 }}
                             >
                                 ¡Empezar!
-                            </button>
+                            </motion.button>
                         </div>
                     </div>
                 )}
@@ -258,7 +291,7 @@ function OnboardingFlow({ onComplete }) {
                     ))}
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
 

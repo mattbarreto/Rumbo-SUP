@@ -24,6 +24,7 @@ const TimelineWidget = ({ timeline, onPointSelect, selectedIndex }) => {
         <div className="timeline-widget">
             <h3 className="section-title">Timeline del Día</h3>
             <div className="timeline-scroll-container">
+                <div className="timeline-line"></div>
                 {timeline.map((point, index) => {
                     const score = point.result.scores.seguridad;
                     const effort = point.result.categories.esfuerzo;
@@ -43,8 +44,8 @@ const TimelineWidget = ({ timeline, onPointSelect, selectedIndex }) => {
                         >
                             <span className="time-label">{point.hour_label}</span>
 
-                            {/* Traffic Light Indicator */}
-                            <div className="traffic-light-indicator"></div>
+                            {/* Water Drop Point (Redesigned from Traffic Light) */}
+                            <div className="timeline-point"></div>
 
                             {/* Effort Icon (SVG - Transparent) */}
                             <div className="effort-icon-wrapper" title={`Esfuerzo: ${effort}`}>

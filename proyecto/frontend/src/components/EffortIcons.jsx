@@ -17,14 +17,14 @@ import React from 'react';
  * Colors: ocean-shimmer (#61A5C2), ocean-foam (#A9D6E5), coral accents
  */
 
-// Colores del design system
+// Colores del design system - Usando variables CSS para permitir override dinámico
 const COLORS = {
-    paddle: '#F5F1EB',        // ocean-sand (white paddle)
-    paddleShade: '#E8E4DC',   // ocean-shell (subtle shade)
-    waterCalm: '#61A5C2',     // ocean-shimmer
-    waterFoam: '#A9D6E5',     // ocean-foam
-    splash: '#FF7043',        // coral splash for high effort
-    splashLight: '#FFAB91',
+    paddle: 'var(--icon-paddle, #F5F1EB)',        // ocean-sand
+    paddleShade: 'var(--icon-paddle-shade, #E8E4DC)', // ocean-shell
+    waterCalm: 'var(--icon-water, #61A5C2)',     // ocean-shimmer
+    waterFoam: 'var(--icon-foam, #A9D6E5)',     // ocean-foam
+    splash: 'var(--icon-splash, #EF4444)',        // Default legacy red
+    splashLight: 'var(--icon-splash-light, #FCA5A5)',
 };
 
 export const EffortLowIcon = ({ size = 28, className = '' }) => (

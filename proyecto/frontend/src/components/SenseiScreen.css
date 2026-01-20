@@ -169,10 +169,10 @@
 }
 
 .disclaimer-badge {
-    background: linear-gradient(135deg, rgba(230, 126, 80, 0.15) 0%, rgba(230, 126, 80, 0.08) 100%);
-    border: 1px solid rgba(230, 126, 80, 0.3);
-    border-radius: var(--radius-xl);
-    padding: var(--space-4) var(--space-5);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(56, 189, 248, 0.05) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
     display: flex;
     align-items: flex-start;
     gap: var(--space-3);
@@ -187,41 +187,11 @@
 
 .disclaimer-badge p {
     margin: 0;
-    color: var(--ocean-shell);
+    color: var(--ocean-foam);
+    /* Lighter for readability */
 }
 
+/* Remove strong tag specific color as it's now handled inline or generally */
 .disclaimer-badge strong {
-    color: var(--ocean-coral);
-    display: block;
-    margin-bottom: var(--space-1);
-    font-size: var(--text-base);
-}
-
-/* Sponsor Slot (Placeholder) */
-.sponsor-slot {
-    background: rgba(10, 22, 40, 0.6);
-    border: 1px dashed var(--glass-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
-    text-align: center;
-    order: -1;
-    /* Muestra el sponsor antes del disclaimer flex */
-}
-
-.sponsor-slot small {
-    display: block;
-    color: var(--ocean-driftwood);
-    font-size: var(--text-xs);
-    margin-bottom: var(--space-2);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    font-weight: 500;
-}
-
-.sponsor-placeholder {
-    font-family: var(--font-display);
     color: var(--ocean-shimmer);
-    font-size: var(--text-base);
-    letter-spacing: 0.02em;
-    opacity: 0.9;
 }

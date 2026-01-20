@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { EnjoymentIcon, EffortIcon, WaveIcon } from './Icons';
+import { triggerHaptic } from '../utils/haptics';
 import './SessionGoalSelector.css';
 
 function SessionGoalSelector({ value, onChange }) {
@@ -31,13 +32,16 @@ function SessionGoalSelector({ value, onChange }) {
                     <motion.button
                         key={goal.id}
                         className={`goal-segment ${value === goal.id ? 'active' : ''}`}
-                        onClick={() => onChange(goal.id)}
+                        onClick={() => {
+                            if (value !== goal.id) triggerHaptic('light');
+                            onChange(goal.id);
+                        }}
                         whileHover={{
-                            scale: 1.05,
+                            scale: 1.02,
                             transition: { type: 'spring', stiffness: 400, damping: 17 }
                         }}
                         whileTap={{
-                            scale: 0.95,
+                            scale: 0.98,
                             transition: { type: 'spring', stiffness: 400, damping: 17 }
                         }}
                         animate={value === goal.id ? {

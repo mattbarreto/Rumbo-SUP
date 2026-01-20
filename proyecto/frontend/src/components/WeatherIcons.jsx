@@ -22,7 +22,7 @@ export const WindIconMinimal = ({ size = 24, className = '' }) => (
 
 export const DirectionIconMinimal = ({ size = 24, className = '' }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke={COLORS.secondary} strokeWidth="1.5" />
+        <circle cx="12" cy="12" r="10" stroke={COLORS.secondary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M12 6L14 11L12 18L10 11L12 6Z" fill={COLORS.primary} />
     </svg>
 );
@@ -30,7 +30,7 @@ export const DirectionIconMinimal = ({ size = 24, className = '' }) => (
 export const WaveIconMinimal = ({ size = 24, className = '' }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
         <path d="M2 13.6C2 13.6 5 10 9 10C13 10 14 14 18 14C22 14 22 10 22 10" stroke={COLORS.primary} strokeWidth="2" strokeLinecap="round" />
-        <path d="M4 18C4 18 6 16 9 16C12 16 13 18 16 18C19 18 20 16 20 16" stroke={COLORS.secondary} strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M4 18C4 18 6 16 9 16C12 16 13 18 16 18C19 18 20 16 20 16" stroke={COLORS.secondary} strokeWidth="2" strokeLinecap="round" />
     </svg>
 );
 
@@ -45,19 +45,19 @@ export const UpdateIconMinimal = ({ size = 24, className = '' }) => (
 
 export const BrainIconMinimal = ({ size = 24, className = '' }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-        <path d="M9.5 8C8.5 8 8 9 8 9" stroke={COLORS.accent} strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M15.5 8C16.5 8 17 9 17 9" stroke={COLORS.accent} strokeWidth="1.5" strokeLinecap="round" />
-        <rect x="5" y="11" width="14" height="8" rx="4" stroke={COLORS.primary} strokeWidth="2" />
+        <path d="M9.5 8C8.5 8 8 9 8 9" stroke={COLORS.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M15.5 8C16.5 8 17 9 17 9" stroke={COLORS.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <rect x="5" y="11" width="14" height="8" rx="4" stroke={COLORS.primary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         <circle cx="12" cy="15" r="2" fill={COLORS.secondary} />
-        <path d="M12 5V8" stroke={COLORS.secondary} strokeWidth="2" strokeLinecap="round" />
+        <path d="M12 5V8" stroke={COLORS.secondary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M12 3L14 5H10L12 3Z" fill={COLORS.primary} opacity="0.8" />
     </svg>
 );
 
 export const ShieldIconMinimal = ({ size = 24, className = '' }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="9" stroke={COLORS.secondary} strokeWidth="1.5" opacity="0.5" />
-        <path d="M12 3C12 3 12 8 12 12C12 16 16 21 16 21" stroke={COLORS.primary} strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="12" cy="12" r="9" stroke={COLORS.secondary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
+        <path d="M12 3C12 3 12 8 12 12C12 16 16 21 16 21" stroke={COLORS.primary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         <circle cx="12" cy="12" r="3" fill={COLORS.primary} stroke="none" opacity="0.9" />
     </svg>
 );

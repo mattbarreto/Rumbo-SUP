@@ -19,6 +19,8 @@
     text-align: center;
     margin-bottom: var(--space-6);
     border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    /* 28px - más redondeado */
 }
 
 .app-logo {
@@ -118,6 +120,7 @@
     gap: var(--space-4);
     padding: var(--space-5);
     margin-bottom: var(--space-6);
+    border-radius: var(--radius-card);
 }
 
 .tech-header {

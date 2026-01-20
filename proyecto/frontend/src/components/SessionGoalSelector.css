@@ -75,13 +75,18 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 2px;
-    opacity: 0.7;
-    transition: opacity 0.2s ease;
+    color: var(--ocean-shimmer);
+    /* Matching Onboarding Brightness */
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+    transition: all 0.2s ease;
 }
 
 .goal-segment.active .goal-icon {
     opacity: 1;
     transform: scale(1.1);
+    color: var(--neutral-900);
+    /* Dark on Active (Cyan background) */
+    filter: none;
 }
 
 .goal-label {

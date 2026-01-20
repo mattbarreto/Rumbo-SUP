@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { WaveIcon, GithubIcon, LinkedinIcon, GlobeIcon, CodeIcon } from './Icons';
 import './AboutScreen.css';
 
@@ -6,7 +7,17 @@ function AboutScreen() {
     const navigate = useNavigate();
 
     return (
-        <div className="page about-screen">
+        <motion.div
+            className="page about-screen"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 30
+            }}
+        >
             <div className="container">
                 <div className="about-header">
                     <button className="btn-back-nav" onClick={() => navigate('/profile')}>
@@ -72,7 +83,7 @@ function AboutScreen() {
                     <p>Hecho con 💙 y 🌊 en Buenos Aires</p>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
 

@@ -1,5 +1,6 @@
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { SettingsIcon, ShieldIcon, EffortIcon, EnjoymentIcon, WaveIcon } from './Icons';
 import './ProfileScreen.css';
 
@@ -40,7 +41,17 @@ function ProfileScreen() {
     };
 
     return (
-        <div className="page profile-screen">
+        <motion.div
+            className="page profile-screen"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 30
+            }}
+        >
             <div className="container">
                 <div className="profile-header">
                     <button className="btn-back-nav" onClick={() => navigate('/')}>
@@ -111,7 +122,7 @@ function ProfileScreen() {
                     </button>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
 

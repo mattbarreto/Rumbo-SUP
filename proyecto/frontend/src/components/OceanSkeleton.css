@@ -8,23 +8,38 @@
     animation: fadeIn 0.5s ease-out;
 }
 
-.skeleton-pulse {
-    background: linear-gradient(90deg,
-            rgba(97, 165, 194, 0.1) 0%,
-            rgba(97, 165, 194, 0.2) 50%,
-            rgba(97, 165, 194, 0.1) 100%);
-    background-size: 200% 100%;
-    animation: waveShimmer 2s infinite linear;
-    border-radius: var(--radius-md);
+/* Base Styles for Skeleton Containers */
+.skeleton-card {
+    position: relative;
+    background: var(--ocean-deep);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    /* Subtle border to match theme */
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-@keyframes waveShimmer {
+.skeleton-shimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(97, 165, 194, 0.15),
+            transparent);
+    animation: shimmer 1.5s infinite;
+    transform: skewX(-20deg);
+    /* Slight angle for speed */
+}
+
+@keyframes shimmer {
     0% {
-        background-position: -200% 0;
+        transform: translateX(-150%) skewX(-20deg);
     }
 
     100% {
-        background-position: 200% 0;
+        transform: translateX(150%) skewX(-20deg);
     }
 }
 
@@ -45,6 +60,9 @@
     width: 200px;
     height: 200px;
     border-radius: 50%;
+    position: relative;
+    background: var(--ocean-deep);
+    overflow: hidden;
     border: 4px solid rgba(97, 165, 194, 0.1);
 }
 

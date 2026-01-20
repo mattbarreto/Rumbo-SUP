@@ -1,248 +1,271 @@
+/* ========================================
+   MAIN SCREEN - THE COCKPIT
+   ======================================== */
+
 .main-screen {
-    background: var(--gradient-ocean);
+    /* Fondo transparente para heredar el degradado del body/background */
+    background: transparent;
     min-height: 100dvh;
 }
 
+/* ==================== HEADER ==================== */
 .main-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: var(--space-8);
-    /* ASYMMETRIC LAYOUT: subtle left offset for visual interest */
-    padding-left: var(--space-2);
+    align-items: center;
+    /* Strict alignment */
+    margin-bottom: var(--space-6);
+    padding: var(--space-2) 0;
+    /* Vertical breathing */
 }
 
 .spot-name {
-    color: var(--neutral-100);
+    color: var(--ocean-foam);
     font-family: var(--font-display);
-    font-weight: var(--weight-bold);
-    font-size: var(--text-3xl);
+    font-weight: 700;
+    font-size: 2rem;
+    /* Clearer scale */
     letter-spacing: -0.02em;
-    margin-bottom: var(--space-1);
-    /* Enhanced staggered reveal */
-    animation: fadeInLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-@keyframes fadeInLeft {
-    0% {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    margin-bottom: 2px;
 }
 
 .spot-subtitle {
-    color: hsla(210, 15%, 98%, 0.7);
+    color: var(--ocean-driftwood);
     font-size: var(--text-sm);
-    font-weight: var(--weight-medium);
+    font-weight: 500;
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: 6px;
+    opacity: 0.8;
 }
 
-.separator {
-    opacity: 0.4;
-}
-
-
-
-.header-actions {
-    display: flex;
-    gap: var(--space-3);
-    align-items: center;
-}
-
+/* Clean Icon Buttons (No borders/glass) */
 .btn-icon {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--radius-lg);
-    /* More squircle, less rounded rect */
-    width: 48px;
-    /* Slightly larger touch target */
-    height: 48px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-inner);
+    width: 44px;
+    /* Apple/Google Touch Target Standard */
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--text-xl);
-    color: var(--neutral-100);
-    cursor: pointer;
-    transition: all var(--transition-base);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    /* Floating effect */
-}
-
-.btn-icon:hover {
-    background: var(--glass-medium);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    color: var(--ocean-foam);
+    transition: transform var(--duration-fast) var(--ease-elastic);
 }
 
 .btn-icon:active {
-    transform: translateY(0);
+    background: rgba(255, 255, 255, 0.05);
+    transform: var(--touch-scale);
 }
 
-.alerts-section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    margin-bottom: var(--space-6);
-}
-
+/* ==================== METRICS GRID ==================== */
+/* No more overlapping. Space = Clarity. */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--space-3);
+    /* 12px gap */
     margin-bottom: var(--space-6);
-    /* Enable stacking context for overlapping */
-    position: relative;
+    align-items: stretch;
 }
 
-/* Overlapping staggered cards - Premium composition */
-.metrics-grid>*:nth-child(2) {
-    transform: translateY(-8px);
-    z-index: 2;
+.metrics-grid>* {
+    /* Remove old transform layering */
+    transform: none !important;
+    z-index: 1 !important;
 }
 
-.metrics-grid>*:nth-child(3) {
-    transform: translateY(-4px);
-    z-index: 1;
-}
-
+/* ==================== CONDITIONS LIST (Nautical Table) ==================== */
 .conditions-card {
-    background: var(--gradient-card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--ocean-current);
-    border-radius: var(--radius-xl);
+    /* Flat transparent panel, distinct from floating MetricCards */
+    /* Organic: Floating Panel */
+    background: rgba(18, 34, 53, 0.3);
+    border: none;
+    /* No visible border */
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    /* Soft depth */
+    border-radius: var(--radius-card);
     padding: var(--space-6);
-    box-shadow: var(--shadow-soft);
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-8);
 }
 
 .conditions-card h3 {
-    color: var(--neutral-100);
-    font-size: var(--text-lg);
-    font-weight: var(--weight-semibold);
+    color: var(--ocean-shimmer);
+    font-size: var(--text-xs);
+    font-weight: 700;
     margin-bottom: var(--space-4);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: var(--text-xs);
-    color: hsla(210, 15%, 98%, 0.6);
+    letter-spacing: 0.1em;
+    opacity: 0.8;
 }
 
 .conditions-grid {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+    /* Row separation */
 }
 
 .condition-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    /* Strict Grid: Icon | Label | Value */
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
+    /* 12px */
+    padding: var(--space-3) 0;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
+}
+
+.condition-item:last-child {
+    border-bottom: none;
+}
+
+/* Remove old flex stuff implies simpler usage in JSX */
+.condition-item>div:first-child {
+    /* No longer needed with defined grid */
+    display: contents;
 }
 
 .condition-icon {
+    /* Reduced prominence */
     width: 32px;
     height: 32px;
-    color: var(--ocean-cyan);
+    color: var(--ocean-driftwood);
+    opacity: 0.7;
+    /* Ensure it fits in grid column */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .condition-label {
-    font-size: var(--text-xs);
-    color: hsla(210, 15%, 98%, 0.6);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: var(--weight-semibold);
-    margin-bottom: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--ocean-sand);
+    font-weight: 500;
 }
 
 .condition-value {
-    font-size: var(--text-xl);
-    font-weight: var(--weight-bold);
-    color: var(--neutral-100);
-    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
+    /* Tech font for data */
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--ocean-foam);
+    text-align: right;
+    justify-self: end;
 }
 
+/* Sub-details for Wind */
+.condition-details {
+    grid-column: 2 / 4;
+    /* Align with Label start */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+/* ==================== ACTIONS ==================== */
 .actions-section {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: var(--space-3);
-    margin-top: var(--space-8);
+    margin-top: var(--space-6);
 }
 
-/* Loading State */
-.loading-container {
+/* Universal Button Physics */
+.btn {
+    width: 100%;
+    height: 56px;
+    /* Physical height */
+    border-radius: var(--radius-inner);
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 50vh;
-    color: var(--neutral-100);
+    font-weight: 600;
+    font-size: var(--text-base);
+    transition: transform var(--duration-fast) var(--ease-smooth);
+    border: none;
+    gap: var(--space-2);
 }
 
-.loading-spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid hsla(210, 20%, 98%, 0.2);
-    border-top-color: var(--ocean-cyan);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+.btn:active {
+    transform: var(--touch-scale);
+    opacity: var(--touch-opacity);
+}
+
+.btn-primary {
+    background: var(--ocean-shimmer);
+    color: var(--ocean-abyss);
+    /* Contrast for legibility */
+    box-shadow: 0 4px 20px rgba(56, 189, 248, 0.25);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--ocean-foam);
+    border: none;
+    /* Removed border */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    /* Tonal separation */
+}
+
+/* ==================== SECTIONS ==================== */
+/* ==================== SECTIONS ==================== */
+.section-title {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ocean-driftwood);
+    margin-bottom: var(--space-3);
+    /* Strict grid alignment - removed padding-left */
+    padding-left: 0;
+}
+
+/* Layer Panels removed styling overlap */
+.layer-a-section,
+.layer-b-section {
+    background: transparent;
+    border: none;
+    padding: 0;
     margin-bottom: var(--space-6);
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* ==================== FORECAST ELEMENTS ==================== */
-
+/* Unified Alert Style for Forecast Banner */
+/* Unified Organic Alert Style for Forecast Banner */
 .forecast-banner {
-    background: var(--ocean-surface);
-    color: var(--ocean-cyan);
+    background: linear-gradient(90deg,
+            rgba(34, 211, 238, 0.15) 0%,
+            rgba(34, 211, 238, 0.05) 100%);
+    color: var(--ocean-shimmer);
+    border: none;
+    border-radius: 20px;
+    /* Organic Capsule */
+    padding: var(--space-4) var(--space-6);
     text-align: center;
-    padding: var(--space-2);
     font-size: var(--text-sm);
-    font-weight: var(--weight-semibold);
-    border-radius: var(--radius-md);
+    font-weight: 600;
     margin-bottom: var(--space-4);
-    border: 1px solid var(--ocean-cyan);
-    box-shadow: 0 0 10px rgba(64, 224, 208, 0.2);
-}
-
-.highlight-time {
-    color: var(--ocean-cyan);
-    font-weight: var(--weight-bold);
-}
-
-.sensei-tip-card {
-    margin-bottom: var(--space-6);
-    background: linear-gradient(135deg, rgba(64, 224, 208, 0.1), rgba(0, 0, 0, 0));
-    border-color: rgba(64, 224, 208, 0.3);
-}
-
-.tip-header {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-2);
-    margin-bottom: var(--space-2);
-    color: var(--ocean-cyan);
-    font-weight: var(--weight-semibold);
-    text-transform: uppercase;
-    font-size: var(--text-xs);
-    letter-spacing: 1px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    /* Floating feel */
+    backdrop-filter: blur(12px);
 }
 
-.tip-text {
-    font-size: var(--text-base);
-    color: var(--text-primary);
-    line-height: var(--leading-relaxed);
-    margin: 0;
+.conditions-card {
+    /* Flat transparent panel, distinct from floating MetricCards */
+    /* Organic Separation */
+    background: rgba(18, 34, 53, 0.3);
+    border: none;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-card);
+    padding: var(--space-6);
+    margin-bottom: var(--space-8);
+    margin-top: var(--space-6);
+    /* ADDED SEPARATION */
 }

@@ -38,11 +38,27 @@ El **SenseiEngine** es el núcleo determinístico que evalúa la seguridad y con
 ## 🚀 Características Principales
 
 - **Sistema Multi-Provider Resiliente:** Arquitectura híbrida que consume datos de Open-Meteo (primario), Windy.com (respaldo de élite) y OpenWeatherMap (último recurso).
-- **Smart Session Cache:** Persistencia inteligente en frontend para reducir latencia y consumo de API.
+- **Smart Session Cache:** Persistencia inteligente en frontend para reducir latencia y consumorojo de API.
 - **Auditoría Forense:** Herramienta de autodiagnóstico (`/api/audit`) para verificar la salud de todos los proveedores en tiempo real.
 - **Análisis Semántico:** Transforma datos crudos en narrativas comprensibles ("Mar picado", "Glassy", "Viento de tierra").
 - **Personalización Contextual:** Ajusta scores basándose en tabla (rígida/inflable) y experiencia.
 - **Timeline Inteligente:** Proyección hora a hora con corrección automática de zona horaria.
+
+### 🎨 Animación de Viento Elite (Nuevo)
+
+Sistema de partículas de nivel AAA con **9 features de física avanzada**:
+
+1. **Depth Layering**: 3 capas parallax para efecto 3D (fondo 30%, medio 60%, frente 100%)
+2. **Wind Gusts**: Ráfagas periódicas que simulan la respiración natural del aire
+3. **Multi-Frequency Turbulence**: 3 ondas sinusoidales combinadas para movimiento orgánico
+4. **Fade Lifecycle**: Spawn/despawn cinematográfico de partículas
+5. **Clustering**: Agrupaciones emergentes (atracción entre partículas 10-50px)
+6. **Wind Wake**: 🌟 **Interacción táctil** - Las partículas se apartan al tocar/arrastrar
+7. **Smart Respawn**: Reposicionamiento inteligente basado en dirección de flujo
+8. **Layer-Specific Colors**: Opacidades diferenciadas por profundidad
+9. **Perpendicular Turbulence**: Desplazamiento transversal al flujo para realismo
+
+**Performance**: 280 partículas optimizadas, ~60 FPS en dispositivos modernos.
 
 ## 📡 Integración de APIs
 
@@ -75,10 +91,15 @@ Genera las explicaciones narrativas.
 - **Providers Pattern:** Abstracción de fuentes de datos (`WeatherProvider` interface).
 - **Hybrid Service:** Lógica de caché inteligente (TTL 30min) y orquestación de fallbacks.
 - **Pydantic Models:** Validación estricta de datos.
+- **Scoring System:** Sistema multidimensional (Seguridad/Esfuerzo/Disfrute) con reglas determinísticas.
 
 ### Frontend (React / Vite)
 - **PWA First:** Diseñado para funcionar como app nativa en móviles.
-- **Design System:** Interfaz minimalista enfocada en legibilidad bajo sol.
+- **Design System Orgánico:** Sistema completo de variables CSS (8 tamaños de border-radius, 8pt grid spacing, paleta oceánica).
+- **Elite Animations:** Canvas-based particle system con física avanzada.
+- **Componentes Modulares**: Arquitectura componentizada con separación clara de responsabilidades.
+
+📚 **Documentación detallada**: Ver [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) para diagramas y explicación profunda del sistema (solo en repo local).
 
 ## ⚙️ Instalación Local
 
@@ -134,7 +155,13 @@ La app estará disponible en `http://localhost:5173`.
 
 ## 🤝 Contribuir
 
-Las contribuciones son bienvenidas. Por favor, asegúrate de no subir claves API. La carpeta `docs/` y scripts de prueba están ignorados.
+Las contribuciones son bienvenidas. Por favor:
+
+1. Lee la [Guía de Contribución](docs/CONTRIBUTING.md) para code style y workflow (solo en repo local)
+2. No subas claves API - usa variables de entorno
+3. Sigue [Conventional Commits](https://www.conventionalcommits.org/) para mensajes
+
+**Issues**: [GitHub Issues](https://github.com/tuusuario/rumbo-sup/issues)
 
 ## 📄 Licencia
 

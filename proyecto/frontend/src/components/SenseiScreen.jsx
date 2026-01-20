@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getExplanation } from '../services/api';
 import ReactMarkdown from 'react-markdown';
@@ -6,6 +7,7 @@ import {
     BrainIcon, AlertIcon, ArrowLeftIcon, InfoIcon,
     WaveIcon, SeeIcon, BodyIcon, IdeaIcon, TargetIcon
 } from './Icons';
+import CircularIndicator from './CircularIndicator';
 import './SenseiScreen.css';
 
 // Componente para renderizar H2 con iconos dinámicos
@@ -106,7 +108,17 @@ function SenseiScreen() {
     }
 
     return (
-        <div className="page sensei-screen">
+        <motion.div
+            className="page sensei-screen"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 30
+            }}
+        >
             <div className="container">
                 {/* Header */}
                 <div className="sensei-header">
@@ -118,6 +130,15 @@ function SenseiScreen() {
                         <BrainIcon size={28} className="text-ocean-cyan" />
                         <h1>Guía de Mar</h1>
                     </div>
+                </div>
+
+                {/* Safety Indicator Hero - Shared Element */}
+                <div style={{ display: 'flex', justifyContent: 'center', margin: 'var(--space-6) 0' }}>
+                    <CircularIndicator
+                        seguridad={result.scores.seguridad}
+                        categoria={result.categories.seguridad}
+                        freshness="fresh"
+                    />
                 </div>
 
                 {/* Explicación */}
@@ -133,28 +154,25 @@ function SenseiScreen() {
 
                 {/* Disclaimer & Sponsor */}
                 <div className="sensei-footer">
-                    <div className="sponsor-slot">
-                        <small>Potenciado por</small>
-                        <div className="sponsor-placeholder">[ Tu Escuela de SUP ]</div>
-                    </div>
-
                     <div className="disclaimer-badge">
                         <div className="disclaimer-icon-wrapper">
                             <InfoIcon size={20} className="text-ocean-shimmer" />
                         </div>
                         <p>
-                            Rumbo es un asistente digital basado en datos.
+                            <strong>Rumbo SUP</strong> es un asistente digital creado con <span style={{ color: 'var(--safety-danger)' }}>❤</span> por un amante del SUP.
                             <br />
-                            <strong>No reemplaza a un instructor certificado.</strong> Consultá siempre a los locales.
+                            <span style={{ opacity: 0.7, fontSize: '0.9em' }}>
+                                Hecho para ayudarte a aprender sobre el mar. No reemplaza a un instructor certificado.
+                            </span>
                         </p>
                     </div>
 
-                    <button className="btn btn-primary btn-large" onClick={() => navigate('/')}>
+                    <button className="btn btn-primary btn-large btn-wave" onClick={() => navigate('/')}>
                         Volver al Inicio
                     </button>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
 

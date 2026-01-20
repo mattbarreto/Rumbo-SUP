@@ -1,0 +1,129 @@
+/* Tooltip Component - Oceanic Premium Styling */
+
+.tooltip-trigger {
+    position: relative;
+    cursor: help;
+    display: inline-flex;
+    align-items: center;
+}
+
+.tooltip-trigger:focus {
+    outline: 2px solid var(--ocean-shimmer);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Term Highlight Styling */
+.term-highlight {
+    color: var(--ocean-shimmer);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--ocean-foam);
+    text-underline-offset: 3px;
+    transition: all 0.2s ease;
+}
+
+.term-highlight:hover {
+    color: var(--ocean-foam);
+    text-decoration-color: var(--ocean-shimmer);
+}
+
+/* Tooltip Content Box */
+.tooltip-content {
+    position: absolute;
+    background: linear-gradient(135deg, var(--ocean-deep), var(--ocean-current));
+    color: var(--ocean-sand);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 220px;
+    width: max-content;
+    z-index: 1000;
+    pointer-events: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(97, 165, 194, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Positioning Variants */
+.tooltip-top {
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-bottom {
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-left {
+    right: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.tooltip-right {
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Arrow Indicator */
+.tooltip-arrow {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--ocean-deep);
+    transform: rotate(45deg);
+    border: 1px solid rgba(97, 165, 194, 0.2);
+}
+
+.tooltip-top .tooltip-arrow {
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    border-top: none;
+    border-left: none;
+}
+
+.tooltip-bottom .tooltip-arrow {
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    border-bottom: none;
+    border-right: none;
+}
+
+.tooltip-left .tooltip-arrow {
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    border-left: none;
+    border-bottom: none;
+}
+
+.tooltip-right .tooltip-arrow {
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    border-right: none;
+    border-top: none;
+}
+
+/* Responsive: Larger touch area on mobile */
+@media (max-width: 768px) {
+    .tooltip-trigger {
+        padding: 4px;
+        margin: -4px;
+    }
+
+    .tooltip-content {
+        max-width: 200px;
+        font-size: 12px;
+    }
+}

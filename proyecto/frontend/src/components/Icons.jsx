@@ -34,15 +34,15 @@ export const WindIcon = ({ className = "", size = 24 }) => (
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className={className}
-        style={{ opacity: 0.9 }}
     >
-        {/* Abstract Flow: Asymmetric tapering lines */}
-        <path
-            d="M2 12H18M2 8H14M2 16H22"
-            strokeWidth="1.5"
-            strokeLinecap="square"
-        />
+        {/* Abstract Flow: Asymmetric tapering lines with wave element */}
+        <path d="M2 12H18" />
+        <path d="M2 8H14" />
+        <path d="M2 16H22" />
         {/* Motion dot */}
         <circle cx="20" cy="8" r="1.5" fill="currentColor" stroke="none" />
     </svg>
@@ -66,7 +66,7 @@ export const WaveIcon = ({ className = "", size = 24 }) => (
         />
         <path
             d="M2 19C5 19 7 15.5 10 15.5"
-            strokeWidth="1.5"
+            strokeWidth="2"
             strokeLinecap="round"
             opacity="0.5"
         />
@@ -80,10 +80,13 @@ export const TideIcon = ({ className = "", size = 24, direction = "rising" }) =>
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className={className}
     >
         {/* Vertical Gauge: Minimalist level indicator */}
-        <line x1="12" y1="4" x2="12" y2="20" strokeWidth="1" opacity="0.4" />
+        <line x1="12" y1="4" x2="12" y2="20" opacity="0.4" />
         <circle
             cx="12"
             cy={direction === "rising" ? "8" : direction === "falling" ? "16" : "12"}
@@ -92,8 +95,8 @@ export const TideIcon = ({ className = "", size = 24, direction = "rising" }) =>
             stroke="none"
         />
         {/* Direction indicator */}
-        {direction === "rising" && <path d="M18 10L12 4L6 10" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />}
-        {direction === "falling" && <path d="M18 14L12 20L6 14" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />}
+        {direction === "rising" && <path d="M18 10L12 4L6 10" opacity="0.6" />}
+        {direction === "falling" && <path d="M18 14L12 20L6 14" opacity="0.6" />}
     </svg>
 );
 
@@ -104,15 +107,14 @@ export const ShieldIcon = ({ className = "", size = 24 }) => (
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className={className}
     >
         {/* Protective Orbit: Abstract safety */}
-        <circle cx="12" cy="12" r="9" strokeWidth="1.5" opacity="0.3" />
-        <path
-            d="M12 3C12 3 12 8 12 12C12 16 16 21 16 21"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-        />
+        <circle cx="12" cy="12" r="9" opacity="0.3" />
+        <path d="M12 3C12 3 12 8 12 12C12 16 16 21 16 21" />
         <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none" opacity="0.8" />
     </svg>
 );
@@ -124,15 +126,13 @@ export const EffortIcon = ({ className = "", size = 24 }) => (
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className={className}
     >
         {/* Pulse: Activity monitor abstract */}
-        <path
-            d="M3 12H6L9 6L15 18L18 12H21"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        />
+        <path d="M3 12H6L9 6L15 18L18 12H21" />
     </svg>
 );
 
@@ -165,14 +165,17 @@ export const LocationIcon = ({ className = "", size = 24 }) => (
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className={className}
     >
         {/* Crosshair: Precision location */}
-        <circle cx="12" cy="12" r="8" strokeWidth="1.5" />
-        <line x1="12" y1="2" x2="12" y2="6" strokeWidth="1.5" />
-        <line x1="12" y1="18" x2="12" y2="22" strokeWidth="1.5" />
-        <line x1="2" y1="12" x2="6" y2="12" strokeWidth="1.5" />
-        <line x1="18" y1="12" x2="22" y2="12" strokeWidth="1.5" />
+        <circle cx="12" cy="12" r="8" />
+        <line x1="12" y1="2" x2="12" y2="6" />
+        <line x1="12" y1="18" x2="12" y2="22" />
+        <line x1="2" y1="12" x2="6" y2="12" />
+        <line x1="18" y1="12" x2="22" y2="12" />
         <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
     </svg>
 );
@@ -184,15 +187,14 @@ export const RefreshIcon = ({ className = "", size = 24 }) => (
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className={className}
     >
         {/* Open Loop: Minimalist refresh */}
-        <path
-            d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C15.5 3 18.5 5 20 8"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-        />
-        <path d="M20 3V8H15" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C15.5 3 18.5 5 20 8" />
+        <path d="M20 3V8H15" />
     </svg>
 );
 
@@ -203,12 +205,15 @@ export const SettingsIcon = ({ className = "", size = 24 }) => (
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className={className}
     >
         {/* Faders: Abstract control */}
-        <line x1="6" y1="4" x2="6" y2="20" strokeWidth="1.5" strokeLinecap="round" opacity="0.3" />
-        <line x1="12" y1="4" x2="12" y2="20" strokeWidth="1.5" strokeLinecap="round" opacity="0.3" />
-        <line x1="18" y1="4" x2="18" y2="20" strokeWidth="1.5" strokeLinecap="round" opacity="0.3" />
+        <line x1="6" y1="4" x2="6" y2="20" opacity="0.3" />
+        <line x1="12" y1="4" x2="12" y2="20" opacity="0.3" />
+        <line x1="18" y1="4" x2="18" y2="20" opacity="0.3" />
 
         <circle cx="6" cy="14" r="2" fill="currentColor" stroke="none" />
         <circle cx="12" cy="8" r="2" fill="currentColor" stroke="none" />
@@ -256,98 +261,100 @@ export const TimeIcon = ({ className = "", size = 24 }) => (
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className={className}
     >
         {/* Minimalist Hands: Just the hands, no face */}
-        <path d="M12 6V12L16 14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="12" cy="12" r="9" strokeWidth="1.5" opacity="0.4" />
+        <path d="M12 6V12L16 14" />
+        <circle cx="12" cy="12" r="9" opacity="0.4" />
     </svg>
 );
 
 export const GithubIcon = ({ className = "", size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
-        <path d="M9 19C9 19 9.034 16.094 9 13C3.5 14.25 3.5 10.062 3.5 10.062C3.5 10.062 1.75 9.312 3.5 9.312C5.25 9.312 6.125 10.062 6.125 10.062C7 11.812 9.625 11.25 9.625 11.25C9.625 11.25 10.062 10.062 10.5 9.625C6.125 9.187 3.5 5.812 3.5 5.812C3.5 3.875 4.375 2.5 4.375 2.5C4.375 2.5 2.625 2.5 2.625 4.375C2.625 6.25 4.375 9.312 4.375 9.312C4.375 9.312 4.375 11.812 4.375 11.812" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0" />
-        <path d="M12 2C6.47 2 2 6.47 2 12C2 16.42 5.31 20.17 9.5 21.17C10 21.26 10.19 20.96 10.19 20.72C10.19 20.5 10.18 19.91 10.18 19.13C7.23 19.78 6.4 17.96 6.16 17.29C6.03 16.94 5.43 15.86 4.9 15.58C4.46 15.34 3.84 14.88 4.89 14.86C5.87 14.85 6.57 15.76 6.8 16.13C7.94 18.06 9.77 17.5 10.49 17.17C10.6 16.35 10.93 15.8 11.3 15.48C8.56 15.17 5.68 14.11 5.68 9.38C5.68 8.03 6.16 6.94 6.96 6.07C6.83 5.76 6.41 4.5 7.08 2.81C7.08 2.81 8.11 2.48 10.45 4.07C11.43 3.8 12.48 3.66 13.53 3.66C14.58 3.66 15.63 3.8 16.61 4.07C18.95 2.48 19.98 2.81 19.98 2.81C20.66 4.5 20.24 5.76 20.11 6.07C20.91 6.94 21.39 8.03 21.39 9.38C21.39 14.12 18.51 15.16 15.76 15.47C16.23 15.87 16.65 16.67 16.65 17.89C16.65 19.64 16.64 21.06 16.64 21.28C16.64 21.52 16.82 21.83 17.33 21.73C21.51 20.17 25 16.32 25 11.83C25 6.4 20.52 2 15 2H12Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <path d="M12 2C6.47 2 2 6.47 2 12C2 16.42 5.31 20.17 9.5 21.17C10 21.26 10.19 20.96 10.19 20.72C10.19 20.5 10.18 19.91 10.18 19.13C7.23 19.78 6.4 17.96 6.16 17.29C6.03 16.94 5.43 15.86 4.9 15.58C4.46 15.34 3.84 14.88 4.89 14.86C5.87 14.85 6.57 15.76 6.8 16.13C7.94 18.06 9.77 17.5 10.49 17.17C10.6 16.35 10.93 15.8 11.3 15.48C8.56 15.17 5.68 14.11 5.68 9.38C5.68 8.03 6.16 6.94 6.96 6.07C6.83 5.76 6.41 4.5 7.08 2.81C7.08 2.81 8.11 2.48 10.45 4.07C11.43 3.8 12.48 3.66 13.53 3.66C14.58 3.66 15.63 3.8 16.61 4.07C18.95 2.48 19.98 2.81 19.98 2.81C20.66 4.5 20.24 5.76 20.11 6.07C20.91 6.94 21.39 8.03 21.39 9.38C21.39 14.12 18.51 15.16 15.76 15.47C16.23 15.87 16.65 16.67 16.65 17.89C16.65 19.64 16.64 21.06 16.64 21.28C16.64 21.52 16.82 21.83 17.33 21.73C21.51 20.17 24 16.32 24 12C24 6.47 18.53 2 12 2Z" />
     </svg>
 );
 
 export const LinkedinIcon = ({ className = "", size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
-        <path d="M16 8C17.5913 8 19.1174 8.63214 20.2426 9.75736C21.3679 10.8826 22 12.4087 22 14V21H18V14C18 13.4696 17.7893 12.9609 17.4142 12.5858C17.0391 12.2107 16.5304 12 16 12C15.4696 12 14.9609 12.2107 14.5858 12.5858C14.2107 12.9609 14 13.4696 14 14V21H10V14C10 12.4087 10.6321 10.8826 11.7574 9.75736C12.8826 8.63214 14.4087 8 16 8Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M6 9H2V21H6V9Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M4 6C5.10457 6 6 5.10457 6 4C6 2.89543 5.10457 2 4 2C2.89543 2 2 2.89543 2 4C2 5.10457 2.89543 6 4 6Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <path d="M16 8C17.5913 8 19.1174 8.63214 20.2426 9.75736C21.3679 10.8826 22 12.4087 22 14V21H18V14C18 13.4696 17.7893 12.9609 17.4142 12.5858C17.0391 12.2107 16.5304 12 16 12C15.4696 12 14.9609 12.2107 14.5858 12.5858C14.2107 12.9609 14 13.4696 14 14V21H10V14C10 12.4087 10.6321 10.8826 11.7574 9.75736C12.8826 8.63214 14.4087 8 16 8Z" />
+        <path d="M6 9H2V21H6V9Z" />
+        <path d="M4 6C5.10457 6 6 5.10457 6 4C6 2.89543 5.10457 2 4 2C2.89543 2 2 2.89543 2 4C2 5.10457 2.89543 6 4 6Z" />
     </svg>
 );
 
 export const GlobeIcon = ({ className = "", size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
-        <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
-        <path d="M2.05 12.5H22" strokeWidth="1.5" opacity="0.5" />
-        <path d="M12 2A15.3 15.3 0 0 1 17.05 12A15.3 15.3 0 0 1 12 22A15.3 15.3 0 0 1 6.95 12A15.3 15.3 0 0 1 12 2Z" strokeWidth="1.5" opacity="0.8" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <circle cx="12" cy="12" r="10" />
+        <path d="M2.05 12.5H22" opacity="0.5" />
+        <path d="M12 2A15.3 15.3 0 0 1 17.05 12A15.3 15.3 0 0 1 12 22A15.3 15.3 0 0 1 6.95 12A15.3 15.3 0 0 1 12 2Z" opacity="0.8" />
     </svg>
 );
 
 export const CodeIcon = ({ className = "", size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
-        <path d="M16 18L22 12L16 6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M8 6L2 12L8 18" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <path d="M16 18L22 12L16 6" />
+        <path d="M8 6L2 12L8 18" />
     </svg>
 );
 
 export const ShareIcon = ({ className = "", size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
-        <circle cx="18" cy="5" r="3" strokeWidth="1.5" />
-        <circle cx="6" cy="12" r="3" strokeWidth="1.5" />
-        <circle cx="18" cy="19" r="3" strokeWidth="1.5" />
-        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" strokeWidth="1.5" />
-        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" strokeWidth="1.5" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <circle cx="18" cy="5" r="3" />
+        <circle cx="6" cy="12" r="3" />
+        <circle cx="18" cy="19" r="3" />
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
     </svg>
 );
 
 
 export const InfoIcon = ({ className = "", size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
-        <circle cx="12" cy="12" r="10" strokeWidth="2" opacity="0.8" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <circle cx="12" cy="12" r="10" opacity="0.8" />
         {/* Liquid Info: Drop shape and soft line */}
-        <path d="M12 16V12" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 16V12" />
         <path d="M12 8.5C12.5523 8.5 13 8.05228 13 7.5C13 6.94772 12.5523 6.5 12 6.5C11.4477 6.5 11 6.94772 11 7.5C11 8.05228 11.4477 8.5 12 8.5Z" fill="currentColor" />
     </svg>
 );
 
 export const ArrowLeftIcon = ({ className = "", size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         {/* Fluid Arrow: Curved shaft like a current */}
-        <path d="M20 12H4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M10 18L4 12L10 6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M20 12H4" />
+        <path d="M10 18L4 12L10 6" />
     </svg>
 );
 
 export const SeeIcon = ({ className = "", size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         {/* Ocean Horizon: Scanning the sea - curved observation line */}
-        <path d="M2 12C4 9 8 6 12 6C16 6 20 9 22 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M2 12C4 15 8 18 12 18C16 18 20 15 22 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
+        <path d="M2 12C4 9 8 6 12 6C16 6 20 9 22 12" />
+        <path d="M2 12C4 15 8 18 12 18C16 18 20 15 22 12" opacity="0.4" />
         {/* Focus point: wave crest */}
-        <circle cx="12" cy="12" r="2" strokeWidth="2" opacity="0.8" />
+        <circle cx="12" cy="12" r="2" opacity="0.8" />
     </svg>
 );
 
 export const BodyIcon = ({ className = "", size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         {/* Balance Wave: Body as flowing water finding equilibrium */}
-        <path d="M12 3C12 3 12 8 12 12C12 16 12 21 12 21" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
-        <path d="M6 12C6 12 9 9 12 9C15 9 18 12 18 12C18 12 15 15 12 15C9 15 6 12 6 12Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 3C12 3 12 8 12 12C12 16 12 21 12 21" opacity="0.3" />
+        <path d="M6 12C6 12 9 9 12 9C15 9 18 12 18 12C18 12 15 15 12 15C9 15 6 12 6 12Z" />
         {/* Floating center of gravity */}
         <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.6" />
     </svg>
 );
 
 export const IdeaIcon = ({ className = "", size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         {/* Navigation Star: Strategy as celestial guidance over ocean */}
-        <path d="M12 2L14 8L20 9L15 14L17 20L12 17L7 20L9 14L4 9L10 8L12 2Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+        <path d="M12 2L14 8L20 9L15 14L17 20L12 17L7 20L9 14L4 9L10 8L12 2Z" opacity="0.8" />
         {/* Radiating clarity */}
-        <circle cx="12" cy="11" r="3" strokeWidth="1.5" opacity="0.4" />
+        <circle cx="12" cy="11" r="3" opacity="0.4" />
     </svg>
 );
 

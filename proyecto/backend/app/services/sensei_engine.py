@@ -146,21 +146,33 @@ class SenseiEngine:
         """
         Calcula dirección relativa del viento respecto a la costa
         
+        IMPORTANTE: Usamos rangos de grados específicos para Mar del Plata (Varese).
+        Esta lógica debe coincidir EXACTAMENTE con windUtils.calculateMarDelPlataOffshore()
+        en el frontend para evitar inconsistencias.
+        
+        Rangos para costa orientada al Este (Varese):
+        - Onshore (desde el mar): 22.5° - 157.5° (NNE a SSE)
+        - Cross (paralelo): 157.5° - 202.5° (S) y 337.5° - 22.5° (N)
+        - Offshore (desde tierra): 202.5° - 337.5° (SSO a NNO)
+        
         Returns:
             "onshore" (hacia playa), "offshore" (hacia mar), "cross" (paralelo)
         """
-        # Normalizar diferencia angular
-        diff = abs(wind_deg - coast_deg)
-        if diff > 180:
-            diff = 360 - diff
+        # Normalizar a 0-360
+        deg = wind_deg % 360
+        if deg < 0:
+            deg += 360
         
-        # Clasificar
-        if diff < 45:  # Viento en misma dirección que costa mira
-            return "offshore"  # Sopla hacia el mar
-        elif diff > 135:  # Viento opuesto
-            return "onshore"  # Sopla hacia la playa
+        # Rangos específicos para Mar del Plata / Varese
+        # Estos rangos reflejan la geografía real de la playa
+        if deg >= 22.5 and deg <= 157.5:
+            return "onshore"   # Viento del mar hacia la playa (NNE a SSE)
+        elif deg > 157.5 and deg < 202.5:
+            return "cross"     # Viento paralelo (Sur)
+        elif deg >= 202.5 and deg <= 337.5:
+            return "offshore"  # Viento de tierra hacia el mar (SSO a NNO)
         else:
-            return "cross"  # Viento paralelo a costa
+            return "cross"     # Sector Norte (337.5 - 360 - 22.5)
             
     def _evaluate_flags(
         self, 

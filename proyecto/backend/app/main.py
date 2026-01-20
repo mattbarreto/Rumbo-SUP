@@ -56,9 +56,43 @@ async def shutdown_event():
 
 @app.get("/")
 async def root():
-    """Root endpoint"""
+    """Root endpoint - Serves index.html if static files exist, else API info"""
+    # Si existe el frontend build, servirlo
+    if os.path.exists("app/static/index.html"):
+        return FileResponse("app/static/index.html")
     return {
         "message": "Rumbo SUP API",
-        "version": "0.1.0",
-        "docs": "/docs"
+        "version": "0.2.0",
+        "docs": "/docs",
+        "status": "Frontend not mounted (check app/static)"
     }
+
+# Servir archivos estáticos si existen (Producción)
+# Se espera que el usuario copie 'frontend/dist' a 'backend/app/static'
+if os.path.exists("app/static"):
+    from fastapi.staticfiles import StaticFiles
+    from fastapi.responses import FileResponse
+    
+    # 1. Mount assets (JS/CSS)
+    if os.path.exists("app/static/assets"):
+        app.mount("/assets", StaticFiles(directory="app/static/assets"), name="assets")
+        
+    # 2. Otros archivos estáticos en root (favicon, manifesto, etc)
+    # No montamos "/" directamente para no ocultar la API, lo manejamos manual o con excepciones
+    
+    # 3. SPA Catch-all (Para rutas de React como /login, /dashboard)
+    # IMPORTANTE: Esto debe ir DESPUES de los routers de API
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # Ignorar rutas de API (ya manejadas arriba)
+        if full_path.startswith("api") or full_path.startswith("docs") or full_path.startswith("openapi"):
+             from fastapi import HTTPException
+             raise HTTPException(status_code=404, detail="Not Found")
+        
+        # Servir archivo si existe (ej: favicon.ico)
+        file_path = os.path.join("app/static", full_path)
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+             return FileResponse(file_path)
+             
+        # Fallback a index.html para SPA routing
+        return FileResponse("app/static/index.html")
