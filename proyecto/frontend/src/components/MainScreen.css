@@ -23,8 +23,8 @@
     color: var(--ocean-foam);
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 2rem;
-    /* Clearer scale */
+    /* Fluid scaling: 1.5rem (24px) on small phones, up to 2rem (32px) on larger */
+    font-size: clamp(1.5rem, 6vw, 2rem);
     letter-spacing: -0.02em;
     margin-bottom: 2px;
 }
@@ -60,14 +60,22 @@
 }
 
 /* ==================== METRICS GRID ==================== */
-/* No more overlapping. Space = Clarity. */
+/* Responsive Grid: 2 columns on small phones, 3 columns on 390px+ */
 .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    /* Mobile first: 2 columns */
     gap: var(--space-3);
     /* 12px gap */
     margin-bottom: var(--space-6);
     align-items: stretch;
+}
+
+/* 3 columns for larger phones (390px+) */
+@media (min-width: 390px) {
+    .metrics-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 .metrics-grid>* {

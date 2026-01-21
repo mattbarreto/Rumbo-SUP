@@ -1,117 +1,83 @@
-# 🌊 Rumbo SUP - Tu Guía de Mar Personal
+# Rumbo SUP
 
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 ![Python](https://img.shields.io/badge/backend-FastAPI-blue)
 ![React](https://img.shields.io/badge/frontend-React%20%2B%20Vite-61DAFB)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-🔗 **Demo en vivo**: [rumbo.matiasbarreto.com](https://rumbo.matiasbarreto.com)
+**Demo**: [rumbo.matiasbarreto.com](https://rumbo.matiasbarreto.com)
 
-**Rumbo SUP** es una Aplicación Web Progresiva (PWA) diseñada para practicantes de Stand Up Paddle en Mar del Plata. Utiliza un motor híbrido de inteligencia meteorológica para analizar condiciones marítimas en tiempo real y ofrecer recomendaciones personalizadas de seguridad y disfrute, adaptadas a tu nivel de experiencia y equipamiento.
+Rumbo SUP es una aplicación web progresiva (PWA) diseñada para practicantes de Stand Up Paddle en Mar del Plata. Combina datos meteorológicos en tiempo real con un motor de análisis híbrido para ofrecer recomendaciones personalizadas de seguridad y disfrute, adaptadas al nivel de experiencia del usuario.
 
-## 🎯 Arquitectura "Split Brain"
+---
 
-- **Layer A (Motor Determinístico)**: Calcula seguridad/esfuerzo/disfrute sin IA. Riguroso y predecible.
-- **Layer B (Pedagógico)**: IA (Google Gemini) explica las decisiones de forma educativa y empática.
+## Arquitectura
 
-**La IA nunca decide si entras o no. Solo enseña el "por qué".**
+El sistema utiliza una arquitectura "Split Brain" que separa las decisiones críticas de las explicaciones:
 
-## 🧠 SenseiEngine (Motor de Decisiones)
+| Capa | Responsabilidad | Tecnología |
+|------|-----------------|------------|
+| **Layer A** (Determinístico) | Cálculo de scores de seguridad, esfuerzo y disfrute | Reglas Python |
+| **Layer B** (Pedagógico) | Explicaciones educativas y contextuales | Google Gemini |
 
-El **SenseiEngine** es el núcleo determinístico que evalúa la seguridad y condiciones del mar. Se encarga de traducir variables crudas en semántica de surf.
+La IA nunca decide si el usuario entra al agua. Solo explica el "por qué" de cada recomendación.
 
-### Variables Críticas y Flags
+### SenseiEngine
 
-| Variable | Flag Generado | Impacto en Score | Impacto Semántico |
-| :--- | :--- | :--- | :--- |
-| **Tormenta (WMO 95-99)** | `tormenta_electrica` | **Seguridad = 0** (Bloqueante) | Alerta crítica de riesgo eléctrico. |
-| **Visibilidad < 1km** | `visibilidad_nula` | **Seguridad = 0** | Aviso de desorientación. |
-| **Periodo < 5s** | `mar_picado` | Esfuerzo +20 | Aviso de inestabilidad/equilibrio. |
-| **UV Index > 6** | `uv_alto` | - | Consejos de protección solar. |
-| **Lluvia > 0.5mm** | `lluvia` | Seguridad -10 | Aviso de frío/visibilidad. |
+El motor de decisiones evalúa variables meteorológicas y genera flags semánticos:
 
-### Lógica de Puntuación
-- **Seguridad (0-100)**: Inicia en 100. Resta por viento offshore (-15), lluvia (-10). Se vuelve 0 si hay tormenta eléctrica o visibilidad nula.
-- **Esfuerzo (0-100)**: Suma basada en velocidad de viento y altura de ola. Se penaliza extra (+20) si el mar está "picado" (choppy).
-- **Disfrute (0-100)**: Cálculo subjetivo basado en el objetivo del usuario (Calma vs Entrenamiento vs Desafío).
+| Condición | Flag | Impacto |
+|-----------|------|---------|
+| Tormenta eléctrica (WMO 95-99) | `tormenta_electrica` | Seguridad = 0 |
+| Visibilidad < 1km | `visibilidad_nula` | Seguridad = 0 |
+| Período < 5s | `mar_picado` | Esfuerzo +20 |
+| UV > 6 | `uv_alto` | Alerta solar |
+| Lluvia > 0.5mm | `lluvia` | Seguridad -10 |
 
-## 🚀 Características Principales
+---
 
-- **Sistema Multi-Provider Resiliente:** Arquitectura híbrida que consume datos de Open-Meteo (primario), Windy.com (respaldo de élite) y OpenWeatherMap (último recurso).
-- **Smart Session Cache:** Persistencia inteligente en frontend para reducir latencia y consumorojo de API.
-- **Auditoría Forense:** Herramienta de autodiagnóstico (`/api/audit`) para verificar la salud de todos los proveedores en tiempo real.
-- **Análisis Semántico:** Transforma datos crudos en narrativas comprensibles ("Mar picado", "Glassy", "Viento de tierra").
-- **Personalización Contextual:** Ajusta scores basándose en tabla (rígida/inflable) y experiencia.
-- **Timeline Inteligente:** Proyección hora a hora con corrección automática de zona horaria.
+## Características
 
-### 🎨 Animación de Viento Elite (Nuevo)
+- **Multi-Provider Resiliente**: Open-Meteo (principal), Windy.com (respaldo), OpenWeatherMap (fallback)
+- **Smart Cache**: Persistencia inteligente en frontend para reducir latencia
+- **Timeline Inteligente**: Proyección hora a hora con corrección de zona horaria
+- **Análisis Semántico**: Traduce datos crudos en narrativas comprensibles
+- **Sistema Responsive**: Garantiza estabilidad visual desde 320px hasta tablets
+- **Animación de Viento**: Sistema de partículas con física avanzada (280 partículas, ~60 FPS)
 
-Sistema de partículas de nivel AAA con **9 features de física avanzada**:
+---
 
-1. **Depth Layering**: 3 capas parallax para efecto 3D (fondo 30%, medio 60%, frente 100%)
-2. **Wind Gusts**: Ráfagas periódicas que simulan la respiración natural del aire
-3. **Multi-Frequency Turbulence**: 3 ondas sinusoidales combinadas para movimiento orgánico
-4. **Fade Lifecycle**: Spawn/despawn cinematográfico de partículas
-5. **Clustering**: Agrupaciones emergentes (atracción entre partículas 10-50px)
-6. **Wind Wake**: 🌟 **Interacción táctil** - Las partículas se apartan al tocar/arrastrar
-7. **Smart Respawn**: Reposicionamiento inteligente basado en dirección de flujo
-8. **Layer-Specific Colors**: Opacidades diferenciadas por profundidad
-9. **Perpendicular Turbulence**: Desplazamiento transversal al flujo para realismo
+## Stack Tecnológico
 
-**Performance**: 280 partículas optimizadas, ~60 FPS en dispositivos modernos.
+### Backend
 
-## 📡 Integración de APIs
+- Python 3.10+ / FastAPI
+- Patrón Provider para abstracción de fuentes de datos
+- Cache inteligente (TTL 30min)
+- Validación con Pydantic
 
-El sistema utiliza un **HybridWeatherProvider** que orquesta múltiples fuentes:
+### Frontend
 
-### 1. Open-Meteo (Principal)
-Proveedor primario para datos marinos y atmosféricos.
-- **Documentación**: [Open-Meteo Marine API](https://open-meteo.com/en/docs/marine-weather-api)
-- **Uso**: Modelo `best_match` con coordenadas costeras exactas para evitar errores de interpolación tierra-mar.
+- React 18 / Vite
+- PWA con service worker
+- Sistema de diseño basado en variables CSS (8pt grid, paleta oceánica)
+- Animaciones con Canvas y Framer Motion
 
-### 2. Windy.com (Respaldo de Élite)
-Se activa automáticamente si Open-Meteo falla (Error 429/503).
-- **Documentación**: [Windy Point Forecast API v2](https://api.windy.com/point-forecast/docs)
-- **Uso**: Modelos `gfs` (viento) y `gfsWave` (olas).
-- **Ventaja**: Datos de altísima calidad y fiabilidad comercial.
+---
 
-### 3. OpenWeatherMap (Último Recurso)
-Fallback final para validación básica.
-- **Documentación**: [OpenWeather API](https://openweathermap.org/api)
-- **Uso**: Datos básicos de viento y clima si fallan los anteriores.
+## Instalación
 
-### 4. Google Gemini (IA Pedagógica)
-Genera las explicaciones narrativas.
-- **Modelo**: `gemini-2.0-flash-exp`.
-- **Uso**: Traduce Flags y Scores en consejos de seguridad ("Usa lycra", "Cuidado con la deriva").
+### Requisitos
 
-## 🛠️ Arquitectura Técnica
-
-### Backend (Python / FastAPI)
-- **Providers Pattern:** Abstracción de fuentes de datos (`WeatherProvider` interface).
-- **Hybrid Service:** Lógica de caché inteligente (TTL 30min) y orquestación de fallbacks.
-- **Pydantic Models:** Validación estricta de datos.
-- **Scoring System:** Sistema multidimensional (Seguridad/Esfuerzo/Disfrute) con reglas determinísticas.
-
-### Frontend (React / Vite)
-- **PWA First:** Diseñado para funcionar como app nativa en móviles.
-- **Design System Orgánico:** Sistema completo de variables CSS (8 tamaños de border-radius, 8pt grid spacing, paleta oceánica).
-- **Elite Animations:** Canvas-based particle system con física avanzada.
-- **Componentes Modulares**: Arquitectura componentizada con separación clara de responsabilidades.
-
-📚 **Documentación detallada**: Ver [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) para diagramas y explicación profunda del sistema (solo en repo local).
-
-## ⚙️ Instalación Local
-
-### Prerrequisitos
 - Python 3.10+
 - Node.js 18+
 
-### 1. Configuración del Backend
+### Backend
 
 ```bash
 cd proyecto/backend
 python -m venv venv
+
 # Windows
 .\venv\Scripts\activate
 # Linux/Mac
@@ -120,16 +86,22 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Crea un archivo `.env` en `proyecto/backend/` con tus credenciales:
+Crear archivo `.env` en `proyecto/backend/`:
 
 ```env
 OPENWEATHER_API_KEY=tu_clave
-WINDY_API_KEY=tu_clave_windy
+WINDY_API_KEY=tu_clave
 GEMINI_API_KEY=tu_clave
 FRONTEND_URL=http://localhost:5173
 ```
 
-### 2. Configuración del Frontend
+Ejecutar:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+### Frontend
 
 ```bash
 cd proyecto/frontend
@@ -137,38 +109,57 @@ npm install
 npm run dev
 ```
 
-La app estará disponible en `http://localhost:5173`.
+La aplicación estará disponible en `http://localhost:5173`.
 
-## 📦 Demo en Producción
+---
+
+## Producción
 
 | Servicio | URL |
 |----------|-----|
 | Frontend | `https://rumbo.matiasbarreto.com` |
-| Backend API | `https://rumbo-api.matiasbarreto.com` |
+| API | `https://rumbo-api.matiasbarreto.com` |
 
-## 🧪 Principios Arquitectónicos
+---
 
-1. **Semáforo = Solo seguridad** (nunca GO/NO-GO).
-2. **Layer A y Layer B separados** (decisión vs explicación).
-3. **Disfrute basado en objetivos** (calma/entrenamiento/desafío).
-4. **Modelo de seguridad inmutable**.
+## APIs Utilizadas
 
-## 🤝 Contribuir
+| Proveedor | Uso | Documentación |
+|-----------|-----|---------------|
+| Open-Meteo | Datos marinos y atmosféricos (principal) | [Marine API](https://open-meteo.com/en/docs/marine-weather-api) |
+| Windy.com | Respaldo de alta calidad | [Point Forecast API](https://api.windy.com/point-forecast/docs) |
+| OpenWeatherMap | Fallback básico | [API Docs](https://openweathermap.org/api) |
+| Google Gemini | Generación de explicaciones | `gemini-2.0-flash-exp` |
 
-Las contribuciones son bienvenidas. Por favor:
+---
 
-1. Lee la [Guía de Contribución](docs/CONTRIBUTING.md) para code style y workflow (solo en repo local)
-2. No subas claves API - usa variables de entorno
+## Principios de Diseño
+
+1. El semáforo indica seguridad, no "GO/NO-GO"
+2. Decisión y explicación están separadas (Layer A vs Layer B)
+3. El disfrute se calcula según el objetivo del usuario
+4. El modelo de seguridad es inmutable
+
+---
+
+## Contribuir
+
+Las contribuciones son bienvenidas. Antes de empezar:
+
+1. Lee la [Guía de Contribución](docs/CONTRIBUTING.md)
+2. Usa variables de entorno para claves API (nunca commitear credenciales)
 3. Sigue [Conventional Commits](https://www.conventionalcommits.org/) para mensajes
 
-**Issues**: [GitHub Issues](https://github.com/tuusuario/rumbo-sup/issues)
+Para reportar bugs o sugerir features, abrí un [issue](https://github.com/mattbarreto/rumbo-sup/issues).
 
-## 📄 Licencia
+---
 
-Este proyecto está bajo la Licencia MIT.
+## Licencia
+
+MIT License. Ver [LICENSE](proyecto/LICENSE) para más detalles.
 
 ---
 
 <p align="center">
-  Hecho con 💙 y 🧉 en Mar del Plata
+  Desarrollado en Mar del Plata
 </p>

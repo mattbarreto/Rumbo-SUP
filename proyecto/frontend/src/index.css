@@ -136,6 +136,35 @@
   /* ==================== INTERACTION (Physical Feedback) ==================== */
   --touch-scale: scale(0.96);
   --touch-opacity: 0.85;
+
+  /* ==================== RESPONSIVE SYSTEM (Maritime Universal) ==================== */
+  /* Semantic Breakpoint Tokens - Mobile First */
+  --bp-small-phone: 320px;
+  /* iPhone SE, small Android */
+  --bp-standard-phone: 360px;
+  /* Standard Android */
+  --bp-large-phone: 414px;
+  /* iPhone Plus/Max */
+  --bp-tablet: 768px;
+  /* iPad portrait */
+  --bp-desktop: 1024px;
+  /* iPad landscape, desktop */
+
+  /* Fluid Typography Scale - Smooth scaling across viewports */
+  /* Using clamp(min, preferred, max) for seamless responsiveness */
+  --text-hero: clamp(2.5rem, 8vw, 4rem);
+  /* Hero numbers */
+  --text-metric: clamp(1.75rem, 6vw, 2.5rem);
+  /* Metric values */
+  --text-heading: clamp(1.5rem, 5vw, 2rem);
+  /* Section headings */
+  --text-spot-name: clamp(1.5rem, 6vw, 2rem);
+  /* Spot title */
+
+  /* Responsive Spacing - Adapts to viewport */
+  --space-fluid-sm: clamp(0.5rem, 2vw, 1rem);
+  --space-fluid-md: clamp(1rem, 3vw, 1.5rem);
+  --space-fluid-lg: clamp(1.5rem, 4vw, 2rem);
 }
 
 /* ==================== RESET & BASE ==================== */
@@ -495,9 +524,29 @@ p {
 
 .container {
   width: 100%;
-  max-width: 480px;
+  max-width: 100%;
+  padding: var(--space-4);
   margin: 0 auto;
-  padding: var(--space-6);
+}
+
+/* Progressive Enhancement for Larger Screens */
+@media (min-width: 480px) {
+  .container {
+    max-width: 480px;
+    padding: var(--space-6);
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 960px;
+  }
 }
 
 .page {

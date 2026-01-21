@@ -11,7 +11,8 @@
 
 .onboarding-container {
     width: 100%;
-    max-width: 420px;
+    /* More flexible on small screens */
+    max-width: min(420px, 100%);
 }
 
 .onboarding-step {

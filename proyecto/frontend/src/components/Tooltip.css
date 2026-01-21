@@ -48,23 +48,29 @@
     -webkit-backdrop-filter: blur(8px);
 }
 
-/* Positioning Variants */
-.tooltip-top {
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
+/* Portal-based Fixed Positioning (escapes overflow:hidden) */
+.tooltip-fixed {
+    /* position: fixed is applied inline via JS */
+    /* Override any inherited transforms */
+    transform: none !important;
 }
 
-.tooltip-bottom {
-    top: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
+.tooltip-fixed .tooltip-arrow {
+    /* Arrow is positioned inline via JS left property */
+    position: absolute;
+    transform: translateX(-50%) rotate(45deg);
 }
 
-.tooltip-left {
-    right: calc(100% + 8px);
-    top: 50%;
-    transform: translateY(-50%);
+.tooltip-fixed.tooltip-top .tooltip-arrow {
+    bottom: -4px;
+    border-top: none;
+    border-left: none;
+}
+
+.tooltip-fixed.tooltip-bottom .tooltip-arrow {
+    top: -4px;
+    border-bottom: none;
+    border-right: none;
 }
 
 .tooltip-right {

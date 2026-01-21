@@ -26,10 +26,9 @@
 
 .breathing-ring-container {
     position: relative;
-    width: 260px;
-    /* Increased from 240px to allow breathing expansion */
-    height: 260px;
-    /* Increased from 240px to allow breathing expansion */
+    /* Responsive sizing: 200px on small phones, scales up to 280px on larger devices */
+    width: clamp(200px, 65vw, 280px);
+    height: clamp(200px, 65vw, 280px);
     display: flex;
     align-items: center;
     justify-content: center;

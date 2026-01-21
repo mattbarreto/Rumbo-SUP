@@ -57,8 +57,9 @@
 }
 
 .sk-circle {
-    width: 200px;
-    height: 200px;
+    /* Fluid scaling to match CircularIndicator responsiveness */
+    width: clamp(160px, 50vw, 220px);
+    height: clamp(160px, 50vw, 220px);
     border-radius: 50%;
     position: relative;
     background: var(--ocean-deep);
@@ -68,8 +69,16 @@
 
 .sk-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    /* Mobile first: 2 columns to match metrics grid */
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-4);
+}
+
+/* Match metrics grid breakpoint */
+@media (min-width: 390px) {
+    .sk-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 .sk-card {

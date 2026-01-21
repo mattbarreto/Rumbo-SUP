@@ -52,8 +52,9 @@
 
 .timeline-block {
     flex: 0 0 auto;
-    width: 64px;
-    height: 96px;
+    /* Fluid sizing: 56px on tiny phones, scales to 72px on larger */
+    width: clamp(56px, 15vw, 72px);
+    height: clamp(80px, 22vw, 100px);
     background: transparent;
     /* Remove card bg for cleaner look? Or keep glass minimal? */
     /* Keeping glass but much lighter or removing border to let points shine? */

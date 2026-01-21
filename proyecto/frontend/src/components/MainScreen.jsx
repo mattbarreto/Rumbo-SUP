@@ -256,7 +256,9 @@ function MainScreen() {
         'riesgo_deriva': 'danger',
         'olas_grandes': 'warning',
         'principiante_condiciones_moderadas': 'warning',
-        'deriva_varese': 'danger'
+        'deriva_varese': 'danger',
+        'uv_alto': 'warning',
+        'uv_extremo': 'danger'
     };
 
     const flagDescriptions = {
@@ -264,7 +266,9 @@ function MainScreen() {
         'riesgo_deriva': 'Riesgo de deriva',
         'olas_grandes': 'Olas grandes',
         'principiante_condiciones_moderadas': 'Condiciones moderadas para principiante',
-        'deriva_varese': 'Marea bajando + viento offshore'
+        'deriva_varese': 'Marea bajando + viento offshore',
+        'uv_alto': 'Índice UV Alto',
+        'uv_extremo': 'Índice UV Extremo'
     };
 
     const flagTooltips = {
@@ -272,7 +276,9 @@ function MainScreen() {
         'riesgo_deriva': 'Condiciones que pueden alejarte de tu posición original (corrientes, viento offshore).',
         'olas_grandes': 'Olas que requieren técnica avanzada de equilibrio y mayor consumo energético.',
         'principiante_condiciones_moderadas': 'Si recién empezás, estas condiciones podrían ser desafiantes.',
-        'deriva_varese': 'Combinación peligrosa: marea bajante + viento offshore = alto riesgo de alejamiento.'
+        'deriva_varese': 'Combinación peligrosa: marea bajante + viento offshore = alto riesgo de alejamiento.',
+        'uv_alto': 'Protección solar necesaria. Riesgo de quemaduras en exposición prolongada.',
+        'uv_extremo': 'Evitar exposición directa. Protección solar máxima requerida.'
     };
 
     return (
